@@ -60,7 +60,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (req: express.Request, res: express.Response) => {
   res.json({ status: 'OK', message: 'Skalice API is running' });
 });
 
@@ -79,7 +79,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 });
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use('*', (req: express.Request, res: express.Response) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
