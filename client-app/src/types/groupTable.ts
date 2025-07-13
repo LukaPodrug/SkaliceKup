@@ -13,8 +13,9 @@ export interface GroupTableTeam extends ApiTeam {
 export interface GroupTableMatch extends ApiMatch {
   homeTeam: string; // name, not id
   awayTeam: string; // name, not id
-  homeScore: number | null;
-  awayScore: number | null;
+  homeScore: number | undefined;
+  awayScore: number | undefined;
   date: string;
   status: 'finished' | 'scheduled' | 'live';
+  round?: string;
 } 
