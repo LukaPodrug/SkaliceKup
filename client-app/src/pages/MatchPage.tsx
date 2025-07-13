@@ -257,14 +257,12 @@ const MatchPage: React.FC = () => {
                     </Typography>
                     <Box sx={{ flex: 1 }}>
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.875rem', fontWeight: 600, color: '#222' }}>
-                        {/* Show player name if available */}
-                        {'player' in event && event.player && typeof event.player === 'object' && 'firstName' in event.player && 'lastName' in event.player
+                        {typeof event.player === 'object' && event.player && 'firstName' in event.player && 'lastName' in event.player
                           ? `${event.player.firstName} ${event.player.lastName}`
                           : typeof event.playerId === 'string' ? event.playerId : ''}
                       </Typography>
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.75rem', color: '#666' }}>
-                        {/* Show team name if available */}
-                        {'team' in event && event.team && typeof event.team === 'object' && 'name' in event.team
+                        {typeof event.team === 'object' && event.team && 'name' in event.team
                           ? event.team.name
                           : typeof event.teamId === 'string' ? event.teamId : ''}
                       </Typography>
@@ -370,14 +368,12 @@ const MatchPage: React.FC = () => {
                       </Typography>
                       <Box sx={{ flex: 1 }}>
                         <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', fontWeight: 600, color: '#222' }}>
-                          {/* Show player name if available */}
-                          {'player' in event && event.player && typeof event.player === 'object' && 'firstName' in event.player && 'lastName' in event.player
+                          {typeof event.player === 'object' && event.player && 'firstName' in event.player && 'lastName' in event.player
                             ? `${event.player.firstName} ${event.player.lastName}`
                             : typeof event.playerId === 'string' ? event.playerId : ''}
                         </Typography>
                         <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.8rem', color: '#666' }}>
-                          {/* Show team name if available */}
-                          {'team' in event && event.team && typeof event.team === 'object' && 'name' in event.team
+                          {typeof event.team === 'object' && event.team && 'name' in event.team
                             ? event.team.name
                             : typeof event.teamId === 'string' ? event.teamId : ''}
                         </Typography>
