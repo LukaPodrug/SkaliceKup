@@ -1,21 +1,10 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box } from '@mui/material';
 import teamLogoMock from '../assets/teamLogoMock.png';
-
-interface Team {
-  id: number;
-  name: string;
-  played: number;
-  won: number;
-  drawn: number;
-  lost: number;
-  goalsFor: number;
-  goalsAgainst: number;
-  points: number;
-}
+import type { GroupTableTeam } from '../types/groupTable';
 
 interface GroupTableProps {
-  teams: Team[];
+  teams: GroupTableTeam[];
   isMobile?: boolean;
 }
 

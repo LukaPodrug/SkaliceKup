@@ -2,20 +2,10 @@ import React from 'react';
 import { Box, Typography, Chip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import teamLogoMock from '../assets/teamLogoMock.png';
-
-interface Match {
-  id: string;
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number | null;
-  awayScore: number | null;
-  date: string;
-  status: 'finished' | 'scheduled' | 'live';
-  round?: string;
-}
+import type { GroupTableMatch } from '../types/groupTable';
 
 interface ResultsMatchCardProps {
-  match: Match;
+  match: GroupTableMatch;
   isMobile?: boolean;
   showRound?: boolean;
 }

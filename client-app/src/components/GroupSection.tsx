@@ -2,49 +2,14 @@ import React from 'react';
 import { Box, Typography, Divider, Chip } from '@mui/material';
 import GroupTable from './GroupTable';
 import ResultsMatchCard from './ResultsMatchCard';
-
-interface Team {
-  id: string;
-  name: string;
-  played: number;
-  won: number;
-  drawn: number;
-  lost: number;
-  goalsFor: number;
-  goalsAgainst: number;
-  points: number;
-}
-
-interface Match {
-  id: string;
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number | null;
-  awayScore: number | null;
-  date: string;
-  status: 'finished' | 'scheduled' | 'live';
-}
+import type { GroupTableTeam, GroupTableMatch } from '../types/groupTable';
 
 interface GroupSectionProps {
   name: string;
-  teams: Team[];
-  matches: Match[];
+  teams: GroupTableTeam[];
+  matches: GroupTableMatch[];
   isMobile?: boolean;
 }
-
-// Helper function to map status
-const mapStatus = (status: 'finished' | 'scheduled' | 'live'): string => {
-  switch (status) {
-    case 'finished':
-      return 'Kraj';
-    case 'live':
-      return 'U tijeku';
-    case 'scheduled':
-      return 'Nije počelo';
-    default:
-      return 'Nije počelo';
-  }
-};
 
 const GroupSection: React.FC<GroupSectionProps> = ({ name, teams, matches, isMobile = false }) => {
   return (
@@ -70,7 +35,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ name, teams, matches, isMob
 
       {/* Group Matches */}
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        {matches.map((match: Match, index: number) => (
+        {matches.map((match: GroupTableMatch, index: number) => (
           <React.Fragment key={match.id}>
             <ResultsMatchCard
               match={match}
