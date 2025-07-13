@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const isProd = process.env.NODE_ENV === 'production';
+
 // Parse Neon PostgreSQL connection string
 const parseConnectionString = (connectionString: string) => {
   const url = new URL(connectionString);
@@ -19,19 +21,17 @@ const parseConnectionString = (connectionString: string) => {
 };
 
 const getDatabaseConfig = () => {
-  // If DATABASE_URL is provided (for production), use it
   if (process.env.DATABASE_URL) {
     return parseConnectionString(process.env.DATABASE_URL);
   }
-  
-  // Fallback to individual environment variables
+
   return {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '5432'),
     username: process.env.DB_USERNAME || 'postgres',
     password: process.env.DB_PASSWORD || 'postgres',
     database: process.env.DB_NAME || 'skalice',
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    ssl: isProd ? { rejectUnauthorized: false } : false
   };
 };
 
@@ -40,17 +40,17 @@ const dbConfig = getDatabaseConfig();
 export const AppDataSource = new DataSource({
   type: 'postgres',
   ...dbConfig,
-  synchronize: process.env.NODE_ENV === 'development', // Auto-create tables in development
-  logging: process.env.NODE_ENV === 'development',
-  entities: ['src/entities/**/*.ts'],
-  migrations: ['src/migrations/**/*.ts'],
-  subscribers: ['src/subscribers/**/*.ts'],
+  synchronize: !isProd,
+  logging: !isProd,
+  entities: [isProd ? 'dist/entities/**/*.js' : 'src/entities/**/*.ts'],
+  migrations: [isProd ? 'dist/migrations/**/*.js' : 'src/migrations/**/*.ts'],
+  subscribers: [isProd ? 'dist/subscribers/**/*.js' : 'src/subscribers/**/*.ts'],
 });
 
 const connectDB = async (): Promise<void> => {
   try {
     console.log('🔌 Connecting to PostgreSQL...');
-    
+
     await AppDataSource.initialize();
     console.log('✅ PostgreSQL Connected successfully!');
   } catch (error) {
@@ -63,4 +63,4 @@ const connectDB = async (): Promise<void> => {
   }
 };
 
-export default connectDB; 
+export default connectDB;
