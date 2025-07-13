@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Container, useTheme, useMediaQuery, CircularProgress, Alert, Divider } from '@mui/material';
+import { Box, Typography, Container, useTheme, useMediaQuery, CircularProgress, Alert, Divider, Pagination } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ArticleCard from '../components/ArticleCard';
 import { contentfulClient, type ContentfulArticle } from '../utils/contentfulClient';
@@ -12,6 +12,8 @@ const NewsPage: React.FC = () => {
   
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [page, setPage] = useState(1);
+  const articlesPerPage = 10;
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -34,6 +36,10 @@ const NewsPage: React.FC = () => {
 
     fetchArticles();
   }, []);
+
+  useEffect(() => {
+    setPage(1); // Reset to first page on fetch
+  }, [articles.length]);
 
   if (loading) {
     return (
@@ -62,24 +68,34 @@ const NewsPage: React.FC = () => {
               Nema dostupnih članaka.
             </Typography>
           ) : (
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              {articles.map((article, idx, arr) => (
-                <React.Fragment key={article.id}>
-                  <ArticleCard
-                    id={article.id}
-                    title={article.title}
-                    excerpt={typeof article.content === 'string' ? article.content.substring(0, 150) + '...' : 'Članak...'}
-                    imageUrl={article.featuredImage?.url || article.images?.[0]?.url || '/articleMock1.jpg'}
-                    date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
-                    isMobile={isMobile}
-                    onClick={() => navigate(`/news/article/${article.id}`)}
-                  />
-                  {idx < arr.length - 1 && (
-                    <Divider sx={{ bgcolor: '#e0e0e0', height: '1px', borderRadius: 1, m: 0 }} />
-                  )}
-                </React.Fragment>
-              ))}
-            </Box>
+            <>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                {articles.slice((page-1)*articlesPerPage, page*articlesPerPage).map((article, idx, arr) => (
+                  <React.Fragment key={article.id}>
+                    <ArticleCard
+                      id={article.id}
+                      title={article.title}
+                      excerpt={typeof article.content === 'string' ? article.content.substring(0, 150) + '...' : 'Članak...'}
+                      imageUrl={article.featuredImage?.url || article.images?.[0]?.url || '/articleMock1.jpg'}
+                      date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
+                      isMobile={isMobile}
+                      onClick={() => navigate(`/news/article/${article.id}`)}
+                    />
+                    {idx < arr.length - 1 && (
+                      <Divider sx={{ bgcolor: '#e0e0e0', height: '1px', borderRadius: 1, m: 0 }} />
+                    )}
+                  </React.Fragment>
+                ))}
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                <Pagination
+                  count={Math.ceil(articles.length / articlesPerPage)}
+                  page={page}
+                  onChange={(_, value) => setPage(value)}
+                  color="primary"
+                />
+              </Box>
+            </>
           )}
         </Box>
       </Box>
@@ -96,27 +112,34 @@ const NewsPage: React.FC = () => {
               Nema dostupnih članaka.
             </Typography>
           ) : (
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column'
-            }}>
-              {articles.map((article, idx, arr) => (
-                <React.Fragment key={article.id}>
-                  <ArticleCard
-                    id={article.id}
-                    title={article.title}
-                    excerpt={typeof article.content === 'string' ? article.content.substring(0, 150) + '...' : 'Članak...'}
-                    imageUrl={article.featuredImage?.url || article.images?.[0]?.url || '/articleMock1.jpg'}
-                    date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
-                    isMobile={false}
-                    onClick={() => navigate(`/news/article/${article.id}`)}
-                  />
-                  {idx < arr.length - 1 && (
-                    <Divider sx={{ bgcolor: '#e0e0e0', height: '1px', borderRadius: 1, m: 0 }} />
-                  )}
-                </React.Fragment>
-              ))}
-            </Box>
+            <>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                {articles.slice((page-1)*articlesPerPage, page*articlesPerPage).map((article, idx, arr) => (
+                  <React.Fragment key={article.id}>
+                    <ArticleCard
+                      id={article.id}
+                      title={article.title}
+                      excerpt={typeof article.content === 'string' ? article.content.substring(0, 150) + '...' : 'Članak...'}
+                      imageUrl={article.featuredImage?.url || article.images?.[0]?.url || '/articleMock1.jpg'}
+                      date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
+                      isMobile={false}
+                      onClick={() => navigate(`/news/article/${article.id}`)}
+                    />
+                    {idx < arr.length - 1 && (
+                      <Divider sx={{ bgcolor: '#e0e0e0', height: '1px', borderRadius: 1, m: 0 }} />
+                    )}
+                  </React.Fragment>
+                ))}
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                <Pagination
+                  count={Math.ceil(articles.length / articlesPerPage)}
+                  page={page}
+                  onChange={(_, value) => setPage(value)}
+                  color="primary"
+                />
+              </Box>
+            </>
           )}
         </Box>
       </Container>
