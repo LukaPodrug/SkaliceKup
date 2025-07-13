@@ -12,10 +12,13 @@ import {
   Tab,
   Grid,
   Modal,
-  IconButton
+  IconButton,
+  Button,
+  Pagination
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { contentfulClient, type ContentfulArticle } from '../utils/contentfulClient';
+import ArticleCard from '../components/ArticleCard';
 
 const ArticlePage: React.FC = () => {
   const { articleId } = useParams<{ articleId: string }>();
@@ -29,6 +32,11 @@ const ArticlePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [recentArticles, setRecentArticles] = useState<ContentfulArticle[]>([]);
+  const [articlesLoading, setArticlesLoading] = useState(true);
+  const [articlesError, setArticlesError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const articlesPerPage = 4;
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -54,6 +62,25 @@ const ArticlePage: React.FC = () => {
     };
 
     fetchArticle();
+  }, [articleId]);
+
+  useEffect(() => {
+    const fetchRecentArticles = async () => {
+      try {
+        setArticlesLoading(true);
+        const response = await contentfulClient.getArticles(8);
+        if (response.error) {
+          setArticlesError(response.error);
+        } else if (response.data) {
+          setRecentArticles(response.data.filter((a: ContentfulArticle) => a.id !== articleId));
+        }
+      } catch (err) {
+        setArticlesError('Greška pri dohvaćanju članaka');
+      } finally {
+        setArticlesLoading(false);
+      }
+    };
+    fetchRecentArticles();
   }, [articleId]);
 
   if (loading) {
@@ -313,6 +340,56 @@ const ArticlePage: React.FC = () => {
             </IconButton>
           </Box>
         </Modal>
+
+        {/* Below article content, before export default */}
+        <Box sx={{ mt: 6 }}>
+          <Typography variant="h5" sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 700, mb: 3 }}>
+            Najnoviji članci
+          </Typography>
+          {articlesLoading ? (
+            <CircularProgress sx={{ color: '#fd9905' }} />
+          ) : articlesError ? (
+            <Alert severity="error" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>{articlesError}</Alert>
+          ) : recentArticles.length === 0 ? (
+            <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>Nema dostupnih članaka.</Typography>
+          ) : (
+            <>
+              {recentArticles.slice((page-1)*articlesPerPage, page*articlesPerPage).map((a, idx, arr) => (
+                <React.Fragment key={a.id}>
+                  <ArticleCard
+                    id={a.id}
+                    title={a.title}
+                    excerpt={typeof a.content === 'string' ? a.content.substring(0, 150) + '...' : 'Članak...'}
+                    imageUrl={a.featuredImage?.url || a.images?.[0]?.url || '/articleMock1.jpg'}
+                    date={new Date(a.publishedAt).toLocaleDateString('hr-HR')}
+                    isMobile={isMobile}
+                    onClick={() => navigate(`/news/article/${a.id}`)}
+                  />
+                  {idx < arr.length - 1 && (
+                    <Divider sx={{ my: isMobile ? 2 : 3, bgcolor: '#e0e0e0', height: '1px', borderRadius: 1 }} />
+                  )}
+                </React.Fragment>
+              ))}
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                <Pagination
+                  count={Math.ceil(recentArticles.length / articlesPerPage)}
+                  page={page}
+                  onChange={(_, value) => setPage(value)}
+                  color="primary"
+                />
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                <Button
+                  variant="contained"
+                  sx={{ bgcolor: '#fd9905', color: '#fff', fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, borderRadius: 8, px: 4, py: 1, boxShadow: 'none', textTransform: 'none', '&:hover': { bgcolor: '#e68a00', boxShadow: 'none' } }}
+                  onClick={() => navigate('/news')}
+                >
+                  Svi članci
+                </Button>
+              </Box>
+            </>
+          )}
+        </Box>
       </Box>
     );
   }
@@ -558,6 +635,56 @@ const ArticlePage: React.FC = () => {
             </IconButton>
           </Box>
         </Modal>
+
+        {/* Below article content, before export default */}
+        <Box sx={{ mt: 6 }}>
+          <Typography variant="h5" sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 700, mb: 3 }}>
+            Najnoviji članci
+          </Typography>
+          {articlesLoading ? (
+            <CircularProgress sx={{ color: '#fd9905' }} />
+          ) : articlesError ? (
+            <Alert severity="error" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>{articlesError}</Alert>
+          ) : recentArticles.length === 0 ? (
+            <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>Nema dostupnih članaka.</Typography>
+          ) : (
+            <>
+              {recentArticles.slice((page-1)*articlesPerPage, page*articlesPerPage).map((a, idx, arr) => (
+                <React.Fragment key={a.id}>
+                  <ArticleCard
+                    id={a.id}
+                    title={a.title}
+                    excerpt={typeof a.content === 'string' ? a.content.substring(0, 150) + '...' : 'Članak...'}
+                    imageUrl={a.featuredImage?.url || a.images?.[0]?.url || '/articleMock1.jpg'}
+                    date={new Date(a.publishedAt).toLocaleDateString('hr-HR')}
+                    isMobile={isMobile}
+                    onClick={() => navigate(`/news/article/${a.id}`)}
+                  />
+                  {idx < arr.length - 1 && (
+                    <Divider sx={{ my: isMobile ? 2 : 3, bgcolor: '#e0e0e0', height: '1px', borderRadius: 1 }} />
+                  )}
+                </React.Fragment>
+              ))}
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                <Pagination
+                  count={Math.ceil(recentArticles.length / articlesPerPage)}
+                  page={page}
+                  onChange={(_, value) => setPage(value)}
+                  color="primary"
+                />
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                <Button
+                  variant="contained"
+                  sx={{ bgcolor: '#fd9905', color: '#fff', fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, borderRadius: 8, px: 4, py: 1, boxShadow: 'none', textTransform: 'none', '&:hover': { bgcolor: '#e68a00', boxShadow: 'none' } }}
+                  onClick={() => navigate('/news')}
+                >
+                  Svi članci
+                </Button>
+              </Box>
+            </>
+          )}
+        </Box>
       </Container>
     </Box>
   );

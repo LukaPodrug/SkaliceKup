@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Container, useTheme, useMediaQuery, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Container, useTheme, useMediaQuery, CircularProgress, Alert, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ArticleCard from '../components/ArticleCard';
 import { contentfulClient, type ContentfulArticle } from '../utils/contentfulClient';
@@ -63,17 +63,21 @@ const NewsPage: React.FC = () => {
             </Typography>
           ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              {articles.map((article) => (
-                <ArticleCard
-                  key={article.id}
-                  id={article.id}
-                  title={article.title}
-                  excerpt={typeof article.content === 'string' ? article.content.substring(0, 150) + '...' : 'Članak...'}
-                  imageUrl={article.featuredImage?.url || article.images?.[0]?.url || '/articleMock1.jpg'}
-                  date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
-                  isMobile={true}
-                  onClick={() => navigate(`/news/article/${article.id}`)}
-                />
+              {articles.map((article, idx) => (
+                <React.Fragment key={article.id}>
+                  <ArticleCard
+                    id={article.id}
+                    title={article.title}
+                    excerpt={typeof article.content === 'string' ? article.content.substring(0, 150) + '...' : 'Članak...'}
+                    imageUrl={article.featuredImage?.url || article.images?.[0]?.url || '/articleMock1.jpg'}
+                    date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
+                    isMobile={isMobile}
+                    onClick={() => navigate(`/news/article/${article.id}`)}
+                  />
+                  {idx < articles.length - 1 && (
+                    <Divider sx={{ my: isMobile ? 2 : 3, bgcolor: '#e0e0e0', height: '1px', borderRadius: 1 }} />
+                  )}
+                </React.Fragment>
               ))}
             </Box>
           )}
@@ -96,17 +100,21 @@ const NewsPage: React.FC = () => {
               display: 'flex', 
               flexDirection: 'column'
             }}>
-              {articles.map((article) => (
-                <ArticleCard
-                  key={article.id}
-                  id={article.id}
-                  title={article.title}
-                  excerpt={typeof article.content === 'string' ? article.content.substring(0, 150) + '...' : 'Članak...'}
-                  imageUrl={article.featuredImage?.url || article.images?.[0]?.url || '/articleMock1.jpg'}
-                  date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
-                  isMobile={false}
-                  onClick={() => navigate(`/news/article/${article.id}`)}
-                />
+              {articles.map((article, idx) => (
+                <React.Fragment key={article.id}>
+                  <ArticleCard
+                    id={article.id}
+                    title={article.title}
+                    excerpt={typeof article.content === 'string' ? article.content.substring(0, 150) + '...' : 'Članak...'}
+                    imageUrl={article.featuredImage?.url || article.images?.[0]?.url || '/articleMock1.jpg'}
+                    date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
+                    isMobile={false}
+                    onClick={() => navigate(`/news/article/${article.id}`)}
+                  />
+                  {idx < articles.length - 1 && (
+                    <Divider sx={{ my: isMobile ? 2 : 3, bgcolor: '#e0e0e0', height: '1px', borderRadius: 1 }} />
+                  )}
+                </React.Fragment>
               ))}
             </Box>
           )}
