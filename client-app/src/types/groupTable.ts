@@ -16,6 +16,6 @@ export interface GroupTableMatch extends ApiMatch {
   homeScore: number | undefined;
   awayScore: number | undefined;
   date: string;
-  status: 'finished' | 'scheduled' | 'live';
+  status: 'finished' | 'scheduled' | 'in_progress';
   round?: string;
 } 

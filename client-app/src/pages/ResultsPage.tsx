@@ -307,13 +307,13 @@ const ResultsPage: React.FC = () => {
                       <React.Fragment key={match.id}>
                         <ResultsMatchCard
                           match={{
-                            id: match.id,
+                            ...match,
                             homeTeam: getTeamName(match.homeTeamId),
                             awayTeam: getTeamName(match.awayTeamId),
                             homeScore: homeScore,
                             awayScore: awayScore,
                             date: match.date,
-                            status: match.status === 'in_progress' ? 'live' : match.status,
+                            status: match.status, // do not use 'live', use 'in_progress'
                             round: phase.value === 'knockout' ? match.phase : undefined
                           }}
                           isMobile={true}
@@ -415,13 +415,13 @@ const ResultsPage: React.FC = () => {
                       <React.Fragment key={match.id}>
                         <ResultsMatchCard
                           match={{
-                            id: match.id,
+                            ...match,
                             homeTeam: getTeamName(match.homeTeamId),
                             awayTeam: getTeamName(match.awayTeamId),
                             homeScore: homeScore,
                             awayScore: awayScore,
                             date: match.date,
-                            status: match.status === 'in_progress' ? 'live' : match.status,
+                            status: match.status, // do not use 'live', use 'in_progress'
                             round: phase.value === 'knockout' ? match.phase : undefined
                           }}
                           isMobile={false}
