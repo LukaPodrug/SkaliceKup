@@ -152,6 +152,8 @@ const HomePageMobile: React.FC<{
                 date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
                 isMobile={true}
                 onClick={() => navigate(`/article/${article.id}`)}
+                sx={{ width: '100%' }}
+                imageSx={{ width: '100%', objectFit: 'cover' }}
               />
               {idx < arr.length - 1 && (
                 <Divider sx={{ bgcolor: '#e0e0e0', height: '1px', borderRadius: 1, m: 0 }} />
@@ -349,24 +351,35 @@ const HomePageDesktop: React.FC<{
               Trenutno nema članaka.
             </Typography>
           ) : (
-            <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-              {articles.map((article, idx) => (
-                <React.Fragment key={article.id}>
-                  <ArticleCard
-                    id={article.id}
-                    title={article.title}
-                    excerpt={getArticleExcerpt(article.content)}
-                    imageUrl={article.featuredImage?.url || article.images?.[0]?.url || '/articleMock1.jpg'}
-                    date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
-                    isMobile={false}
-                    onClick={() => navigate(`/article/${article.id}`)}
-                  />
-                  {idx < articles.length - 1 && (
-                    <Divider sx={{ my: 2, bgcolor: '#e0e0e0', height: '1px', borderRadius: 1 }} />
-                  )}
-                </React.Fragment>
-              ))}
-            </Box>
+            <>
+              <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                {articles.map((article, idx, arr) => (
+                  <React.Fragment key={article.id}>
+                    <ArticleCard
+                      id={article.id}
+                      title={article.title}
+                      excerpt={getArticleExcerpt(article.content)}
+                      imageUrl={article.featuredImage?.url || article.images?.[0]?.url || '/articleMock1.jpg'}
+                      date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
+                      isMobile={false}
+                      onClick={() => navigate(`/article/${article.id}`)}
+                    />
+                    {idx < arr.length - 1 && (
+                      <Divider sx={{ bgcolor: '#e0e0e0', height: '1px', borderRadius: 1, m: 0 }} />
+                    )}
+                  </React.Fragment>
+                ))}
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                <Button
+                  variant="contained"
+                  sx={{ bgcolor: '#fd9905', color: '#fff', fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, borderRadius: 8, px: 4, py: 1, boxShadow: 'none', textTransform: 'none', '&:hover': { bgcolor: '#e68a00', boxShadow: 'none' } }}
+                  onClick={() => navigate('/news')}
+                >
+                  Svi članci
+                </Button>
+              </Box>
+            </>
           )}
         </Box>
         
