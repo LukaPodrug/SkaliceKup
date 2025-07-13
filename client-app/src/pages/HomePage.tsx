@@ -152,8 +152,6 @@ const HomePageMobile: React.FC<{
                 date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
                 isMobile={true}
                 onClick={() => navigate(`/article/${article.id}`)}
-                sx={{ width: '100%' }}
-                imageSx={{ width: '100%', objectFit: 'cover' }}
               />
               {idx < arr.length - 1 && (
                 <Divider sx={{ bgcolor: '#e0e0e0', height: '1px', borderRadius: 1, m: 0 }} />
