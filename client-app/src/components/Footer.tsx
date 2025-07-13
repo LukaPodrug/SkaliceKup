@@ -9,22 +9,22 @@ const Footer: React.FC = () => (
           <Box mt={4} display="flex" flexDirection="column" alignItems="center">
             <Box display="flex" justifyContent="center" gap={2} flexWrap="wrap">
               <a href="https://sponsor1.com" target="_blank" rel="noopener noreferrer">
-                <img src="/src/assets/sponsor3.png" alt="Sponsor 1" style={{ height: 48, borderRadius: 8 }} />
+                <img src="/sponsor3.png" alt="Sponsor 1" style={{ height: 48, borderRadius: 8 }} />
               </a>
               <a href="https://sponsor2.com" target="_blank" rel="noopener noreferrer">
-                <img src="/src/assets/sponsor2.png" alt="Sponsor 2" style={{ height: 48, borderRadius: 8 }} />
+                <img src="/sponsor2.png" alt="Sponsor 2" style={{ height: 48, borderRadius: 8 }} />
               </a>
               <a href="https://sponsor3.com" target="_blank" rel="noopener noreferrer">
-                <img src="/src/assets/sponsor4.png" alt="Sponsor 3" style={{ height: 48, borderRadius: 8 }} />
+                <img src="/sponsor4.png" alt="Sponsor 3" style={{ height: 48, borderRadius: 8 }} />
               </a>
               <a href="https://sponsor4.com" target="_blank" rel="noopener noreferrer">
-                <img src="/src/assets/sponsor1.png" alt="Sponsor 4" style={{ height: 48, borderRadius: 8 }} />
+                <img src="/sponsor1.png" alt="Sponsor 4" style={{ height: 48, borderRadius: 8 }} />
               </a>
               <a href="https://sponsor5.com" target="_blank" rel="noopener noreferrer">
-                <img src="/src/assets/sponsor5.png" alt="Sponsor 5" style={{ height: 48, borderRadius: 8 }} />
+                <img src="/sponsor5.png" alt="Sponsor 5" style={{ height: 48, borderRadius: 8 }} />
               </a>
               <a href="https://sponsor6.com" target="_blank" rel="noopener noreferrer">
-                <img src="/src/assets/sponsor6.png" alt="Sponsor 6" style={{ height: 48, borderRadius: 8 }} />
+                <img src="/sponsor6.png" alt="Sponsor 6" style={{ height: 48, borderRadius: 8 }} />
               </a>
             </Box>
           </Box>
