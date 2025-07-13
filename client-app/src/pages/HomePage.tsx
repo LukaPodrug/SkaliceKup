@@ -104,7 +104,7 @@ const HomePageMobile: React.FC<{
   return (
     <Box sx={{ flexGrow: 1, p: 0, m: 0, width: '100%', bgcolor: '#f7f7f7', display: 'flex', flexDirection: 'column' }}>
       {/* Articles Section - First */}
-      <Box sx={{ px: 2, bgcolor: '#fff', mb: 2 }}>
+      <Box sx={{ bgcolor: '#fff', mb: 2 }}>
         {matches.length === 0 ? (
           <Typography sx={{ p: 3, textAlign: 'center', color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
             Nema dostupnih utakmica.
@@ -133,7 +133,7 @@ const HomePageMobile: React.FC<{
       </Box>
 
       {/* News Section - Mobile */}
-      <Box sx={{ pb: 2, bgcolor: '#fff', mb: 2 }}>
+      <Box sx={{ bgcolor: '#fff', mb: 2 }}>
         <Typography variant="h6" sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 700, mb: 2 }}>
           Novosti
         </Typography>
