@@ -253,20 +253,20 @@ const MatchPage: React.FC = () => {
                 <React.Fragment key={index}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1.5, px: 2 }}>
                     <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: '0.875rem', minWidth: 30, color: '#222' }}>
-                      {event.minute}'
+                      {typeof event.minute === 'number' ? `${event.minute}'` : ''}
                     </Typography>
                     <Box sx={{ flex: 1 }}>
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.875rem', fontWeight: 600, color: '#222' }}>
                         {/* Show player name if available */}
                         {'player' in event && event.player && typeof event.player === 'object' && 'firstName' in event.player && 'lastName' in event.player
                           ? `${event.player.firstName} ${event.player.lastName}`
-                          : event.playerId || ''}
+                          : typeof event.playerId === 'string' ? event.playerId : ''}
                       </Typography>
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.75rem', color: '#666' }}>
                         {/* Show team name if available */}
                         {'team' in event && event.team && typeof event.team === 'object' && 'name' in event.team
                           ? event.team.name
-                          : event.teamId || ''}
+                          : typeof event.teamId === 'string' ? event.teamId : ''}
                       </Typography>
                     </Box>
                     <Chip 
@@ -366,20 +366,20 @@ const MatchPage: React.FC = () => {
                   <React.Fragment key={index}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1.5, px: 2 }}>
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: '0.95rem', minWidth: 30, color: '#222' }}>
-                        {event.minute}'
+                        {typeof event.minute === 'number' ? `${event.minute}'` : ''}
                       </Typography>
                       <Box sx={{ flex: 1 }}>
                         <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', fontWeight: 600, color: '#222' }}>
                           {/* Show player name if available */}
                           {'player' in event && event.player && typeof event.player === 'object' && 'firstName' in event.player && 'lastName' in event.player
                             ? `${event.player.firstName} ${event.player.lastName}`
-                            : event.playerId || ''}
+                            : typeof event.playerId === 'string' ? event.playerId : ''}
                         </Typography>
                         <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.8rem', color: '#666' }}>
                           {/* Show team name if available */}
                           {'team' in event && event.team && typeof event.team === 'object' && 'name' in event.team
                             ? event.team.name
-                            : event.teamId || ''}
+                            : typeof event.teamId === 'string' ? event.teamId : ''}
                         </Typography>
                       </Box>
                       <Chip 

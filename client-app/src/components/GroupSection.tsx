@@ -18,7 +18,7 @@ const mapStatus = (status: 'finished' | 'scheduled' | 'live'): string => {
   }
 };
 
-const GroupSection: React.FC<GroupSectionProps> = ({ name, teams, matches, isMobile = false }) => {
+const GroupSection: React.FC<{ name: string; teams: Team[]; matches: Match[]; isMobile?: boolean }> = ({ name, teams, matches, isMobile = false }) => {
   return (
     <Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, mb: isMobile ? 2 : 3 }}>
@@ -42,7 +42,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ name, teams, matches, isMob
 
       {/* Group Matches */}
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        {matches.map((match, index) => (
+        {matches.map((match: Match, index: number) => (
           <React.Fragment key={match.id}>
             <ResultsMatchCard
               match={match}
