@@ -2,35 +2,7 @@ import React from 'react';
 import { Box, Typography, Divider, Chip } from '@mui/material';
 import GroupTable from './GroupTable';
 import ResultsMatchCard from './ResultsMatchCard';
-
-interface Team {
-  id: number;
-  name: string;
-  played: number;
-  won: number;
-  drawn: number;
-  lost: number;
-  goalsFor: number;
-  goalsAgainst: number;
-  points: number;
-}
-
-interface Match {
-  id: number;
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number | null;
-  awayScore: number | null;
-  date: string;
-  status: 'finished' | 'scheduled' | 'live';
-}
-
-interface GroupSectionProps {
-  name: string;
-  teams: Team[];
-  matches: Match[];
-  isMobile?: boolean;
-}
+import type { Match, Team } from '../utils/apiClient';
 
 // Helper function to map status
 const mapStatus = (status: 'finished' | 'scheduled' | 'live'): string => {
