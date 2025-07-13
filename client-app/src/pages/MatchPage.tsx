@@ -146,6 +146,18 @@ const MatchPage: React.FC = () => {
     return { homeScore, awayScore };
   };
 
+  const getPlayerName = (playerId?: string) => {
+    const player = [...homeSquad, ...awaySquad].find(p => p.id === playerId);
+    return player ? `${player.firstName} ${player.lastName}` : playerId || '';
+  };
+
+  const getTeamName = (teamId?: string) => {
+    if (!teamId) return '';
+    if (homeTeam?.id === teamId) return homeTeam.name;
+    if (awayTeam?.id === teamId) return awayTeam.name;
+    return teamId;
+  };
+
   if (loading) {
     return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}><CircularProgress sx={{ color: '#fd9905' }} /></Box>;
   }
@@ -257,14 +269,10 @@ const MatchPage: React.FC = () => {
                     </Typography>
                     <Box sx={{ flex: 1 }}>
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.875rem', fontWeight: 600, color: '#222' }}>
-                        {typeof event.player === 'object' && event.player && 'firstName' in event.player && 'lastName' in event.player
-                          ? `${event.player.firstName} ${event.player.lastName}`
-                          : typeof event.playerId === 'string' ? event.playerId : ''}
+                        {getPlayerName(event.playerId)}
                       </Typography>
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.75rem', color: '#666' }}>
-                        {typeof event.team === 'object' && event.team && 'name' in event.team
-                          ? event.team.name
-                          : typeof event.teamId === 'string' ? event.teamId : ''}
+                        {getTeamName(event.teamId)}
                       </Typography>
                     </Box>
                     <Chip 
@@ -368,14 +376,10 @@ const MatchPage: React.FC = () => {
                       </Typography>
                       <Box sx={{ flex: 1 }}>
                         <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', fontWeight: 600, color: '#222' }}>
-                          {typeof event.player === 'object' && event.player && 'firstName' in event.player && 'lastName' in event.player
-                            ? `${event.player.firstName} ${event.player.lastName}`
-                            : typeof event.playerId === 'string' ? event.playerId : ''}
+                          {getPlayerName(event.playerId)}
                         </Typography>
                         <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.8rem', color: '#666' }}>
-                          {typeof event.team === 'object' && event.team && 'name' in event.team
-                            ? event.team.name
-                            : typeof event.teamId === 'string' ? event.teamId : ''}
+                          {getTeamName(event.teamId)}
                         </Typography>
                       </Box>
                       <Chip 
