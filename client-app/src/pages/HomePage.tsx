@@ -133,7 +133,7 @@ const HomePageMobile: React.FC<{
       </Box>
 
       {/* News Section - Mobile */}
-      <Box sx={{ bgcolor: '#fff', mb: 2, pb: 1 }}>
+      <Box sx={{ bgcolor: '#fff', mb: 2, pb: 2 }}>
         {articles.length === 0 ? (
           <Typography sx={{ p: 2, textAlign: 'center', color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
             Nema dostupnih članaka.

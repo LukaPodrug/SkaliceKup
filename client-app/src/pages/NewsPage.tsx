@@ -87,7 +87,7 @@ const NewsPage: React.FC = () => {
                   </React.Fragment>
                 ))}
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, pb: 2 }}>
                 <Pagination
                   count={Math.ceil(articles.length / articlesPerPage)}
                   page={page}
@@ -131,7 +131,7 @@ const NewsPage: React.FC = () => {
                   </React.Fragment>
                 ))}
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, pb: 2 }}>
                 <Pagination
                   count={Math.ceil(articles.length / articlesPerPage)}
                   page={page}
