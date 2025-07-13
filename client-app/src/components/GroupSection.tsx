@@ -1,0 +1,89 @@
+import React from 'react';
+import { Box, Typography, Divider, Chip } from '@mui/material';
+import GroupTable from './GroupTable';
+import ResultsMatchCard from './ResultsMatchCard';
+
+interface Team {
+  id: number;
+  name: string;
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  points: number;
+}
+
+interface Match {
+  id: number;
+  homeTeam: string;
+  awayTeam: string;
+  homeScore: number | null;
+  awayScore: number | null;
+  date: string;
+  status: 'finished' | 'scheduled' | 'live';
+}
+
+interface GroupSectionProps {
+  name: string;
+  teams: Team[];
+  matches: Match[];
+  isMobile?: boolean;
+}
+
+// Helper function to map status
+const mapStatus = (status: 'finished' | 'scheduled' | 'live'): string => {
+  switch (status) {
+    case 'finished':
+      return 'Kraj';
+    case 'live':
+      return 'U tijeku';
+    case 'scheduled':
+      return 'Nije počelo';
+    default:
+      return 'Nije počelo';
+  }
+};
+
+const GroupSection: React.FC<GroupSectionProps> = ({ name, teams, matches, isMobile = false }) => {
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, mb: isMobile ? 2 : 3 }}>
+        <Chip 
+          label={name}
+          size="small"
+          sx={{
+            bgcolor: '#fd9905',
+            color: 'white',
+            fontFamily: 'Ubuntu, sans-serif',
+            fontSize: isMobile ? '0.8rem' : '0.9rem',
+            fontWeight: 600,
+            height: isMobile ? 24 : 28,
+            ml: isMobile ? 1 : 0
+          }}
+        />
+      </Box>
+      
+      {/* Group Table */}
+      <GroupTable teams={teams} isMobile={isMobile} />
+
+      {/* Group Matches */}
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        {matches.map((match, index) => (
+          <React.Fragment key={match.id}>
+            <ResultsMatchCard
+              match={match}
+              isMobile={isMobile}
+            />
+            {index < matches.length - 1 && (
+              <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
+            )}
+          </React.Fragment>
+        ))}
+      </Box>
+    </Box>
+  );
+};
+
+export default GroupSection; 
