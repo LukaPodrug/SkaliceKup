@@ -133,7 +133,7 @@ const HomePageMobile: React.FC<{
       </Box>
 
       {/* News Section - Mobile */}
-      <Box sx={{ px: 2, pb: 2, bgcolor: '#fff', mb: 2 }}>
+      <Box sx={{ pb: 2, bgcolor: '#fff', mb: 2 }}>
         <Typography variant="h6" sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 700, mb: 2 }}>
           Novosti
         </Typography>
@@ -144,15 +144,17 @@ const HomePageMobile: React.FC<{
         ) : (
           articles.slice(0, 3).map((article, idx, arr) => (
             <React.Fragment key={article.id}>
-              <ArticleCard
-                id={article.id}
-                title={article.title}
-                excerpt={getArticleExcerpt(article.content)}
-                imageUrl={article.featuredImage?.url || article.images?.[0]?.url || '/articleMock1.jpg'}
-                date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
-                isMobile={true}
-                onClick={() => navigate(`/article/${article.id}`)}
-              />
+              <Box sx={{ width: '100%' }}>
+                <ArticleCard
+                  id={article.id}
+                  title={article.title}
+                  excerpt={getArticleExcerpt(article.content)}
+                  imageUrl={article.featuredImage?.url || article.images?.[0]?.url || '/articleMock1.jpg'}
+                  date={new Date(article.publishedAt).toLocaleDateString('hr-HR')}
+                  isMobile={true}
+                  onClick={() => navigate(`/article/${article.id}`)}
+                />
+              </Box>
               {idx < arr.length - 1 && (
                 <Divider sx={{ bgcolor: '#e0e0e0', height: '1px', borderRadius: 1, m: 0 }} />
               )}

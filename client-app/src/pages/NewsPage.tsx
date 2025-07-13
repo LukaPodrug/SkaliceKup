@@ -63,7 +63,7 @@ const NewsPage: React.FC = () => {
             </Typography>
           ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              {articles.map((article, idx) => (
+              {articles.map((article, idx, arr) => (
                 <React.Fragment key={article.id}>
                   <ArticleCard
                     id={article.id}
@@ -74,8 +74,8 @@ const NewsPage: React.FC = () => {
                     isMobile={isMobile}
                     onClick={() => navigate(`/news/article/${article.id}`)}
                   />
-                  {idx < articles.length - 1 && (
-                    <Divider sx={{ my: isMobile ? 2 : 3, bgcolor: '#e0e0e0', height: '1px', borderRadius: 1 }} />
+                  {idx < arr.length - 1 && (
+                    <Divider sx={{ bgcolor: '#e0e0e0', height: '1px', borderRadius: 1, m: 0 }} />
                   )}
                 </React.Fragment>
               ))}
@@ -100,7 +100,7 @@ const NewsPage: React.FC = () => {
               display: 'flex', 
               flexDirection: 'column'
             }}>
-              {articles.map((article, idx) => (
+              {articles.map((article, idx, arr) => (
                 <React.Fragment key={article.id}>
                   <ArticleCard
                     id={article.id}
@@ -111,8 +111,8 @@ const NewsPage: React.FC = () => {
                     isMobile={false}
                     onClick={() => navigate(`/news/article/${article.id}`)}
                   />
-                  {idx < articles.length - 1 && (
-                    <Divider sx={{ my: isMobile ? 2 : 3, bgcolor: '#e0e0e0', height: '1px', borderRadius: 1 }} />
+                  {idx < arr.length - 1 && (
+                    <Divider sx={{ bgcolor: '#e0e0e0', height: '1px', borderRadius: 1, m: 0 }} />
                   )}
                 </React.Fragment>
               ))}
