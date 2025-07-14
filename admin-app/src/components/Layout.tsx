@@ -80,7 +80,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
   });
 
   // Add state for number of teams in knockout
-  const [knockoutTeams, setKnockoutTeams] = React.useState(16);
+  const [knockoutTeams, setKnockoutTeams] = React.useState(1);
   // Add state for number of qualification rounds
   const [qualificationRounds, setQualificationRounds] = React.useState(1);
   // Add state for number of group stages
@@ -96,6 +96,10 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
 
   const isTournamentPage = location.pathname.includes('/tournament/');
   const isRootPage = location.pathname === '/';
+  // Extract tournament edition ID from URL if on a tournament page
+  let tournamentId: string | null = null;
+  const match = location.pathname.match(/^\/tournament\/([^/]+)/);
+  if (match) tournamentId = match[1];
 
   const getBreadcrumbs = () => {
     const pathSegments = location.pathname.split('/').filter(Boolean);
@@ -190,15 +194,16 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
     setEditionError(null);
 
     try {
-      const response = await apiClient.createTournamentEdition({
+      const editionData: any = {
         name: editionName,
         year: parseInt(editionYear),
         category: editionCategory as 'senior' | 'veteran',
         phases: selectedPhases,
-        knockoutTeams: selectedPhases.knockout ? Number(knockoutTeams) : undefined,
-        qualificationRounds: selectedPhases.kvalifikacije ? Number(qualificationRounds) : undefined,
-        groupStages: selectedPhases.grupa ? Number(groupStages) : undefined,
-      });
+      };
+      if (selectedPhases.grupa) editionData.numberOfGroups = Number(groupStages);
+      if (selectedPhases.knockout) editionData.numberOfKnockoutPhases = Number(knockoutTeams);
+      if (selectedPhases.kvalifikacije) editionData.numberOfQualificationRounds = Number(qualificationRounds);
+      const response = await apiClient.createTournamentEdition(editionData);
 
       if (response.data) {
         setOpenEditionDialog(false);
@@ -206,7 +211,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
         setEditionYear('');
         setEditionCategory('senior');
         setSelectedPhases({ kvalifikacije: false, grupa: false, knockout: false });
-        setKnockoutTeams(16);
+        setKnockoutTeams(1);
         setQualificationRounds(1);
         setGroupStages(1);
         
@@ -218,7 +223,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
         setEditionError(response.error);
       }
     } catch (err) {
-      setEditionError('Greška pri spremanju edicije.');
+      setEditionError('Greška pri spremanju izdanja.');
       console.error('Error creating tournament edition:', err);
     } finally {
       setEditionLoading(false);
@@ -301,7 +306,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
     setEditionYear('');
     setEditionCategory('senior');
     setSelectedPhases({ kvalifikacije: false, grupa: false, knockout: false });
-    setKnockoutTeams(16);
+    setKnockoutTeams(1);
     setQualificationRounds(1);
     setGroupStages(1);
   };
@@ -330,40 +335,69 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
           borderBottom: '1px solid #e0e0e0',
         }}
       >
-        <Toolbar sx={{ minHeight: { xs: 56, sm: 64 } }}>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
+        <Toolbar sx={{ minHeight: { xs: 56, sm: 64 }, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ fontWeight: 600, cursor: 'pointer', userSelect: 'none' }}
+            onClick={() => navigate('/')}
+          >
             Skalice Kup Admin
           </Typography>
-          {isRootPage && (
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleAddClick}
-              sx={{
-                bgcolor: '#fd9905',
-                fontFamily: 'Ubuntu, sans-serif',
-                '&:hover': { 
-                  bgcolor: '#e68a00',
-                  boxShadow: 'none',
-                },
-                '&:focus': { outline: 'none', boxShadow: 'none' },
-                '&:active': { outline: 'none', boxShadow: 'none' },
-                textTransform: 'none',
-                fontWeight: 600,
-                color: '#fff',
-                borderRadius: '25px',
-                px: 3,
-                py: 1,
+          <Box sx={{ flexGrow: 1 }} />
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleAddClick}
+            sx={{
+              bgcolor: '#fd9905',
+              fontFamily: 'Ubuntu, sans-serif',
+              '&:hover': { 
+                bgcolor: '#e68a00',
                 boxShadow: 'none',
-              }}
-            >
-              Dodaj
-            </Button>
-          )}
+              },
+              '&:focus': { outline: 'none', boxShadow: 'none' },
+              '&:active': { outline: 'none', boxShadow: 'none' },
+              textTransform: 'none',
+              fontWeight: 600,
+              color: '#fff',
+              borderRadius: '25px',
+              px: 3,
+              py: 1,
+              boxShadow: 'none',
+            }}
+          >
+            Dodaj
+          </Button>
         </Toolbar>
       </AppBar>
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {!isRootPage && (
+        {isTournamentPage && (
+          <Box sx={{ display: 'flex', alignItems: 'center', mt: 2, mb: 2, ml: 2 }}>
+            <Button
+              startIcon={<ArrowBackIcon />}
+              onClick={() => navigate('/')}
+              sx={{
+                bgcolor: '#fd9905',
+                color: '#fff',
+                borderRadius: '25px',
+                px: 2,
+                py: 0.5,
+                fontWeight: 600,
+                fontSize: '1rem',
+                textTransform: 'none',
+                boxShadow: 'none',
+                '&:hover': { bgcolor: '#e68a00' },
+                '&:focus': { outline: 'none', boxShadow: 'none' },
+                '&:active': { outline: 'none', boxShadow: 'none' },
+              }}
+            >
+              Nazad
+            </Button>
+          </Box>
+        )}
+        {!isRootPage && !isTournamentPage && (
           <Box sx={{ mb: 3 }}>
             <Breadcrumbs 
               separator="›" 
@@ -415,7 +449,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
           <List disablePadding>
             <ListItem disablePadding>
               <ListItemButton onClick={handleAddEdition} sx={{ py: 3, px: 4, cursor: 'pointer', fontFamily: 'Ubuntu, sans-serif', '&:hover': { bgcolor: '#fff3e0' }, '&:focus': { outline: 'none', boxShadow: 'none' }, '&:active': { outline: 'none', boxShadow: 'none' } }}>
-                <ListItemText primary="Turnirska Edicija" primaryTypographyProps={{ fontWeight: 600, fontSize: '1.1rem' }} />
+                <ListItemText primary="Izdanje" primaryTypographyProps={{ fontWeight: 600, fontSize: '1.1rem' }} />
               </ListItemButton>
             </ListItem>
             <Divider />
@@ -437,12 +471,12 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
       {/* Tournament Edition Dialog */}
       <Dialog open={openEditionDialog} onClose={handleCloseEditionDialog} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 600, color: '#222', fontFamily: 'Ubuntu, sans-serif' }}>
-          Dodaj Turnirsku Ediciju
+          Dodaj izdanje
         </DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 3, overflow: 'visible' }}>
           <TextField
             autoFocus
-            label="Naziv Edicije"
+            label="Naziv izdanja"
             fullWidth
             variant="standard"
             value={editionName}
@@ -511,12 +545,9 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
             <MenuItem value="veteran">Veterani</MenuItem>
           </TextField>
           <FormGroup sx={{ mt: 2, mb: 2 }}>
-            <Typography variant="body2" sx={{ color: '#666', ml: 1, fontWeight: 600, mb: 1 }}>
-              Faze turnira
-            </Typography>
             <FormControlLabel
               control={<Checkbox checked={selectedPhases.kvalifikacije} onChange={(e) => setSelectedPhases(prev => ({ ...prev, kvalifikacije: e.target.checked }))} />}
-              label="Kvalifikacije"
+              label="Pretkolo"
               sx={{ fontFamily: 'Ubuntu, sans-serif' }}
             />
             <FormControlLabel
@@ -561,7 +592,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
           )}
           {selectedPhases.knockout && (
             <TextField
-              label="Broj ekipa za knockout"
+              label="Broj knockout faza"
               value={knockoutTeams}
               onChange={(e) => setKnockoutTeams(Number(e.target.value))}
               variant="standard"
@@ -583,7 +614,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
           )}
           {selectedPhases.grupa && (
             <TextField
-              label="Broj grupnih faza"
+              label="Broj grupa"
               value={groupStages}
               onChange={(e) => setGroupStages(Number(e.target.value))}
               variant="standard"

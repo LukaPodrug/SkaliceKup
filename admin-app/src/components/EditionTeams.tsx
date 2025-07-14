@@ -9,9 +9,10 @@ import type { Team } from '../utils/apiClient';
 
 interface EditionTeamsProps {
   tournamentId: string;
+  refreshTrigger?: number;
 }
 
-const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId }) => {
+const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId, refreshTrigger }) => {
   const [editionTeams, setEditionTeams] = useState<Team[]>([]);
   const [allTeams, setAllTeams] = useState<Team[]>([]);
   const [search, setSearch] = useState('');
@@ -20,6 +21,8 @@ const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId }) => {
   const [editLogo, setEditLogo] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [addingTeamId, setAddingTeamId] = useState<string | null>(null);
+  const [removingTeamId, setRemovingTeamId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,9 +48,10 @@ const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId }) => {
     };
 
     fetchData();
-  }, [tournamentId]);
+  }, [tournamentId, refreshTrigger]);
 
   const handleAddTeam = async (teamId: string) => {
+    setAddingTeamId(teamId);
     try {
       const response = await apiClient.addTeamToEdition(tournamentId, teamId);
       if (response.data) {
@@ -55,10 +59,13 @@ const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId }) => {
       }
     } catch (err) {
       console.error('Error adding team to edition:', err);
+    } finally {
+      setAddingTeamId(null);
     }
   };
 
   const handleRemoveTeam = async (teamId: string) => {
+    setRemovingTeamId(teamId);
     try {
       await apiClient.removeTeamFromEdition(tournamentId, teamId);
       setEditionTeams(editionTeams.filter(team => team.id !== teamId));
@@ -123,7 +130,7 @@ const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId }) => {
   return (
     <Paper sx={{ p: 3, fontFamily: 'Ubuntu, sans-serif' }}>
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
-        Timovi u ovoj ediciji
+        Timovi u ovom izdanju
       </Typography>
       <List>
         {editionTeams.length === 0 && (
@@ -135,16 +142,13 @@ const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId }) => {
               secondaryAction={
                 <>
                   <Button
-                    onClick={() => handleEditTeam(team)}
-                    sx={{ bgcolor: '#1976d2', color: '#fff', borderRadius: '25px', px: 2, py: 0.5, minHeight: '32px', fontWeight: 600, fontSize: '0.95rem', textTransform: 'none', boxShadow: 'none', '&:focus': { outline: 'none', boxShadow: 'none' }, '&:hover': { bgcolor: '#125ea2' } }}
-                  >
-                    Uredi
-                  </Button>
-                  <Button
                     onClick={() => handleRemoveTeam(team.id)}
-                    sx={{ bgcolor: '#fd9905', color: '#fff', borderRadius: '25px', px: 2, py: 0.5, minHeight: '32px', fontWeight: 600, fontSize: '0.95rem', textTransform: 'none', boxShadow: 'none', '&:focus': { outline: 'none', boxShadow: 'none' }, '&:hover': { bgcolor: '#e68a00', color: '#fff' } }}
+                    disabled={removingTeamId === team.id}
+                    sx={{ bgcolor: '#fd9905', color: '#fff', borderRadius: '25px', px: 2, py: 0.5, minHeight: '32px', minWidth: 90, fontWeight: 600, fontSize: '0.95rem', textTransform: 'none', boxShadow: 'none', '&:focus': { outline: 'none', boxShadow: 'none' }, '&:hover': { bgcolor: '#e68a00', color: '#fff' }, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
-                    Ukloni
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+                      {removingTeamId === team.id ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Ukloni'}
+                    </Box>
                   </Button>
                 </>
               }
@@ -172,9 +176,12 @@ const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId }) => {
             secondaryAction={
               <Button
                 onClick={() => handleAddTeam(team.id)}
-                sx={{ bgcolor: '#fd9905', color: '#fff', borderRadius: '25px', px: 2, py: 0.5, minHeight: '32px', textTransform: 'none', boxShadow: 'none', '&:focus': { outline: 'none', boxShadow: 'none' } }}
+                disabled={addingTeamId === team.id}
+                sx={{ bgcolor: '#fd9905', color: '#fff', borderRadius: '25px', px: 2, py: 0.5, minHeight: '32px', minWidth: 90, textTransform: 'none', boxShadow: 'none', '&:focus': { outline: 'none', boxShadow: 'none' }, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                Dodaj
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+                  {addingTeamId === team.id ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Dodaj'}
+                </Box>
               </Button>
             }
           >

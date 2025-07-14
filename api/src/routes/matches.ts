@@ -139,7 +139,9 @@ router.post('/', async (req: Request, res: Response) => {
       qualificationRound,
       homeScore,
       awayScore,
-      status
+      status,
+      homeSquad,
+      awaySquad
     } = req.body;
 
     const match = matchRepository.create({
@@ -153,7 +155,9 @@ router.post('/', async (req: Request, res: Response) => {
       homeScore,
       awayScore,
       status: status || 'scheduled',
-      events: []
+      events: [],
+      homeSquad,
+      awaySquad
     });
 
     const savedMatch = await matchRepository.save(match);
@@ -180,7 +184,9 @@ router.put('/:id', async (req: Request, res: Response) => {
       qualificationRound,
       homeScore,
       awayScore,
-      status
+      status,
+      homeSquad,
+      awaySquad
     } = req.body;
 
     const match = await matchRepository.findOne({
@@ -200,7 +206,9 @@ router.put('/:id', async (req: Request, res: Response) => {
       qualificationRound,
       homeScore,
       awayScore,
-      status
+      status,
+      homeSquad,
+      awaySquad
     });
 
     const updatedMatch = await matchRepository.save(match);

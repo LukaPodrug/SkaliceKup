@@ -16,9 +16,9 @@ export interface TournamentEdition {
     grupa: boolean;
     knockout: boolean;
   };
-  knockoutTeams?: number;
-  qualificationRounds?: number;
-  groupStages?: number;
+  numberOfGroups?: number;
+  numberOfKnockoutPhases?: number;
+  numberOfQualificationRounds?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -53,6 +53,8 @@ export interface Match {
   homeScore?: number;
   awayScore?: number;
   status: 'scheduled' | 'in_progress' | 'finished';
+  homeSquad?: string[];
+  awaySquad?: string[];
   events: Array<{
     type: 'start' | 'goal' | 'yellow' | 'red' | 'penalty' | '10m' | 'end';
     minute: number;

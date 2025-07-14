@@ -78,7 +78,7 @@ function App() {
                 teamsRefreshTrigger={teamsRefreshTrigger}
               /> 
             } />
-            <Route path="/tournament/:id" element={<TournamentManagement />} />
+            <Route path="/tournament/:id" element={<TournamentManagement teamsRefreshTrigger={teamsRefreshTrigger} playersRefreshTrigger={playersRefreshTrigger} onPlayerAdded={handlePlayerAdded} />} />
             <Route path="/tournament/:id/teams" element={<Teams />} />
             <Route path="/tournament/:id/players" element={<Players />} />
             <Route path="/tournament/:id/match-events" element={<MatchEvents />} />

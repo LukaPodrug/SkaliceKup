@@ -9,9 +9,11 @@ import type { Team, Player } from '../utils/apiClient';
 
 interface EditionTeamPlayersProps {
   tournamentId: string;
+  refreshTrigger?: number;
+  onPlayerAdded?: () => void;
 }
 
-const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId }) => {
+const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, refreshTrigger, onPlayerAdded }) => {
   const [editionTeams, setEditionTeams] = useState<Team[]>([]);
   const [allPlayers, setAllPlayers] = useState<Player[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<string>('');
@@ -25,6 +27,8 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId })
   const [editImageUrl, setEditImageUrl] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [addingPlayerId, setAddingPlayerId] = useState<string | null>(null);
+  const [removingPlayerId, setRemovingPlayerId] = useState<string | null>(null);
 
   // Fetch edition teams and all players on component mount
   useEffect(() => {
@@ -54,7 +58,7 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId })
     };
 
     fetchData();
-  }, [tournamentId]);
+  }, [tournamentId, refreshTrigger]);
 
   // Fetch all team players from the edition when teams change
   useEffect(() => {
@@ -104,7 +108,15 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId })
     fetchTeamPlayers();
   }, [tournamentId, selectedTeam]);
 
+  useEffect(() => {
+    // Listen for global player add event
+    if (onPlayerAdded) {
+      // This effect is just a placeholder for future extensibility
+    }
+  }, [onPlayerAdded]);
+
   const handleAddPlayer = async (playerId: string) => {
+    setAddingPlayerId(playerId);
     if (!selectedTeam) return;
     
     try {
@@ -115,10 +127,13 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId })
       }
     } catch (err) {
       console.error('Error adding player to team:', err);
+    } finally {
+      setAddingPlayerId(null);
     }
   };
 
   const handleRemovePlayer = async (playerId: string) => {
+    setRemovingPlayerId(playerId);
     if (!selectedTeam) return;
     
     try {
@@ -127,6 +142,8 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId })
       setAllEditionPlayers(allEditionPlayers.filter(player => player.id !== playerId));
     } catch (err) {
       console.error('Error removing player from team:', err);
+    } finally {
+      setRemovingPlayerId(null);
     }
   };
 
@@ -215,8 +232,26 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId })
           labelId="team-select-label"
           value={selectedTeam}
           label="Odaberi tim"
-          onChange={e => setSelectedTeam(e.target.value)}
-          sx={{ fontFamily: 'Ubuntu, sans-serif' }}
+          onChange={e => setSelectedTeam(e.target.value as string)}
+          fullWidth
+          variant="standard"
+          sx={{
+            mb: 2,
+            fontFamily: 'Ubuntu, sans-serif',
+            bgcolor: 'transparent',
+            '& .MuiInputBase-root': {
+              fontFamily: 'Ubuntu, sans-serif',
+            },
+            '& .MuiInput-underline:before': {
+              borderBottomColor: '#e0e0e0',
+            },
+            '& .MuiInput-underline:after': {
+              borderBottomColor: '#fd9905',
+            },
+            '& .MuiInputBase-input': {
+              bgcolor: 'transparent',
+            },
+          }}
         >
           {editionTeams.map(team => (
             <MenuItem key={team.id} value={team.id} sx={{ fontFamily: 'Ubuntu, sans-serif' }}>{team.name}</MenuItem>
@@ -236,16 +271,13 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId })
               secondaryAction={
                 <>
                   <Button
-                    onClick={() => handleEditPlayer(player)}
-                    sx={{ bgcolor: '#1976d2', color: '#fff', borderRadius: '25px', px: 2, py: 0.5, minHeight: '32px', fontWeight: 600, fontSize: '0.95rem', textTransform: 'none', boxShadow: 'none', '&:focus': { outline: 'none', boxShadow: 'none' }, '&:hover': { bgcolor: '#125ea2' } }}
-                  >
-                    Uredi
-                  </Button>
-                  <Button
                     onClick={() => handleRemovePlayer(player.id)}
-                    sx={{ bgcolor: '#fd9905', color: '#fff', borderRadius: '25px', px: 2, py: 0.5, minHeight: '32px', fontWeight: 600, fontSize: '0.95rem', textTransform: 'none', boxShadow: 'none', '&:focus': { outline: 'none', boxShadow: 'none' }, '&:hover': { bgcolor: '#e68a00', color: '#fff' } }}
+                    disabled={removingPlayerId === player.id}
+                    sx={{ bgcolor: '#fd9905', color: '#fff', borderRadius: '25px', px: 2, py: 0.5, minHeight: '32px', minWidth: 90, fontWeight: 600, fontSize: '0.95rem', textTransform: 'none', boxShadow: 'none', '&:focus': { outline: 'none', boxShadow: 'none' }, '&:hover': { bgcolor: '#e68a00', color: '#fff' }, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
-                    Ukloni
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+                      {removingPlayerId === player.id ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Ukloni'}
+                    </Box>
                   </Button>
                 </>
               }
@@ -276,9 +308,12 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId })
             secondaryAction={
               <Button
                 onClick={() => handleAddPlayer(player.id)}
-                sx={{ bgcolor: '#fd9905', color: '#fff', borderRadius: '25px', px: 2, py: 0.5, minHeight: '32px', textTransform: 'none', boxShadow: 'none', '&:focus': { outline: 'none', boxShadow: 'none' } }}
+                disabled={addingPlayerId === player.id}
+                sx={{ bgcolor: '#fd9905', color: '#fff', borderRadius: '25px', px: 2, py: 0.5, minHeight: '32px', minWidth: 90, textTransform: 'none', boxShadow: 'none', '&:focus': { outline: 'none', boxShadow: 'none' }, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                Dodaj
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+                  {addingPlayerId === player.id ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Dodaj'}
+                </Box>
               </Button>
             }
           >

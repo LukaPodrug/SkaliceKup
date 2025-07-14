@@ -26,6 +26,7 @@ import {
   FormGroup
 } from '@mui/material';
 import { Search as SearchIcon, Edit as EditIcon } from '@mui/icons-material';
+import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
 import { useNavigate } from 'react-router-dom';
 import TournamentEditionCard from '../components/TournamentEditionCard';
 import { apiClient } from '../utils/apiClient';
@@ -85,6 +86,17 @@ const EditionsTab: React.FC<{
         }}
       >
         <CircularProgress sx={{ color: '#fd9905' }} />
+      </Box>
+    );
+  }
+
+  if (tournaments.length === 0) {
+    return (
+      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', py: 8, color: '#888' }}>
+        <SentimentDissatisfiedIcon sx={{ fontSize: 64, mb: 2 }} />
+        <Typography variant="h6" sx={{ fontWeight: 500, fontFamily: 'Ubuntu, sans-serif' }}>
+          Nema izdanja.
+        </Typography>
       </Box>
     );
   }
@@ -159,6 +171,17 @@ const TeamsTab: React.FC<{
         }}
       >
         <CircularProgress sx={{ color: '#fd9905' }} />
+      </Box>
+    );
+  }
+
+  if (teams.length === 0) {
+    return (
+      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', py: 8, color: '#888' }}>
+        <SentimentDissatisfiedIcon sx={{ fontSize: 64, mb: 2 }} />
+        <Typography variant="h6" sx={{ fontWeight: 500, fontFamily: 'Ubuntu, sans-serif' }}>
+          Nema klubova.
+        </Typography>
       </Box>
     );
   }
@@ -297,6 +320,17 @@ const PlayersTab: React.FC<{
         }}
       >
         <CircularProgress sx={{ color: '#fd9905' }} />
+      </Box>
+    );
+  }
+
+  if (players.length === 0) {
+    return (
+      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', py: 8, color: '#888' }}>
+        <SentimentDissatisfiedIcon sx={{ fontSize: 64, mb: 2 }} />
+        <Typography variant="h6" sx={{ fontWeight: 500, fontFamily: 'Ubuntu, sans-serif' }}>
+          Nema igrača.
+        </Typography>
       </Box>
     );
   }
@@ -804,6 +838,22 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
               fontFamily: 'Ubuntu, sans-serif',
               color: '#222',
               textTransform: 'none',
+              '&.Mui-focusVisible': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+              '&:focus': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+              '&:focus-visible': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+              '& > button': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
             },
             '& .Mui-selected': {
               color: '#fd9905',
@@ -813,7 +863,7 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
             },
           }}
         >
-          <Tab label="Edicije" />
+          <Tab label="Izdanja" />
           <Tab label="Klubovi" />
           <Tab label="Igrači" />
         </Tabs>
@@ -836,17 +886,29 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
               placeholder="Pretraži klubove..."
               value={teamsSearch}
               onChange={(e) => handleTeamsSearch(e.target.value)}
+              variant="standard"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
                     <SearchIcon sx={{ color: '#666' }} />
                   </InputAdornment>
                 ),
+                disableUnderline: false,
               }}
               sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '25px',
+                fontFamily: 'Ubuntu, sans-serif',
+                bgcolor: 'transparent',
+                '& .MuiInputBase-root': {
                   fontFamily: 'Ubuntu, sans-serif',
+                },
+                '& .MuiInput-underline:before': {
+                  borderBottomColor: '#e0e0e0',
+                },
+                '& .MuiInput-underline:after': {
+                  borderBottomColor: '#fd9905',
+                },
+                '& .MuiInputBase-input': {
+                  bgcolor: 'transparent',
                 },
               }}
             />
@@ -869,17 +931,29 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
               placeholder="Pretraži igrače..."
               value={playersSearch}
               onChange={(e) => handlePlayersSearch(e.target.value)}
+              variant="standard"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
                     <SearchIcon sx={{ color: '#666' }} />
                   </InputAdornment>
                 ),
+                disableUnderline: false,
               }}
               sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '25px',
+                fontFamily: 'Ubuntu, sans-serif',
+                bgcolor: 'transparent',
+                '& .MuiInputBase-root': {
                   fontFamily: 'Ubuntu, sans-serif',
+                },
+                '& .MuiInput-underline:before': {
+                  borderBottomColor: '#e0e0e0',
+                },
+                '& .MuiInput-underline:after': {
+                  borderBottomColor: '#fd9905',
+                },
+                '& .MuiInputBase-input': {
+                  bgcolor: 'transparent',
                 },
               }}
             />
@@ -955,12 +1029,12 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
       {editTournament && (
         <Dialog open={editTournamentDialogOpen} onClose={handleCloseDialogs} maxWidth="sm" fullWidth>
           <DialogTitle sx={{ fontWeight: 600, color: '#222', fontFamily: 'Ubuntu, sans-serif' }}>
-            Uredi Turnirsku Ediciju
+            Uredi Izdanje
           </DialogTitle>
           <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 3, overflow: 'visible' }}>
             <TextField
               autoFocus
-              label="Naziv Edicije"
+              label="Naziv Izdanja"
               fullWidth
               variant="standard"
               value={editTournamentForm.name}
