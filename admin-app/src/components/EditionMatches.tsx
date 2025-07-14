@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Paper, List, ListItem, ListItemText, Button, Divider, TextField, Select, MenuItem, FormControl, InputLabel, Dialog, DialogTitle, DialogContent, DialogActions, ListItemButton, CircularProgress, Alert, Checkbox, FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import { Box, Typography, Paper, List, ListItem, ListItemText, Button, Divider, TextField, Select, MenuItem, FormControl, InputLabel, Dialog, DialogTitle, DialogContent, DialogActions, ListItemButton, CircularProgress, Alert, Checkbox, FormControlLabel, Radio, RadioGroup, Backdrop } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -55,6 +55,7 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
   const [dateError, setDateError] = useState<string | null>(null);
   const [addMatchLoading, setAddMatchLoading] = useState(false);
   const [eventError, setEventError] = useState<string | null>(null);
+  const [eventLoading, setEventLoading] = useState(false);
 
   // Add group and qualification round options
   const groupOptions = React.useMemo(() => {
@@ -269,20 +270,24 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
 
   const handleAddEvent = async () => {
     setEventError(null);
+    setEventLoading(true);
     if (!selectedMatch || !eventType) return;
     const pad = (v: string) => v.padStart(2, '0');
     const eventTime = eventMinute || eventSecond ? `${pad(eventMinute || '0')}:${pad(eventSecond || '0')}` : '';
     if (!['start', 'end'].includes(eventType) && !eventTime) {
       setEventError('Unesite vrijeme događaja.');
+      setEventLoading(false);
       return;
     }
     if (["goal", "yellow", "red", "penalty", "10m", "foul"].includes(eventType)) {
       if (!teamId) {
         setEventError('Odaberite tim.');
+        setEventLoading(false);
         return;
       }
       if (!playerId) {
         setEventError('Odaberite igrača.');
+        setEventLoading(false);
         return;
       }
     }
@@ -293,7 +298,10 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
         half: eventHalf,
       };
       if (["goal", "yellow", "red", "penalty", "10m"].includes(eventType)) {
-        if (!playerId || !teamId) return;
+        if (!playerId || !teamId) {
+          setEventLoading(false);
+          return;
+        }
         eventData.playerId = playerId;
         eventData.teamId = teamId;
       }
@@ -317,6 +325,8 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
       }
     } catch (err) {
       console.error('Error adding event:', err);
+    } finally {
+      setEventLoading(false);
     }
   };
 
@@ -330,6 +340,7 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
   };
 
   const handleDeleteEvent = async (eventIndex: number) => {
+    setEventLoading(true);
     if (!selectedMatch) return;
     
     try {
@@ -342,6 +353,8 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
       }
     } catch (err) {
       console.error('Error deleting event:', err);
+    } finally {
+      setEventLoading(false);
     }
   };
 
@@ -431,7 +444,19 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
       const player = allPlayers.find(p => p.id === e.playerId);
       playerName = player ? `${player.firstName} ${player.lastName}` : e.playerId;
     }
-    // Always show mm:ss and period
+    // Chronology event types
+    const chronologyTypes = [
+      'start', 'first_half_end', 'second_half_start', 'regular_time_end',
+      'extra1_start', 'extra1_end', 'extra2_start', 'extra2_end', 'shootout_start', 'end'
+    ];
+    if (chronologyTypes.includes(e.type)) {
+      return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', fontFamily: 'Ubuntu, sans-serif' }}>
+          <span style={{ fontWeight: 600 }}>{desc}</span>
+        </Box>
+      );
+    }
+    // Game events: show all details
     let mm = '--', ss = '--';
     if (e.time && typeof e.time === 'string' && e.time.includes(':')) {
       [mm, ss] = e.time.split(':');
@@ -690,6 +715,9 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
           Detalji utakmice
         </DialogTitle>
         <DialogContent sx={{ fontFamily: 'Ubuntu, sans-serif' }}>
+          <Backdrop open={eventLoading} sx={{ zIndex: 2000, color: '#fd9905' }}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
           {selectedMatch && (
             <>
               <Typography sx={{ mb: 2, fontFamily: 'Ubuntu, sans-serif' }}>
@@ -900,7 +928,10 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
                           sx={{ fontFamily: 'Ubuntu, sans-serif' }}
                           variant="standard"
                         >
-                          {(teamId === selectedMatch.homeTeamId ? homePlayers : awayPlayers).map(p => (
+                          {(teamId === selectedMatch.homeTeamId
+                            ? homePlayers.filter(p => homeSquad.includes(p.id))
+                            : awayPlayers.filter(p => awaySquad.includes(p.id))
+                          ).map(p => (
                             <MenuItem key={p.id} value={p.id} sx={{ fontFamily: 'Ubuntu, sans-serif' }}>{`${p.firstName} ${p.lastName}`}</MenuItem>
                           ))}
                         </Select>
