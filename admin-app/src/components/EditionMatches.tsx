@@ -225,7 +225,11 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
         matchData.knockoutPhase = knockoutPhase; // Add knockoutPhase as a separate field
       }
 
+      console.log('Creating match with data:', matchData);
       const response = await apiClient.createMatch(matchData);
+      if (response.error) {
+        console.error('API error:', response.error);
+      }
       if (response.data) {
         setMatches([...matches, response.data]);
         setDate(null);

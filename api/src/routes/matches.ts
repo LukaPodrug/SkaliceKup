@@ -168,7 +168,9 @@ router.post('/', async (req: Request, res: Response) => {
 
     res.status(201).json(populatedMatch);
   } catch (error) {
-    res.status(400).json({ message: 'Invalid data' });
+    console.error('Error creating match:', error);
+    const err = error as Error;
+    res.status(400).json({ message: 'Invalid data', error: err.message, stack: err.stack });
   }
 });
 
