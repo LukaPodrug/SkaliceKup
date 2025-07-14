@@ -36,14 +36,16 @@ router.get('/:id', async (req: Request, res: Response) => {
 // Create tournament edition
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { name, year, category, phases, knockoutTeams } = req.body;
+    const { name, year, category, phases, numberOfGroups, numberOfKnockoutPhases, numberOfQualificationRounds } = req.body;
 
     const edition = tournamentEditionRepository.create({
       name,
       year,
       category,
       phases,
-      knockoutTeams: phases.knockout ? knockoutTeams : undefined
+      numberOfGroups: phases.grupa ? numberOfGroups : undefined,
+      numberOfKnockoutPhases: phases.knockout ? numberOfKnockoutPhases : undefined,
+      numberOfQualificationRounds: phases.kvalifikacije ? numberOfQualificationRounds : undefined
     });
 
     const savedEdition = await tournamentEditionRepository.save(edition);
@@ -56,7 +58,7 @@ router.post('/', async (req: Request, res: Response) => {
 // Update tournament edition
 router.put('/:id', async (req: Request, res: Response) => {
   try {
-    const { name, year, category, phases, knockoutTeams } = req.body;
+    const { name, year, category, phases, numberOfGroups, numberOfKnockoutPhases, numberOfQualificationRounds } = req.body;
 
     const edition = await tournamentEditionRepository.findOne({
       where: { id: req.params.id }
@@ -71,7 +73,9 @@ router.put('/:id', async (req: Request, res: Response) => {
       year,
       category,
       phases,
-      knockoutTeams: phases.knockout ? knockoutTeams : undefined
+      numberOfGroups: phases.grupa ? numberOfGroups : undefined,
+      numberOfKnockoutPhases: phases.knockout ? numberOfKnockoutPhases : undefined,
+      numberOfQualificationRounds: phases.kvalifikacije ? numberOfQualificationRounds : undefined
     });
 
     const updatedEdition = await tournamentEditionRepository.save(edition);
