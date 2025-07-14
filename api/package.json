@@ -6,7 +6,7 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "migrate": "npx typeorm migration:run -d src/config/database.ts",
-    "start": "npm run migrate && node dist/src/index.js",
+    "start": "npm run migrate && node dist/index.js",
     "postinstall": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
