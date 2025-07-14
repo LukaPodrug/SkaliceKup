@@ -62,6 +62,7 @@ export interface Match {
     teamId?: string;
     result?: 'score' | 'miss';
   }>;
+  knockoutPhase?: string;
   createdAt: string;
   updatedAt: string;
 }

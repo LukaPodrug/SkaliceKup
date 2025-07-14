@@ -222,7 +222,7 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
       } else if (phase === 'Kvalifikacije') {
         matchData.qualificationRound = qualificationRound;
       } else if (phase === 'Knockout') {
-        matchData.phase = knockoutPhase;
+        matchData.knockoutPhase = knockoutPhase; // Add knockoutPhase as a separate field
       }
 
       const response = await apiClient.createMatch(matchData);
