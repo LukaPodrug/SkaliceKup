@@ -262,7 +262,6 @@ router.delete('/:id', async (req: Request, res: Response) => {
 // Add match event
 router.post('/:id/events', async (req: Request, res: Response) => {
   try {
-    const { type, minute, playerId, teamId, result } = req.body;
 
     const match = await matchRepository.findOne({
       where: { id: req.params.id }
@@ -272,21 +271,15 @@ router.post('/:id/events', async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Match not found' });
     }
 
-    const newEvent = {
-      type,
-      minute,
-      playerId,
-      teamId,
-      result
-    };
-
+    // Store all event fields sent from the frontend
+    const newEvent = { ...req.body };
     match.events.push(newEvent);
 
     // Update scores based on event type
-    if (type === 'goal') {
-      if (teamId === match.homeTeamId) {
+    if (newEvent.type === 'goal') {
+      if (newEvent.teamId === match.homeTeamId) {
         match.homeScore = (match.homeScore || 0) + 1;
-      } else if (teamId === match.awayTeamId) {
+      } else if (newEvent.teamId === match.awayTeamId) {
         match.awayScore = (match.awayScore || 0) + 1;
       }
     }

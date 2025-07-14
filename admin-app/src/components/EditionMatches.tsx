@@ -54,6 +54,7 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
   const [error, setError] = useState<string | null>(null);
   const [dateError, setDateError] = useState<string | null>(null);
   const [addMatchLoading, setAddMatchLoading] = useState(false);
+  const [eventError, setEventError] = useState<string | null>(null);
 
   // Add group and qualification round options
   const groupOptions = React.useMemo(() => {
@@ -96,7 +97,6 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
   // Add state for event time, half, and shootout penalty
   const [eventTime, setEventTime] = useState('');
   const [eventHalf, setEventHalf] = useState<'first' | 'second' | 'extra1' | 'extra2' | 'shootout'>('first');
-  const [isShootoutPenalty, setIsShootoutPenalty] = useState(false);
 
   // Add state for event minute and second
   const [eventMinute, setEventMinute] = useState('');
@@ -268,11 +268,25 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
   };
 
   const handleAddEvent = async () => {
+    setEventError(null);
     if (!selectedMatch || !eventType) return;
-    if (!['start', 'end'].includes(eventType) && !eventTime) return;
+    const pad = (v: string) => v.padStart(2, '0');
+    const eventTime = eventMinute || eventSecond ? `${pad(eventMinute || '0')}:${pad(eventSecond || '0')}` : '';
+    if (!['start', 'end'].includes(eventType) && !eventTime) {
+      setEventError('Unesite vrijeme događaja.');
+      return;
+    }
+    if (["goal", "yellow", "red", "penalty", "10m", "foul"].includes(eventType)) {
+      if (!teamId) {
+        setEventError('Odaberite tim.');
+        return;
+      }
+      if (!playerId) {
+        setEventError('Odaberite igrača.');
+        return;
+      }
+    }
     try {
-      const pad = (v: string) => v.padStart(2, '0');
-      const eventTime = eventMinute || eventSecond ? `${pad(eventMinute || '0')}:${pad(eventSecond || '0')}` : '';
       const eventData: any = {
         type: eventType,
         time: eventTime,
@@ -285,9 +299,6 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
       }
       if (["penalty", "10m"].includes(eventType)) {
         eventData.result = penaltyResult;
-        if (eventHalf === 'shootout') {
-          eventData.isShootoutPenalty = isShootoutPenalty;
-        }
       }
       const response = await apiClient.addMatchEvent(selectedMatch.id, eventData);
       if (response.data) {
@@ -298,7 +309,6 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
         setEventType('start');
         setEventTime('');
         setEventHalf('first');
-        setIsShootoutPenalty(false);
         setPlayerId('');
         setTeamId('');
         setPenaltyResult('score');
@@ -411,22 +421,32 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
 
   function renderEventDesc(event: any, desc: string) {
     const e = event as any;
+    let teamName = '';
+    let playerName = '';
+    if (e.teamId) {
+      const team = editionTeams.find(t => t.id === e.teamId);
+      teamName = team ? team.name : e.teamId;
+    }
+    if (e.playerId) {
+      const player = allPlayers.find(p => p.id === e.playerId);
+      playerName = player ? `${player.firstName} ${player.lastName}` : e.playerId;
+    }
+    // Always show mm:ss and period
+    let mm = '--', ss = '--';
+    if (e.time && typeof e.time === 'string' && e.time.includes(':')) {
+      [mm, ss] = e.time.split(':');
+    }
+    const period = e.half ? (halfLabels[e.half] || e.half) : '';
     return (
-      <>
-        <span>{desc}</span>
-        {/* @ts-ignore */}
-        {e.time && (
-          <span style={{ color: '#888', marginLeft: 8 }}>{e.time} {/* @ts-ignore */}{e.half ? `(${halfLabels[e.half] || e.half})` : ''}</span>
+      <Box sx={{ display: 'flex', flexDirection: 'column', fontFamily: 'Ubuntu, sans-serif' }}>
+        <span style={{ fontWeight: 600 }}>{desc}</span>
+        {teamName && <span style={{ fontSize: '0.95em' }}>Tim: {teamName}</span>}
+        {playerName && <span style={{ fontSize: '0.95em' }}>Igrač: {playerName}</span>}
+        <span style={{ fontSize: '0.95em' }}>Vrijeme: {mm}:{ss}{period && ` (${period})`}</span>
+        {typeof e.result !== 'undefined' && (
+          <span style={{ fontSize: '0.95em' }}>Ishod: {e.result === 'score' ? 'Gol' : 'Promašaj'}</span>
         )}
-        {/* @ts-ignore */}
-        {e.isShootoutPenalty && (
-          <span style={{ color: '#fd9905', marginLeft: 8 }}>[Raspucavanje]</span>
-        )}
-        {/* @ts-ignore */}
-        {!e.time && e.minute && (
-          <span style={{ color: '#888', marginLeft: 8 }}>{e.minute}. min</span>
-        )}
-      </>
+      </Box>
     );
   }
 
@@ -765,7 +785,7 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
                   )}
                 </Box>
               </Box>
-              <Box sx={{ display: 'flex', gap: 2, flexDirection: 'row', width: '100%', mb: 2 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', mb: 2, gap: 2 }}>
                 <FormControl component="fieldset" sx={{ flex: 1 }}>
                   <Typography variant="subtitle2" sx={{ fontFamily: 'Ubuntu, sans-serif', mb: 1 }}>Kronologija</Typography>
                   <RadioGroup
@@ -805,58 +825,51 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
               </Box>
               {selectedMatch && homeSquad.length > 0 && awaySquad.length > 0 && (
                 <Box sx={{ mt: 2 }}>
-                  {!['start', 'end'].includes(eventType) && (
-                    <Box sx={{ display: 'flex', gap: 2, flexDirection: 'row', width: '100%', mb: 2 }}>
-                      <TextField
-                        label="Minute"
-                        value={eventMinute}
-                        onChange={e => setEventMinute(e.target.value.replace(/[^0-9]/g, ''))}
-                        sx={{ fontFamily: 'Ubuntu, sans-serif', width: '50%' }}
-                        variant="standard"
-                        placeholder="npr. 12"
-                        inputProps={{ maxLength: 2 }}
-                      />
-                      <TextField
-                        label="Sekunde"
-                        value={eventSecond}
-                        onChange={e => setEventSecond(e.target.value.replace(/[^0-9]/g, ''))}
-                        sx={{ fontFamily: 'Ubuntu, sans-serif', width: '50%' }}
-                        variant="standard"
-                        placeholder="npr. 34"
-                        inputProps={{ maxLength: 2 }}
-                      />
-                    </Box>
-                  )}
-                  {!['start', 'end'].includes(eventType) && (
-                    <Box sx={{ mb: 2 }}>
-                      <FormControl sx={{ minWidth: 140, fontFamily: 'Ubuntu, sans-serif' }} variant="standard" fullWidth>
-                        <InputLabel id="half-label" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Poluvrijeme</InputLabel>
-                        <Select
-                          labelId="half-label"
-                          value={eventHalf}
-                          label="Poluvrijeme"
-                          onChange={e => setEventHalf(e.target.value as any)}
-                          sx={{ fontFamily: 'Ubuntu, sans-serif' }}
+                  {/* Only show time and period inputs for game events, not chronology events */}
+                  {['goal', 'yellow', 'red', 'penalty', '10m', 'foul'].includes(eventType) && (
+                    <>
+                      <Box sx={{ display: 'flex', gap: 2, flexDirection: 'row', width: '100%', mb: 2 }}>
+                        <TextField
+                          label="Minute"
+                          value={eventMinute}
+                          onChange={e => setEventMinute(e.target.value.replace(/[^0-9]/g, ''))}
+                          sx={{ fontFamily: 'Ubuntu, sans-serif', width: '50%' }}
                           variant="standard"
-                        >
-                          <MenuItem value="first" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Prvo poluvrijeme</MenuItem>
-                          <MenuItem value="second" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Drugo poluvrijeme</MenuItem>
-                          <MenuItem value="extra1" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Produžeci 1</MenuItem>
-                          <MenuItem value="extra2" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Produžeci 2</MenuItem>
-                          <MenuItem value="shootout" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Penali</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
+                          placeholder="npr. 12"
+                          inputProps={{ maxLength: 2 }}
+                        />
+                        <TextField
+                          label="Sekunde"
+                          value={eventSecond}
+                          onChange={e => setEventSecond(e.target.value.replace(/[^0-9]/g, ''))}
+                          sx={{ fontFamily: 'Ubuntu, sans-serif', width: '50%' }}
+                          variant="standard"
+                          placeholder="npr. 34"
+                          inputProps={{ maxLength: 2 }}
+                        />
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <FormControl sx={{ minWidth: 140, fontFamily: 'Ubuntu, sans-serif' }} variant="standard" fullWidth>
+                          <InputLabel id="half-label" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Poluvrijeme</InputLabel>
+                          <Select
+                            labelId="half-label"
+                            value={eventHalf}
+                            label="Poluvrijeme"
+                            onChange={e => setEventHalf(e.target.value as any)}
+                            sx={{ fontFamily: 'Ubuntu, sans-serif' }}
+                            variant="standard"
+                          >
+                            <MenuItem value="first" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Prvo poluvrijeme</MenuItem>
+                            <MenuItem value="second" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Drugo poluvrijeme</MenuItem>
+                            <MenuItem value="extra1" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Produžeci 1</MenuItem>
+                            <MenuItem value="extra2" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Produžeci 2</MenuItem>
+                            <MenuItem value="shootout" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Penali</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Box>
+                    </>
                   )}
-                  {['penalty', '10m'].includes(eventType) && eventHalf === 'shootout' && (
-                    <Box sx={{ mb: 2 }}>
-                      <FormControlLabel
-                        control={<Checkbox checked={isShootoutPenalty} onChange={e => setIsShootoutPenalty(e.target.checked)} />}
-                        label={<span style={{ fontFamily: 'Ubuntu, sans-serif' }}>Penal tijekom raspucavanja</span>}
-                        sx={{ mt: 1 }}
-                      />
-                    </Box>
-                  )}
+                  {/* Only show team and player inputs for game events */}
                   {['goal', 'yellow', 'red', 'penalty', '10m', 'foul'].includes(eventType) && (
                     <Box sx={{ mb: 2 }}>
                       <FormControl sx={{ minWidth: 140, fontFamily: 'Ubuntu, sans-serif' }} variant="standard" fullWidth>
@@ -936,6 +949,35 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
                   >
                     Dodaj događaj
                   </Button>
+                  {eventError && (
+                    <Typography color="error" sx={{ mt: 1, fontFamily: 'Ubuntu, sans-serif' }}>{eventError}</Typography>
+                  )}
+                  {/* List of entered events */}
+                  {selectedMatch && selectedMatch.events && selectedMatch.events.length > 0 && (
+                    <Box sx={{ mt: 3 }}>
+                      <Typography variant="subtitle2" sx={{ fontFamily: 'Ubuntu, sans-serif', mb: 1 }}>Uneseni događaji</Typography>
+                      <List dense>
+                        {selectedMatch.events.map((event, idx) => (
+                          <React.Fragment key={idx}>
+                            <ListItem
+                              secondaryAction={
+                                <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteEvent(idx)}>
+                                  <DeleteIcon />
+                                </IconButton>
+                              }
+                              sx={{ py: 0.5 }}
+                            >
+                              <ListItemText
+                                primary={renderEventDesc(event, allEventTypes.find(e => e.value === event.type)?.label || event.type)}
+                                sx={{ fontFamily: 'Ubuntu, sans-serif' }}
+                              />
+                            </ListItem>
+                            {idx < selectedMatch.events.length - 1 && <Divider />}
+                          </React.Fragment>
+                        ))}
+                      </List>
+                    </Box>
+                  )}
                 </Box>
               )}
             </>
