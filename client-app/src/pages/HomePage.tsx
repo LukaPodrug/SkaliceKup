@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Divider, Button, useTheme, useMediaQuery, Container, CircularProgress, Alert, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
+import ArticleIcon from '@mui/icons-material/Article';
 import MatchCard from '../components/MatchCard';
 import ArticleCard from '../components/ArticleCard';
 import { apiClient } from '../utils/apiClient';
@@ -106,9 +108,38 @@ const HomePageMobile: React.FC<{
       {/* Articles Section - First */}
       <Box sx={{ bgcolor: '#fff', mb: 2 }}>
         {matches.length === 0 ? (
-          <Typography sx={{ p: 3, textAlign: 'center', color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
-            Nema dostupnih utakmica.
-          </Typography>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            py: 3, 
+            width: '100%'
+          }}>
+            <SportsSoccerIcon sx={{ 
+              fontSize: 64, 
+              color: '#ccc', 
+              mb: 2,
+              opacity: 0.6
+            }} />
+            <Typography sx={{ 
+              textAlign: 'center', 
+              color: '#666', 
+              fontFamily: 'Ubuntu, sans-serif',
+              fontSize: '1.1rem',
+              fontWeight: 500,
+              mb: 1
+            }}>
+              Trenutno nema utakmica
+            </Typography>
+            <Typography sx={{ 
+              textAlign: 'center', 
+              color: '#999', 
+              fontFamily: 'Ubuntu, sans-serif',
+              fontSize: '0.9rem'
+            }}>
+              Provjerite kasnije za nove utakmice
+            </Typography>
+          </Box>
         ) : (
           matches.slice(0, 6).map((match, idx) => {
             const { hasStarted, hasEnded } = getMatchStatus(match);
@@ -135,9 +166,38 @@ const HomePageMobile: React.FC<{
       {/* News Section - Mobile */}
       <Box sx={{ bgcolor: '#fff', mb: 2, pb: 2 }}>
         {articles.length === 0 ? (
-          <Typography sx={{ p: 2, textAlign: 'center', color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
-            Nema dostupnih članaka.
-          </Typography>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            py: 3, 
+            width: '100%'
+          }}>
+            <ArticleIcon sx={{ 
+              fontSize: 64, 
+              color: '#ccc', 
+              mb: 2,
+              opacity: 0.6
+            }} />
+            <Typography sx={{ 
+              textAlign: 'center', 
+              color: '#666', 
+              fontFamily: 'Ubuntu, sans-serif',
+              fontSize: '1.1rem',
+              fontWeight: 500,
+              mb: 1
+            }}>
+              Trenutno nema članaka
+            </Typography>
+            <Typography sx={{ 
+              textAlign: 'center', 
+              color: '#999', 
+              fontFamily: 'Ubuntu, sans-serif',
+              fontSize: '0.9rem'
+            }}>
+              Provjerite kasnije za nove članke
+            </Typography>
+          </Box>
         ) : (
           articles.slice(0, 3).map((article, idx, arr) => (
             <React.Fragment key={article.id}>
@@ -306,11 +366,42 @@ const HomePageDesktop: React.FC<{
     <Box sx={{ flexGrow: 1, p: 0, m: 0, width: '100%', bgcolor: '#f7f7f7', display: 'flex', justifyContent: 'center', overflow: 'hidden' }}>
       <Box sx={{ display: 'flex', width: '100%', maxWidth: '100%', bgcolor: 'transparent', borderRadius: 0, boxShadow: 'none', p: 0 }}>
         {/* Left column: Match cards */}
-        <Box sx={{ flex: 1, pr: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+        <Box sx={{ flex: 1, pr: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', bgcolor: '#fff' }}>
           {matches.length === 0 ? (
-            <Typography sx={{ p: 3, textAlign: 'center', color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
-              Nema dostupnih utakmica.
-            </Typography>
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              py: 3, 
+              minHeight: '300px',
+              width: '100%'
+            }}>
+              <SportsSoccerIcon sx={{ 
+                fontSize: 80, 
+                color: '#ccc', 
+                mb: 3,
+                opacity: 0.6
+              }} />
+              <Typography sx={{ 
+                textAlign: 'center', 
+                color: '#666', 
+                fontFamily: 'Ubuntu, sans-serif',
+                fontSize: '1.2rem',
+                fontWeight: 500,
+                mb: 1
+              }}>
+                Trenutno nema utakmica
+              </Typography>
+              <Typography sx={{ 
+                textAlign: 'center', 
+                color: '#999', 
+                fontFamily: 'Ubuntu, sans-serif',
+                fontSize: '1rem'
+              }}>
+                Provjerite kasnije za nove utakmice
+              </Typography>
+            </Box>
           ) : (
             matches.map((match, idx) => {
               const { hasStarted, hasEnded } = getMatchStatus(match);
@@ -339,14 +430,45 @@ const HomePageDesktop: React.FC<{
         </Box>
         
         {/* Divider between sections */}
-        <Divider orientation="vertical" flexItem sx={{ mx: 0, bgcolor: '#e0e0e0', width: '1px', borderRadius: 1 }} />
+        <Divider orientation="vertical" flexItem sx={{ mx: 0, bgcolor: '#d0d0d0', width: '2px', borderRadius: 0 }} />
         
         {/* Middle column: Articles */}
         <Box sx={{ flex: 2, display: 'flex', flexDirection: 'column', bgcolor: '#fff', justifyContent: 'flex-start', alignItems: 'center' }}>
           {articles.length === 0 ? (
-            <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif', textAlign: 'center', p: 3 }}>
-              Trenutno nema članaka.
-            </Typography>
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              py: 3, 
+              minHeight: '300px',
+              width: '100%'
+            }}>
+              <ArticleIcon sx={{ 
+                fontSize: 80, 
+                color: '#ccc', 
+                mb: 3,
+                opacity: 0.6
+              }} />
+              <Typography sx={{ 
+                textAlign: 'center', 
+                color: '#666', 
+                fontFamily: 'Ubuntu, sans-serif',
+                fontSize: '1.2rem',
+                fontWeight: 500,
+                mb: 1
+              }}>
+                Trenutno nema članaka
+              </Typography>
+              <Typography sx={{ 
+                textAlign: 'center', 
+                color: '#999', 
+                fontFamily: 'Ubuntu, sans-serif',
+                fontSize: '1rem'
+              }}>
+                Provjerite kasnije za nove članke
+              </Typography>
+            </Box>
           ) : (
             <>
               <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -381,10 +503,10 @@ const HomePageDesktop: React.FC<{
         </Box>
         
         {/* Divider between sections */}
-        <Divider orientation="vertical" flexItem sx={{ mx: 0, bgcolor: '#e0e0e0', width: '1px', borderRadius: 1 }} />
+        <Divider orientation="vertical" flexItem sx={{ mx: 0, bgcolor: '#d0d0d0', width: '2px', borderRadius: 0 }} />
         
         {/* Right column: Social media */}
-        <Box sx={{ flex: 1, pl: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Box sx={{ width: 400, pl: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
           {/* Social Media Embeds */}
           <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
             {/* Facebook Profile Embed */}
@@ -392,7 +514,7 @@ const HomePageDesktop: React.FC<{
               <iframe
                 width="100%"
                 height="100%"
-                src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fskalicekup2017&tabs=timeline&width=600&height=500&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
+                src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fskalicekup2017&tabs=timeline&width=400&height=500&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
                 style={{ border: 'none', overflow: 'hidden', maxWidth: '100%' }}
                 scrolling="no"
                 frameBorder="0"

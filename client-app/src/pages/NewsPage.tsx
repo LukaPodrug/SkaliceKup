@@ -3,6 +3,7 @@ import { Box, Typography, Container, useTheme, useMediaQuery, CircularProgress, 
 import { useNavigate } from 'react-router-dom';
 import ArticleCard from '../components/ArticleCard';
 import { contentfulClient, type ContentfulArticle } from '../utils/contentfulClient';
+import ArticleIcon from '@mui/icons-material/Article';
 
 const NewsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -64,9 +65,38 @@ const NewsPage: React.FC = () => {
       <Box sx={{ flexGrow: 1, p: 0, m: 0, width: '100%', bgcolor: '#f7f7f7' }}>
         <Box sx={{ bgcolor: '#fff' }}>
           {articles.length === 0 ? (
-            <Typography sx={{ p: 3, textAlign: 'center', color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
-              Nema dostupnih članaka.
-            </Typography>
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              py: 3,
+              width: '100%'
+            }}>
+              <ArticleIcon sx={{
+                fontSize: 64,
+                color: '#ccc',
+                mb: 2,
+                opacity: 0.6
+              }} />
+              <Typography sx={{
+                textAlign: 'center',
+                color: '#666',
+                fontFamily: 'Ubuntu, sans-serif',
+                fontSize: '1.1rem',
+                fontWeight: 500,
+                mb: 1
+              }}>
+                Trenutno nema članaka
+              </Typography>
+              <Typography sx={{
+                textAlign: 'center',
+                color: '#999',
+                fontFamily: 'Ubuntu, sans-serif',
+                fontSize: '0.9rem'
+              }}>
+                Provjerite kasnije za nove članke
+              </Typography>
+            </Box>
           ) : (
             <>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -92,7 +122,21 @@ const NewsPage: React.FC = () => {
                   count={Math.ceil(articles.length / articlesPerPage)}
                   page={page}
                   onChange={(_, value) => setPage(value)}
-                  color="primary"
+                  sx={{
+                    '& .MuiPaginationItem-root': {
+                      color: '#666',
+                      '&.Mui-selected': {
+                        bgcolor: '#fd9905',
+                        color: '#fff',
+                        '&:hover': {
+                          bgcolor: '#e68a00',
+                        },
+                      },
+                      '&:hover': {
+                        bgcolor: '#fff3e0',
+                      },
+                    },
+                  }}
                 />
               </Box>
             </>
@@ -108,9 +152,40 @@ const NewsPage: React.FC = () => {
       <Container maxWidth={false} sx={{ width: '60%', px: 3 }}>
         <Box sx={{ bgcolor: '#fff', borderRadius: 2 }}>
           {articles.length === 0 ? (
-            <Typography sx={{ p: 3, textAlign: 'center', color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
-              Nema dostupnih članaka.
-            </Typography>
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              py: 3,
+              minHeight: '300px',
+              width: '100%'
+            }}>
+              <ArticleIcon sx={{
+                fontSize: 80,
+                color: '#ccc',
+                mb: 3,
+                opacity: 0.6
+              }} />
+              <Typography sx={{
+                textAlign: 'center',
+                color: '#666',
+                fontFamily: 'Ubuntu, sans-serif',
+                fontSize: '1.2rem',
+                fontWeight: 500,
+                mb: 1
+              }}>
+                Trenutno nema članaka
+              </Typography>
+              <Typography sx={{
+                textAlign: 'center',
+                color: '#999',
+                fontFamily: 'Ubuntu, sans-serif',
+                fontSize: '1rem'
+              }}>
+                Provjerite kasnije za nove članke
+              </Typography>
+            </Box>
           ) : (
             <>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -136,7 +211,21 @@ const NewsPage: React.FC = () => {
                   count={Math.ceil(articles.length / articlesPerPage)}
                   page={page}
                   onChange={(_, value) => setPage(value)}
-                  color="primary"
+                  sx={{
+                    '& .MuiPaginationItem-root': {
+                      color: '#666',
+                      '&.Mui-selected': {
+                        bgcolor: '#fd9905',
+                        color: '#fff',
+                        '&:hover': {
+                          bgcolor: '#e68a00',
+                        },
+                      },
+                      '&:hover': {
+                        bgcolor: '#fff3e0',
+                      },
+                    },
+                  }}
                 />
               </Box>
             </>
