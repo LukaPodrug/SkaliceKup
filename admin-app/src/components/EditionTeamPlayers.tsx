@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, Paper, List, ListItem, ListItemText, Button, Divider, Select, MenuItem, FormControl, InputLabel, TextField, CircularProgress, Alert } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -11,15 +11,21 @@ interface EditionTeamPlayersProps {
   tournamentId: string;
   refreshTrigger?: number;
   onPlayerAdded?: () => void;
+  selectedTeam?: string;
+  setSelectedTeam?: (teamId: string) => void;
+  onAddPlayer?: (playerId: string) => void;
 }
 
-const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, refreshTrigger, onPlayerAdded }) => {
+const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, refreshTrigger, onPlayerAdded, selectedTeam: selectedTeamProp, setSelectedTeam: setSelectedTeamProp, onAddPlayer }) => {
   const [editionTeams, setEditionTeams] = useState<Team[]>([]);
   const [allPlayers, setAllPlayers] = useState<Player[]>([]);
-  const [selectedTeam, setSelectedTeam] = useState<string>('');
+  const [selectedTeamState, setSelectedTeamState] = useState<string>('');
+  const selectedTeam = selectedTeamProp !== undefined ? selectedTeamProp : selectedTeamState;
+  const setSelectedTeam = setSelectedTeamProp !== undefined ? setSelectedTeamProp : setSelectedTeamState;
   const [teamPlayers, setTeamPlayers] = useState<Player[]>([]);
   const [allEditionPlayers, setAllEditionPlayers] = useState<Player[]>([]);
   const [search, setSearch] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
   const [editPlayer, setEditPlayer] = useState<Player | null>(null);
   const [editFirstName, setEditFirstName] = useState('');
   const [editLastName, setEditLastName] = useState('');
@@ -29,6 +35,14 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
   const [error, setError] = useState<string | null>(null);
   const [addingPlayerId, setAddingPlayerId] = useState<string | null>(null);
   const [removingPlayerId, setRemovingPlayerId] = useState<string | null>(null);
+  const [creatingPlayer, setCreatingPlayer] = useState(false);
+  const [openCreatePlayerDialog, setOpenCreatePlayerDialog] = useState(false);
+  const [newPlayerFirstName, setNewPlayerFirstName] = useState('');
+  const [newPlayerLastName, setNewPlayerLastName] = useState('');
+  const [newPlayerDateOfBirth, setNewPlayerDateOfBirth] = useState('');
+  const [newPlayerImageUrl, setNewPlayerImageUrl] = useState('');
+  const [editionPlayersLoading, setEditionPlayersLoading] = useState(true);
+  const [teamPlayersLoading, setTeamPlayersLoading] = useState(true);
 
   // Fetch edition teams and all players on component mount
   useEffect(() => {
@@ -37,7 +51,7 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
         setLoading(true);
         const [editionTeamsResponse, allPlayersResponse] = await Promise.all([
           apiClient.getEditionTeams(tournamentId),
-          apiClient.getPlayers()
+          apiClient.getPlayers() // Initially fetch only 20 players
         ]);
 
         if (editionTeamsResponse.data) {
@@ -60,40 +74,87 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
     fetchData();
   }, [tournamentId, refreshTrigger]);
 
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    (() => {
+      let timeoutId: NodeJS.Timeout;
+      return (searchTerm: string) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(async () => {
+          if (searchTerm.trim()) {
+            setSearchLoading(true);
+            try {
+              const response = await apiClient.getPlayers(searchTerm);
+              if (response.data) {
+                setAllPlayers(response.data);
+              }
+            } catch (err) {
+              console.error('Error searching players:', err);
+            } finally {
+              setSearchLoading(false);
+            }
+          } else {
+            // If search is empty, fetch initial 20 players
+            try {
+              const response = await apiClient.getPlayers();
+              if (response.data) {
+                setAllPlayers(response.data);
+              }
+            } catch (err) {
+              console.error('Error fetching initial players:', err);
+            }
+          }
+        }, 300); // 300ms delay
+      };
+    })(),
+    []
+  );
+
+  // Handle search input changes
+  useEffect(() => {
+    debouncedSearch(search);
+  }, [search, debouncedSearch]);
+
   // Fetch all team players from the edition when teams change
   useEffect(() => {
     const fetchAllEditionPlayers = async () => {
-      if (editionTeams.length === 0) return;
-      
+      if (editionTeams.length === 0) {
+        setAllEditionPlayers([]);
+        setEditionPlayersLoading(false);
+        return;
+      }
+      setEditionPlayersLoading(true);
       try {
         const allTeamPlayersPromises = editionTeams.map(team => 
           apiClient.getEditionPlayers(tournamentId, team.id)
         );
-        
         const allTeamPlayersResponses = await Promise.all(allTeamPlayersPromises);
         const allPlayers: Player[] = [];
-        
         allTeamPlayersResponses.forEach(response => {
           if (response.data) {
             allPlayers.push(...response.data);
           }
         });
-        
         setAllEditionPlayers(allPlayers);
       } catch (err) {
         console.error('Error fetching all edition players:', err);
         setAllEditionPlayers([]);
+      } finally {
+        setEditionPlayersLoading(false);
       }
     };
-
     fetchAllEditionPlayers();
   }, [tournamentId, editionTeams]);
 
   // Fetch team players when selected team changes
   useEffect(() => {
     const fetchTeamPlayers = async () => {
-      if (!selectedTeam) return;
-      
+      if (!selectedTeam) {
+        setTeamPlayers([]);
+        setTeamPlayersLoading(false);
+        return;
+      }
+      setTeamPlayersLoading(true);
       try {
         const response = await apiClient.getEditionPlayers(tournamentId, selectedTeam);
         if (response.data) {
@@ -102,9 +163,10 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
       } catch (err) {
         console.error('Error fetching team players:', err);
         setTeamPlayers([]);
+      } finally {
+        setTeamPlayersLoading(false);
       }
     };
-
     fetchTeamPlayers();
   }, [tournamentId, selectedTeam]);
 
@@ -118,12 +180,12 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
   const handleAddPlayer = async (playerId: string) => {
     setAddingPlayerId(playerId);
     if (!selectedTeam) return;
-    
     try {
       const response = await apiClient.addPlayerToTeam(tournamentId, selectedTeam, playerId);
       if (response.data) {
-        setTeamPlayers([...teamPlayers, response.data]);
-        setAllEditionPlayers([...allEditionPlayers, response.data]);
+        setTeamPlayers(prev => [...prev, response.data]);
+        setAllPlayers(prev => prev.filter(player => player.id !== playerId));
+        setAllEditionPlayers(prev => [...prev, response.data]);
       }
     } catch (err) {
       console.error('Error adding player to team:', err);
@@ -169,13 +231,13 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
       if (response.data) {
         // Update in all lists
         setAllPlayers(allPlayers.map(player => 
-          player.id === editPlayer.id ? response.data! : player
+          player.id === editPlayer.id ? response.data : player
         ));
         setTeamPlayers(teamPlayers.map(player => 
-          player.id === editPlayer.id ? response.data! : player
+          player.id === editPlayer.id ? response.data : player
         ));
         setAllEditionPlayers(allEditionPlayers.map(player => 
-          player.id === editPlayer.id ? response.data! : player
+          player.id === editPlayer.id ? response.data : player
         ));
         setEditPlayer(null);
       }
@@ -184,13 +246,29 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
     }
   };
 
-  // Filter out players who are already assigned to any team in this edition
-  const availablePlayers = allPlayers.filter(player => 
-    !allEditionPlayers.some(editionPlayer => editionPlayer.id === player.id) && 
-    `${player.firstName} ${player.lastName}`.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleCreatePlayerAndAdd = async () => {
+    setCreatingPlayer(true);
+    try {
+      const response = await apiClient.createPlayer({ firstName: newPlayerFirstName, lastName: newPlayerLastName, dateOfBirth: newPlayerDateOfBirth, imageUrl: newPlayerImageUrl });
+      if (response.data) {
+        if (selectedTeam) {
+          await handleAddPlayer(response.data.id);
+        }
+        setAllPlayers(prev => [...prev, response.data]);
+        setOpenCreatePlayerDialog(false);
+        setNewPlayerFirstName('');
+        setNewPlayerLastName('');
+        setNewPlayerDateOfBirth('');
+        setNewPlayerImageUrl('');
+      }
+    } catch (err) {
+      console.error('Error creating and adding player:', err);
+    } finally {
+      setCreatingPlayer(false);
+    }
+  };
 
-  if (loading) {
+  if (loading || editionPlayersLoading || teamPlayersLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
         <CircularProgress sx={{ color: '#fd9905' }} />
@@ -208,14 +286,34 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
     );
   }
 
-  if (editionTeams.length === 0) {
+  if (!selectedTeam) {
     return (
       <Paper sx={{ p: 3, fontFamily: 'Ubuntu, sans-serif' }}>
         <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
           Igrači po timu
         </Typography>
         <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
-          Prvo dodajte timove u ediciju da biste mogli upravljati igračima.
+          Prvo odaberite tim da biste mogli upravljati igračima.
+        </Typography>
+      </Paper>
+    );
+  }
+
+  // Filter out players who are already assigned to any team in this edition
+  const availablePlayers = allPlayers.filter(player => 
+    !allEditionPlayers.some(editionPlayer => editionPlayer.id === player.id)
+  );
+
+  // Only render content after filtering is complete and data is ready
+  // Remove dataReady logic, as loading states now cover readiness
+  if (availablePlayers.length === 0 && teamPlayers.length === 0) {
+    return (
+      <Paper sx={{ p: 3, fontFamily: 'Ubuntu, sans-serif' }}>
+        <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
+          Igrači po timu
+        </Typography>
+        <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
+          Nema dostupnih igrača za dodavanje ovom timu.
         </Typography>
       </Paper>
     );
@@ -294,14 +392,33 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
       <Typography variant="subtitle1" sx={{ mt: 3, mb: 1, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
         Dodaj igrača
       </Typography>
-      <TextField
-        placeholder="Pretraži igrače..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        variant="standard"
-        fullWidth
-        sx={{ mb: 2, fontFamily: 'Ubuntu, sans-serif' }}
-      />
+      <Box sx={{ position: 'relative', mb: 2 }}>
+        <TextField
+          placeholder="Pretraži igrače..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          variant="standard"
+          fullWidth
+          sx={{ fontFamily: 'Ubuntu, sans-serif' }}
+        />
+        {searchLoading && (
+          <CircularProgress 
+            size={20} 
+            sx={{ 
+              color: '#fd9905', 
+              position: 'absolute', 
+              right: 8, 
+              top: '50%', 
+              transform: 'translateY(-50%)' 
+            }} 
+          />
+        )}
+      </Box>
+      {!search && allPlayers.length === 20 && (
+        <Typography sx={{ color: '#666', fontFamily: 'Ubuntu, sans-serif', fontSize: '0.875rem', mb: 2, fontStyle: 'italic' }}>
+          Prikazano prvih 20 igrača. Koristite pretragu za pronalaženje ostalih igrača.
+        </Typography>
+      )}
       <List>
         {availablePlayers.map(player => (
           <ListItem key={player.id}
@@ -323,8 +440,10 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
             />
           </ListItem>
         ))}
-        {availablePlayers.length === 0 && (
-          <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif', px: 2, py: 1 }}>Nema rezultata.</Typography>
+        {availablePlayers.length === 0 && !searchLoading && (
+          <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif', px: 2, py: 1 }}>
+            {search ? 'Nema rezultata.' : 'Nema dostupnih igrača.'}
+          </Typography>
         )}
       </List>
       {/* Edit Player Modal */}

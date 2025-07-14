@@ -33,6 +33,22 @@ const TournamentManagement: React.FC<TournamentManagementProps> = ({ teamsRefres
     category: 'senior' as 'senior' | 'veteran',
     year: ''
   });
+  // LIFT selectedTeam state for EditionTeamPlayers
+  const [selectedTeam, setSelectedTeam] = useState<string>('');
+
+  // Handler to add team to edition
+  const handleAddTeamToEdition = async (teamId: string) => {
+    if (!id) return;
+    await apiClient.addTeamToEdition(id, teamId);
+    // Optionally trigger refresh
+  };
+
+  // Handler to add player to selected team in edition
+  const handleAddPlayerToTeam = async (playerId: string) => {
+    if (!id || !selectedTeam) return;
+    await apiClient.addPlayerToTeam(id, selectedTeam, playerId);
+    // Optionally trigger refresh
+  };
 
   useEffect(() => {
     const fetchTournament = async () => {
@@ -163,8 +179,8 @@ const TournamentManagement: React.FC<TournamentManagementProps> = ({ teamsRefres
         {tabLabels.map(label => <Tab key={label} label={label} />)}
       </Tabs>
       <Box sx={{ mt: 3 }}>
-        {tab === 0 && <EditionTeams tournamentId={tournament.id} refreshTrigger={teamsRefreshTrigger} />}
-        {tab === 1 && <EditionTeamPlayers tournamentId={tournament.id} refreshTrigger={playersRefreshTrigger} onPlayerAdded={onPlayerAdded} />}
+        {tab === 0 && <EditionTeams tournamentId={tournament.id} refreshTrigger={teamsRefreshTrigger} onAddTeam={handleAddTeamToEdition} />}
+        {tab === 1 && <EditionTeamPlayers tournamentId={tournament.id} refreshTrigger={playersRefreshTrigger} onPlayerAdded={onPlayerAdded} selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} onAddPlayer={handleAddPlayerToTeam} />}
         {tab === 2 && <EditionMatches tournamentId={tournament.id} />}
       </Box>
       <Dialog open={editEditionOpen} onClose={handleCloseEditEdition}>

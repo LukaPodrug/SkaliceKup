@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Paper, List, ListItem, ListItemText, Button, Divider, TextField, Select, MenuItem, FormControl, InputLabel, Dialog, DialogTitle, DialogContent, DialogActions, ListItemButton, CircularProgress, Alert, Checkbox, FormControlLabel, Radio, RadioGroup, Backdrop } from '@mui/material';
+import { Box, Typography, Paper, List, ListItem, ListItemText, Button, Divider, TextField, Select, MenuItem, FormControl, InputLabel, Dialog, DialogTitle, DialogContent, DialogActions, ListItemButton, CircularProgress, Alert, Checkbox, FormControlLabel, Radio, RadioGroup, Backdrop, Autocomplete } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -541,36 +541,67 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
             },
           }}
         />
-        <FormControl sx={{ minWidth: 140, fontFamily: 'Ubuntu, sans-serif' }} variant="standard" fullWidth>
-          <InputLabel id="home-team-label" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Domaćin</InputLabel>
-          <Select
-            labelId="home-team-label"
-            value={homeTeam}
-            label="Domaćin"
-            onChange={e => setHomeTeam(e.target.value)}
-            sx={{ fontFamily: 'Ubuntu, sans-serif' }}
-            variant="standard"
-          >
-            {editionTeams.map(team => (
-              <MenuItem key={team.id} value={team.id} sx={{ fontFamily: 'Ubuntu, sans-serif' }}>{team.name}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ minWidth: 140, fontFamily: 'Ubuntu, sans-serif' }} variant="standard" fullWidth>
-          <InputLabel id="away-team-label" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Gost</InputLabel>
-          <Select
-            labelId="away-team-label"
-            value={awayTeam}
-            label="Gost"
-            onChange={e => setAwayTeam(e.target.value)}
-            sx={{ fontFamily: 'Ubuntu, sans-serif' }}
-            variant="standard"
-          >
-            {editionTeams.filter(team => team.id !== homeTeam).map(team => (
-              <MenuItem key={team.id} value={team.id} sx={{ fontFamily: 'Ubuntu, sans-serif' }}>{team.name}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Autocomplete
+          options={editionTeams}
+          getOptionLabel={(option) => option.name}
+          value={editionTeams.find(team => team.id === homeTeam) || null}
+          onChange={(event, newValue) => {
+            setHomeTeam(newValue ? newValue.id : '');
+            if (newValue && newValue.id === awayTeam) {
+              setAwayTeam('');
+            }
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Domaćin"
+              variant="standard"
+              sx={{ fontFamily: 'Ubuntu, sans-serif' }}
+            />
+          )}
+          sx={{ 
+            width: '100%',
+            fontFamily: 'Ubuntu, sans-serif',
+            '& .MuiInputLabel-root': {
+              '&.Mui-focused': {
+                color: '#fd9905',
+              },
+              fontFamily: 'Ubuntu, sans-serif',
+            },
+            '& .MuiInput-underline:after': {
+              borderBottomColor: '#fd9905',
+            },
+          }}
+        />
+        <Autocomplete
+          options={editionTeams.filter(team => team.id !== homeTeam)}
+          getOptionLabel={(option) => option.name}
+          value={editionTeams.find(team => team.id === awayTeam) || null}
+          onChange={(event, newValue) => {
+            setAwayTeam(newValue ? newValue.id : '');
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Gost"
+              variant="standard"
+              sx={{ fontFamily: 'Ubuntu, sans-serif' }}
+            />
+          )}
+          sx={{ 
+            width: '100%',
+            fontFamily: 'Ubuntu, sans-serif',
+            '& .MuiInputLabel-root': {
+              '&.Mui-focused': {
+                color: '#fd9905',
+              },
+              fontFamily: 'Ubuntu, sans-serif',
+            },
+            '& .MuiInput-underline:after': {
+              borderBottomColor: '#fd9905',
+            },
+          }}
+        />
         <FormControl sx={{ minWidth: 140, fontFamily: 'Ubuntu, sans-serif' }} variant="standard" fullWidth>
           <InputLabel id="phase-label" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Faza</InputLabel>
           <Select
@@ -675,8 +706,23 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
           const away = editionTeams.find(t => t.id === match.awayTeamId)?.name || '';
           return (
             <React.Fragment key={match.id}>
-              <ListItem disablePadding>
-                <ListItemButton onClick={() => handleOpenMatch(match)} sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#fff3e0' }, fontFamily: 'Ubuntu, sans-serif' }}>
+              <ListItem 
+                disablePadding 
+                sx={{ 
+                  '&:hover': { bgcolor: '#fff3e0' },
+                  transition: 'background-color 0.2s ease',
+                  position: 'relative'
+                }}
+              >
+                <ListItemButton 
+                  onClick={() => handleOpenMatch(match)} 
+                  sx={{ 
+                    cursor: 'pointer', 
+                    fontFamily: 'Ubuntu, sans-serif',
+                    flex: 1,
+                    pr: 8 // Add padding to make room for the trash button
+                  }}
+                >
                   <ListItemText
                     primary={
                       <Box>
@@ -696,8 +742,26 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
                 </ListItemButton>
                 <IconButton
                   aria-label="Obriši utakmicu"
-                  onClick={() => handleDeleteMatch(match.id)}
-                  sx={{ borderRadius: '25px', bgcolor: '#f5f5f5', color: '#fd9905', ml: 1, minHeight: '32px', fontWeight: 600, fontSize: '0.95rem', '&:hover': { bgcolor: '#ffe0b2', color: '#fd9905' }, '&:focus': { outline: 'none' }, boxShadow: 'none' }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteMatch(match.id);
+                  }}
+                  sx={{ 
+                    position: 'absolute',
+                    right: 12,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    borderRadius: '25px', 
+                    bgcolor: '#f5f5f5', 
+                    color: '#fd9905', 
+                    minHeight: '32px', 
+                    fontWeight: 600, 
+                    fontSize: '0.95rem', 
+                    '&:hover': { bgcolor: '#ffe0b2', color: '#fd9905' }, 
+                    '&:focus': { outline: 'none' }, 
+                    boxShadow: 'none',
+                    zIndex: 1
+                  }}
                 >
                   <DeleteIcon />
                 </IconButton>

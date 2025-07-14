@@ -19,9 +19,11 @@ router.get('/', async (req: Request, res: Response) => {
       );
     }
     
+    // Always limit to 20 items for performance
     const players = await queryBuilder
       .orderBy('player.lastName', 'ASC')
       .addOrderBy('player.firstName', 'ASC')
+      .limit(20)
       .getMany();
       
     res.json(players);

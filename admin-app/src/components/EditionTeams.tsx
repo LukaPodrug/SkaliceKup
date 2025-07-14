@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, List, ListItem, ListItemText, Button, Divider, Paper, TextField, CircularProgress, Alert } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -10,12 +10,14 @@ import type { Team } from '../utils/apiClient';
 interface EditionTeamsProps {
   tournamentId: string;
   refreshTrigger?: number;
+  onAddTeam?: (teamId: string) => void;
 }
 
-const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId, refreshTrigger }) => {
+const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId, refreshTrigger, onAddTeam }) => {
   const [editionTeams, setEditionTeams] = useState<Team[]>([]);
   const [allTeams, setAllTeams] = useState<Team[]>([]);
   const [search, setSearch] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
   const [editTeam, setEditTeam] = useState<Team | null>(null);
   const [editName, setEditName] = useState('');
   const [editLogo, setEditLogo] = useState('');
@@ -23,39 +25,84 @@ const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId, refreshTrigge
   const [error, setError] = useState<string | null>(null);
   const [addingTeamId, setAddingTeamId] = useState<string | null>(null);
   const [removingTeamId, setRemovingTeamId] = useState<string | null>(null);
+  const [creatingTeam, setCreatingTeam] = useState(false);
+  const [openCreateTeamDialog, setOpenCreateTeamDialog] = useState(false);
+  const [newTeamName, setNewTeamName] = useState('');
+  const [newTeamLogo, setNewTeamLogo] = useState('');
+
+  const fetchTeamsData = async () => {
+    try {
+      setLoading(true);
+      const [editionTeamsResponse, allTeamsResponse] = await Promise.all([
+        apiClient.getEditionTeams(tournamentId),
+        apiClient.getTeams() // Initially fetch only 20 teams
+      ]);
+      if (editionTeamsResponse.data) {
+        setEditionTeams(editionTeamsResponse.data);
+      }
+      if (allTeamsResponse.data) {
+        setAllTeams(allTeamsResponse.data);
+      }
+    } catch (err) {
+      setError('Failed to load teams');
+      console.error('Error fetching teams:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    (() => {
+      let timeoutId: NodeJS.Timeout;
+      return (searchTerm: string) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(async () => {
+          if (searchTerm.trim()) {
+            setSearchLoading(true);
+            try {
+              const response = await apiClient.getTeams(searchTerm);
+              if (response.data) {
+                setAllTeams(response.data);
+              }
+            } catch (err) {
+              console.error('Error searching teams:', err);
+            } finally {
+              setSearchLoading(false);
+            }
+          } else {
+            // If search is empty, fetch initial 20 teams
+            try {
+              const response = await apiClient.getTeams();
+              if (response.data) {
+                setAllTeams(response.data);
+              }
+            } catch (err) {
+              console.error('Error fetching initial teams:', err);
+            }
+          }
+        }, 300); // 300ms delay
+      };
+    })(),
+    []
+  );
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [editionTeamsResponse, allTeamsResponse] = await Promise.all([
-          apiClient.getEditionTeams(tournamentId),
-          apiClient.getTeams()
-        ]);
-
-        if (editionTeamsResponse.data) {
-          setEditionTeams(editionTeamsResponse.data);
-        }
-        if (allTeamsResponse.data) {
-          setAllTeams(allTeamsResponse.data);
-        }
-      } catch (err) {
-        setError('Failed to load teams');
-        console.error('Error fetching teams:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    fetchTeamsData();
   }, [tournamentId, refreshTrigger]);
+
+  // Handle search input changes
+  useEffect(() => {
+    debouncedSearch(search);
+  }, [search, debouncedSearch]);
 
   const handleAddTeam = async (teamId: string) => {
     setAddingTeamId(teamId);
     try {
       const response = await apiClient.addTeamToEdition(tournamentId, teamId);
       if (response.data) {
-        setEditionTeams([...editionTeams, response.data]);
+        setEditionTeams(prev => [...prev, response.data]);
+        setAllTeams(prev => prev.filter(team => team.id !== teamId));
       }
     } catch (err) {
       console.error('Error adding team to edition:', err);
@@ -92,10 +139,10 @@ const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId, refreshTrigge
       if (response.data) {
         // Update in both lists
         setEditionTeams(editionTeams.map(team => 
-          team.id === editTeam.id ? response.data! : team
+          team.id === editTeam.id ? response.data : team
         ));
         setAllTeams(allTeams.map(team => 
-          team.id === editTeam.id ? response.data! : team
+          team.id === editTeam.id ? response.data : team
         ));
         setEditTeam(null);
       }
@@ -104,9 +151,29 @@ const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId, refreshTrigge
     }
   };
 
+  const handleCreateTeamAndAdd = async () => {
+    setCreatingTeam(true);
+    try {
+      const response = await apiClient.createTeam({ name: newTeamName, logo: newTeamLogo });
+      if (response.data) {
+        const addResp = await apiClient.addTeamToEdition(tournamentId, response.data.id);
+        if (addResp.data) {
+          // Instead of just updating state, refetch both lists to ensure sync
+          await fetchTeamsData();
+        }
+        setOpenCreateTeamDialog(false);
+        setNewTeamName('');
+        setNewTeamLogo('');
+      }
+    } catch (err) {
+      console.error('Error creating and adding team:', err);
+    } finally {
+      setCreatingTeam(false);
+    }
+  };
+
   const availableTeams = allTeams.filter(team => 
-    !editionTeams.some(editionTeam => editionTeam.id === team.id) && 
-    team.name.toLowerCase().includes(search.toLowerCase())
+    !editionTeams.some(editionTeam => editionTeam.id === team.id)
   );
 
   if (loading) {
@@ -162,14 +229,33 @@ const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId, refreshTrigge
       <Typography variant="subtitle1" sx={{ mt: 3, mb: 1, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
         Dodaj tim
       </Typography>
-      <TextField
-        placeholder="Pretraži timove..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        variant="standard"
-        fullWidth
-        sx={{ mb: 2, fontFamily: 'Ubuntu, sans-serif' }}
-      />
+      <Box sx={{ position: 'relative', mb: 2 }}>
+        <TextField
+          placeholder="Pretraži timove..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          variant="standard"
+          fullWidth
+          sx={{ fontFamily: 'Ubuntu, sans-serif' }}
+        />
+        {searchLoading && (
+          <CircularProgress 
+            size={20} 
+            sx={{ 
+              color: '#fd9905', 
+              position: 'absolute', 
+              right: 8, 
+              top: '50%', 
+              transform: 'translateY(-50%)' 
+            }} 
+          />
+        )}
+      </Box>
+      {!search && allTeams.length === 20 && (
+        <Typography sx={{ color: '#666', fontFamily: 'Ubuntu, sans-serif', fontSize: '0.875rem', mb: 2, fontStyle: 'italic' }}>
+          Prikazano prvih 20 timova. Koristite pretragu za pronalaženje ostalih timova.
+        </Typography>
+      )}
       <List>
         {availableTeams.map(team => (
           <ListItem key={team.id}
@@ -188,8 +274,10 @@ const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId, refreshTrigge
             <ListItemText primary={team.name} primaryTypographyProps={{ fontFamily: 'Ubuntu, sans-serif' }} />
           </ListItem>
         ))}
-        {availableTeams.length === 0 && (
-          <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif', px: 2, py: 1 }}>Nema rezultata.</Typography>
+        {availableTeams.length === 0 && !searchLoading && (
+          <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif', px: 2, py: 1 }}>
+            {search ? 'Nema rezultata.' : 'Nema dostupnih timova.'}
+          </Typography>
         )}
       </List>
       {/* Edit Team Modal */}
