@@ -794,7 +794,7 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
           value={tabValue}
           onChange={handleTabChange}
           indicatorColor="primary"
-          textColor="primary"
+          textColor="primary" 
           variant="fullWidth"
           sx={{
             width: '100%',
