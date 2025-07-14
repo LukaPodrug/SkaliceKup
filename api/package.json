@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
     "build": "tsc",
+    "migrate": "npx typeorm migration:run -d src/config/database.ts",
+    "start": "npm run migrate && node dist/src/index.js",
     "postinstall": "npm run build",
-    "migrate": "ts-node src/migrations/runMigrations.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
