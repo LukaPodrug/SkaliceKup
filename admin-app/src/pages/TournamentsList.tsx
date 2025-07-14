@@ -73,7 +73,17 @@ const EditionsTab: React.FC<{
 }> = ({ tournaments, navigate, loading, isMobile, onEditEdition }) => {
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <Box
+        sx={{
+          width: isMobile ? '100vw' : '60%',
+          maxWidth: 800,
+          mx: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: 300,
+        }}
+      >
         <CircularProgress sx={{ color: '#fd9905' }} />
       </Box>
     );
@@ -81,7 +91,7 @@ const EditionsTab: React.FC<{
 
   if (isMobile) {
     return (
-      <Box sx={{ bgcolor: '#fff' }}>
+      <Box sx={{ bgcolor: '#fff', width: '100vw' }}>
         {tournaments.map((tournament, idx) => (
           <TournamentEditionCard
             key={tournament.id}
@@ -137,7 +147,17 @@ const TeamsTab: React.FC<{
 }> = ({ teams, loading, isMobile, onEditTeam }) => {
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <Box
+        sx={{
+          width: isMobile ? '100vw' : '60%',
+          maxWidth: 800,
+          mx: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: 300,
+        }}
+      >
         <CircularProgress sx={{ color: '#fd9905' }} />
       </Box>
     );
@@ -145,7 +165,7 @@ const TeamsTab: React.FC<{
 
   if (isMobile) {
     return (
-      <Box sx={{ bgcolor: '#fff' }}>
+      <Box sx={{ bgcolor: '#fff', width: '100vw' }}>
         {teams.map((team, idx) => (
           <React.Fragment key={team.id}>
             <Card sx={{ borderRadius: 0, boxShadow: 'none', m: 0 }}>
@@ -265,7 +285,17 @@ const PlayersTab: React.FC<{
 }> = ({ players, loading, isMobile, onEditPlayer }) => {
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <Box
+        sx={{
+          width: isMobile ? '100vw' : '60%',
+          maxWidth: 800,
+          mx: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: 300,
+        }}
+      >
         <CircularProgress sx={{ color: '#fd9905' }} />
       </Box>
     );
@@ -273,7 +303,7 @@ const PlayersTab: React.FC<{
 
   if (isMobile) {
     return (
-      <Box sx={{ bgcolor: '#fff' }}>
+      <Box sx={{ bgcolor: '#fff', width: '100vw' }}>
         {players.map((player, idx) => (
           <React.Fragment key={player.id}>
             <Card sx={{ borderRadius: 0, boxShadow: 'none', m: 0 }}>
@@ -730,8 +760,18 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
 
   if (tournamentsError) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <Alert severity="error" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>
+      <Box
+        sx={{
+          width: isMobile ? '100%' : '60%',
+          maxWidth: 800,
+          mx: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: 300,
+        }}
+      >
+        <Alert severity="error" sx={{ fontFamily: 'Ubuntu, sans-serif', width: '100%' }}>
           {tournamentsError}
         </Alert>
       </Box>
@@ -739,60 +779,58 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
   }
 
   return (
-    <Box sx={{ width: '100%', bgcolor: '#f7f7f7' }}>
+    <Box sx={{ width: '100%', bgcolor: '#f7f7f7', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {/* Tabs */}
-      <Box sx={{ 
-        bgcolor: '#fff', 
+      <Box sx={{
+        bgcolor: '#fff',
         borderBottom: '1px solid #e0e0e0',
+        width: isMobile ? '100%' : '60%',
+        maxWidth: 800,
+        mx: 'auto',
         display: 'flex',
-        justifyContent: 'center'
+        justifyContent: 'center',
       }}>
-        <Box sx={{ 
-          width: isMobile ? '100%' : '60%',
-          maxWidth: '800px'
-        }}>
-          <Tabs
-            value={tabValue}
-            onChange={handleTabChange}
-            indicatorColor="primary"
-            textColor="primary"
-            variant="fullWidth"
-            sx={{
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="fullWidth"
+          sx={{
+            width: '100%',
+            fontFamily: 'Ubuntu, sans-serif',
+            '& .MuiTab-root': {
+              fontWeight: 600,
               fontFamily: 'Ubuntu, sans-serif',
-              '& .MuiTab-root': {
-                fontWeight: 600,
-                fontFamily: 'Ubuntu, sans-serif',
-                color: '#222',
-                textTransform: 'none',
-              },
-              '& .Mui-selected': {
-                color: '#fd9905',
-              },
-              '& .MuiTabs-indicator': {
-                bgcolor: '#fd9905',
-              },
-            }}
-          >
-            <Tab label="Edicije" />
-            <Tab label="Klubovi" />
-            <Tab label="Igrači" />
-          </Tabs>
-        </Box>
+              color: '#222',
+              textTransform: 'none',
+            },
+            '& .Mui-selected': {
+              color: '#fd9905',
+            },
+            '& .MuiTabs-indicator': {
+              bgcolor: '#fd9905',
+            },
+          }}
+        >
+          <Tab label="Edicije" />
+          <Tab label="Klubovi" />
+          <Tab label="Igrači" />
+        </Tabs>
       </Box>
 
       {/* Search bars */}
       {tabValue === 1 && (
-        <Box sx={{ 
-          bgcolor: '#fff', 
-          p: 2, 
+        <Box sx={{
+          bgcolor: '#fff',
+          p: 2,
           borderBottom: '1px solid #e0e0e0',
+          width: isMobile ? '100%' : '60%',
+          maxWidth: 800,
+          mx: 'auto',
           display: 'flex',
-          justifyContent: 'center'
+          justifyContent: 'center',
         }}>
-          <Box sx={{ 
-            width: isMobile ? '100%' : '60%',
-            maxWidth: '800px'
-          }}>
             <TextField
               fullWidth
               placeholder="Pretraži klubove..."
@@ -812,22 +850,20 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
                 },
               }}
             />
-          </Box>
         </Box>
       )}
 
       {tabValue === 2 && (
-        <Box sx={{ 
-          bgcolor: '#fff', 
-          p: 2, 
+        <Box sx={{
+          bgcolor: '#fff',
+          p: 2,
           borderBottom: '1px solid #e0e0e0',
+          width: isMobile ? '100%' : '60%',
+          maxWidth: 800,
+          mx: 'auto',
           display: 'flex',
-          justifyContent: 'center'
+          justifyContent: 'center',
         }}>
-          <Box sx={{ 
-            width: isMobile ? '100%' : '60%',
-            maxWidth: '800px'
-          }}>
             <TextField
               fullWidth
               placeholder="Pretraži igrače..."
@@ -847,7 +883,6 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
                 },
               }}
             />
-          </Box>
         </Box>
       )}
 
@@ -864,8 +899,18 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
 
       <TabPanel value={tabValue} index={1}>
         {teamsError ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-            <Alert severity="error" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>
+          <Box
+            sx={{
+              width: isMobile ? '100%' : '60%',
+              maxWidth: 800,
+              mx: 'auto',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: 300,
+            }}
+          >
+            <Alert severity="error" sx={{ fontFamily: 'Ubuntu, sans-serif', width: '100%' }}>
               {teamsError}
             </Alert>
           </Box>
@@ -881,8 +926,18 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
 
       <TabPanel value={tabValue} index={2}>
         {playersError ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-            <Alert severity="error" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>
+          <Box
+            sx={{
+              width: isMobile ? '100%' : '60%',
+              maxWidth: 800,
+              mx: 'auto',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: 300,
+            }}
+          >
+            <Alert severity="error" sx={{ fontFamily: 'Ubuntu, sans-serif', width: '100%' }}>
               {playersError}
             </Alert>
           </Box>

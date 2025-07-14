@@ -18,6 +18,7 @@ export interface TournamentEdition {
   };
   knockoutTeams?: number;
   qualificationRounds?: number;
+  groupStages?: number;
   createdAt: string;
   updatedAt: string;
 }

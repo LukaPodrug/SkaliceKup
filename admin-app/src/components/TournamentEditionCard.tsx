@@ -22,6 +22,7 @@ const TournamentEditionCard: React.FC<TournamentEditionCardProps> = ({ name, cat
           boxShadow: 'none',
           borderRadius: 0,
           m: 0,
+          width: { xs: '100%', sm: 'auto' },
         }}
       >
         <CardContent sx={{ p: 3 }}>

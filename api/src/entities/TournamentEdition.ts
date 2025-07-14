@@ -26,7 +26,13 @@ export class TournamentEdition {
   };
 
   @Column({ type: 'int', nullable: true })
-  knockoutTeams?: number;
+  numberOfGroups?: number;
+
+  @Column({ type: 'int', nullable: true })
+  numberOfKnockoutPhases?: number;
+
+  @Column({ type: 'int', nullable: true })
+  numberOfQualificationRounds?: number;
 
   @CreateDateColumn()
   createdAt!: Date;

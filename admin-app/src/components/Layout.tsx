@@ -83,6 +83,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
   const [knockoutTeams, setKnockoutTeams] = React.useState(16);
   // Add state for number of qualification rounds
   const [qualificationRounds, setQualificationRounds] = React.useState(1);
+  // Add state for number of group stages
+  const [groupStages, setGroupStages] = React.useState(1);
   const [editionError, setEditionError] = React.useState<string | null>(null);
   const [editionLoading, setEditionLoading] = React.useState(false);
 
@@ -179,6 +181,10 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
       setEditionError('Unesite broj kvalifikacijskih kola.');
       return;
     }
+    if (selectedPhases.grupa && (!groupStages || isNaN(Number(groupStages)))) {
+      setEditionError('Unesite broj grupnih faza.');
+      return;
+    }
 
     setEditionLoading(true);
     setEditionError(null);
@@ -190,7 +196,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
         category: editionCategory as 'senior' | 'veteran',
         phases: selectedPhases,
         knockoutTeams: selectedPhases.knockout ? Number(knockoutTeams) : undefined,
-        qualificationRounds: selectedPhases.kvalifikacije ? Number(qualificationRounds) : undefined
+        qualificationRounds: selectedPhases.kvalifikacije ? Number(qualificationRounds) : undefined,
+        groupStages: selectedPhases.grupa ? Number(groupStages) : undefined,
       });
 
       if (response.data) {
@@ -201,6 +208,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
         setSelectedPhases({ kvalifikacije: false, grupa: false, knockout: false });
         setKnockoutTeams(16);
         setQualificationRounds(1);
+        setGroupStages(1);
         
         // Call the callback to refresh the tournaments list
         if (onTournamentAdded) {
@@ -295,6 +303,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
     setSelectedPhases({ kvalifikacije: false, grupa: false, knockout: false });
     setKnockoutTeams(16);
     setQualificationRounds(1);
+    setGroupStages(1);
   };
 
   const handleClosePlayerDialog = () => {
@@ -312,16 +321,16 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#f7f7f7', pt: isMobile ? 0 : 0 }}>
+    <Box sx={{ minHeight: '100vh', width: '100vw', display: 'flex', flexDirection: 'column', bgcolor: '#f7f7f7' }}>
       <AppBar
-        position="fixed"
+        position="static"
         sx={{
           bgcolor: '#fff',
           color: '#222',
           borderBottom: '1px solid #e0e0e0',
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ minHeight: { xs: 56, sm: 64 } }}>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
             Skalice Kup Admin
           </Typography>
@@ -353,14 +362,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
           )}
         </Toolbar>
       </AppBar>
-      
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          mt: '64px',
-        }}
-      >
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {!isRootPage && (
           <Box sx={{ mb: 3 }}>
             <Breadcrumbs 
@@ -405,10 +407,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
             </Breadcrumbs>
           </Box>
         )}
-        
         {children}
       </Box>
-
       {/* Add Options Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
         <DialogContent sx={{ p: 0 }}>
@@ -578,6 +578,35 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
                   borderBottomColor: '#fd9905',
                 },
                 fontFamily: 'Ubuntu, sans-serif',
+              }}
+            />
+          )}
+          {selectedPhases.grupa && (
+            <TextField
+              label="Broj grupnih faza"
+              value={groupStages}
+              onChange={(e) => setGroupStages(Number(e.target.value))}
+              variant="standard"
+              fullWidth
+              type="number"
+              sx={{
+                '& .MuiInputLabel-root': {
+                  '&.Mui-focused': {
+                    color: '#fd9905',
+                  },
+                  fontFamily: 'Ubuntu, sans-serif',
+                },
+                '& .MuiInput-underline:after': {
+                  borderBottomColor: '#fd9905',
+                },
+                fontFamily: 'Ubuntu, sans-serif',
+                '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button': {
+                  '-webkit-appearance': 'none',
+                  margin: 0,
+                },
+                '& input[type=number]': {
+                  '-moz-appearance': 'textfield',
+                },
               }}
             />
           )}
