@@ -80,9 +80,9 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
   });
 
   // Add state for number of teams in knockout
-  const [knockoutTeams, setKnockoutTeams] = React.useState(1);
+  const [numberOfKnockoutPhases, setNumberOfKnockoutPhases] = React.useState(1);
   // Add state for number of qualification rounds
-  const [qualificationRounds, setQualificationRounds] = React.useState(1);
+  const [numberOfQualificationRounds, setNumberOfQualificationRounds] = React.useState(1);
   // Add state for number of group stages
   const [groupStages, setGroupStages] = React.useState(1);
   const [editionError, setEditionError] = React.useState<string | null>(null);
@@ -177,11 +177,11 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
       setEditionError('Odaberite barem jednu fazu.');
       return;
     }
-    if (selectedPhases.knockout && (!knockoutTeams || isNaN(Number(knockoutTeams)))) {
+    if (selectedPhases.knockout && (!numberOfKnockoutPhases || isNaN(Number(numberOfKnockoutPhases)))) {
       setEditionError('Unesite broj ekipa za knockout fazu.');
       return;
     }
-    if (selectedPhases.kvalifikacije && (!qualificationRounds || isNaN(Number(qualificationRounds)))) {
+    if (selectedPhases.kvalifikacije && (!numberOfQualificationRounds || isNaN(Number(numberOfQualificationRounds)))) {
       setEditionError('Unesite broj kvalifikacijskih kola.');
       return;
     }
@@ -201,8 +201,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
         phases: selectedPhases,
       };
       if (selectedPhases.grupa) editionData.numberOfGroups = Number(groupStages);
-      if (selectedPhases.knockout) editionData.numberOfKnockoutPhases = Number(knockoutTeams);
-      if (selectedPhases.kvalifikacije) editionData.numberOfQualificationRounds = Number(qualificationRounds);
+      if (selectedPhases.knockout) editionData.numberOfKnockoutPhases = Number(numberOfKnockoutPhases);
+      if (selectedPhases.kvalifikacije) editionData.numberOfQualificationRounds = Number(numberOfQualificationRounds);
       const response = await apiClient.createTournamentEdition(editionData);
 
       if (response.data) {
@@ -211,8 +211,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
         setEditionYear('');
         setEditionCategory('senior');
         setSelectedPhases({ kvalifikacije: false, grupa: false, knockout: false });
-        setKnockoutTeams(1);
-        setQualificationRounds(1);
+        setNumberOfKnockoutPhases(1);
+        setNumberOfQualificationRounds(1);
         setGroupStages(1);
         
         // Call the callback to refresh the tournaments list
@@ -306,8 +306,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
     setEditionYear('');
     setEditionCategory('senior');
     setSelectedPhases({ kvalifikacije: false, grupa: false, knockout: false });
-    setKnockoutTeams(1);
-    setQualificationRounds(1);
+    setNumberOfKnockoutPhases(1);
+    setNumberOfQualificationRounds(1);
     setGroupStages(1);
   };
 
@@ -564,8 +564,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
           {selectedPhases.kvalifikacije && (
             <TextField
               label="Broj kvalifikacijskih kola"
-              value={qualificationRounds}
-              onChange={(e) => setQualificationRounds(Number(e.target.value))}
+              value={numberOfQualificationRounds}
+              onChange={(e) => setNumberOfQualificationRounds(Number(e.target.value))}
               variant="standard"
               fullWidth
               type="number"
@@ -593,8 +593,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
           {selectedPhases.knockout && (
             <TextField
               label="Broj knockout faza"
-              value={knockoutTeams}
-              onChange={(e) => setKnockoutTeams(Number(e.target.value))}
+              value={numberOfKnockoutPhases}
+              onChange={(e) => setNumberOfKnockoutPhases(Number(e.target.value))}
               variant="standard"
               fullWidth
               type="number"

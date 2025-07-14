@@ -75,7 +75,6 @@ const TournamentManagement: React.FC<TournamentManagementProps> = ({ teamsRefres
         category: editForm.category,
         year: parseInt(editForm.year),
         phases: tournament.phases,
-        knockoutTeams: tournament.knockoutTeams
       });
       
       if (response.data) {

@@ -501,8 +501,8 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
       grupa: false,
       knockout: false,
     },
-    knockoutTeams: 16,
-    qualificationRounds: 1
+    numberOfKnockoutPhases: 16,
+    numberOfQualificationRounds: 1
   });
 
   const [editTeamDialogOpen, setEditTeamDialogOpen] = useState(false);
@@ -638,8 +638,8 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
       year: tournament.year.toString(),
       category: tournament.category,
       selectedPhases: tournament.phases,
-      knockoutTeams: tournament.knockoutTeams || 16,
-      qualificationRounds: tournament.qualificationRounds || 1
+      numberOfKnockoutPhases: tournament.numberOfKnockoutPhases || 16,
+      numberOfQualificationRounds: tournament.numberOfQualificationRounds || 1
     });
     setEditTournamentError(null);
     setEditTournamentDialogOpen(true);
@@ -679,11 +679,11 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
       setEditTournamentError('Odaberite barem jednu fazu.');
       return;
     }
-    if (editTournamentForm.selectedPhases.knockout && (!editTournamentForm.knockoutTeams || isNaN(Number(editTournamentForm.knockoutTeams)))) {
+    if (editTournamentForm.selectedPhases.knockout && (!editTournamentForm.numberOfKnockoutPhases || isNaN(Number(editTournamentForm.numberOfKnockoutPhases)))) {
       setEditTournamentError('Unesite broj ekipa za knockout fazu.');
       return;
     }
-    if (editTournamentForm.selectedPhases.kvalifikacije && (!editTournamentForm.qualificationRounds || isNaN(Number(editTournamentForm.qualificationRounds)))) {
+    if (editTournamentForm.selectedPhases.kvalifikacije && (!editTournamentForm.numberOfQualificationRounds || isNaN(Number(editTournamentForm.numberOfQualificationRounds)))) {
       setEditTournamentError('Unesite broj kvalifikacijskih kola.');
       return;
     }
@@ -697,8 +697,8 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
         year: parseInt(editTournamentForm.year),
         category: editTournamentForm.category,
         phases: editTournamentForm.selectedPhases,
-        knockoutTeams: editTournamentForm.selectedPhases.knockout ? Number(editTournamentForm.knockoutTeams) : undefined,
-        qualificationRounds: editTournamentForm.selectedPhases.kvalifikacije ? Number(editTournamentForm.qualificationRounds) : undefined
+        numberOfKnockoutPhases: editTournamentForm.selectedPhases.knockout ? Number(editTournamentForm.numberOfKnockoutPhases) : undefined,
+        numberOfQualificationRounds: editTournamentForm.selectedPhases.kvalifikacije ? Number(editTournamentForm.numberOfQualificationRounds) : undefined
       });
 
       if (response.data) {
@@ -1125,8 +1125,8 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
             {editTournamentForm.selectedPhases.kvalifikacije && (
               <TextField
                 label="Broj kvalifikacijskih kola"
-                value={editTournamentForm.qualificationRounds}
-                onChange={(e) => setEditTournamentForm(prev => ({ ...prev, qualificationRounds: Number(e.target.value) }))}
+                value={editTournamentForm.numberOfQualificationRounds}
+                onChange={(e) => setEditTournamentForm(prev => ({ ...prev, numberOfQualificationRounds: Number(e.target.value) }))}
                 variant="standard"
                 fullWidth
                 type="number"
@@ -1154,8 +1154,8 @@ const AdminHomePage: React.FC<TournamentsListProps> = ({ refreshTrigger = 0, pla
             {editTournamentForm.selectedPhases.knockout && (
               <TextField
                 label="Broj ekipa za knockout"
-                value={editTournamentForm.knockoutTeams}
-                onChange={(e) => setEditTournamentForm(prev => ({ ...prev, knockoutTeams: Number(e.target.value) }))}
+                value={editTournamentForm.numberOfKnockoutPhases}
+                onChange={(e) => setEditTournamentForm(prev => ({ ...prev, numberOfKnockoutPhases: Number(e.target.value) }))}
                 variant="standard"
                 fullWidth
                 type="number"
