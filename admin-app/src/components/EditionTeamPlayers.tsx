@@ -4,6 +4,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import Autocomplete from '@mui/material/Autocomplete';
 import { apiClient } from '../utils/apiClient';
 import type { Team, Player } from '../utils/apiClient';
 
@@ -319,36 +320,35 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
         Igrači po timu
       </Typography>
       <FormControl fullWidth sx={{ mb: 2, fontFamily: 'Ubuntu, sans-serif' }}>
-        <InputLabel id="team-select-label" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Odaberi tim</InputLabel>
-        <Select
-          labelId="team-select-label"
-          value={selectedTeam}
-          label="Odaberi tim"
-          onChange={e => setSelectedTeam(e.target.value as string)}
-          fullWidth
-          variant="standard"
+        {/* Replace Select with Autocomplete for team selection */}
+        <Autocomplete
+          options={editionTeams}
+          getOptionLabel={(option) => option.name}
+          value={editionTeams.find(team => team.id === selectedTeam) || null}
+          onChange={(event, newValue) => setSelectedTeam(newValue ? newValue.id : '')}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Odaberi tim"
+              variant="standard"
+              sx={{ fontFamily: 'Ubuntu, sans-serif' }}
+            />
+          )}
           sx={{
             mb: 2,
             fontFamily: 'Ubuntu, sans-serif',
             bgcolor: 'transparent',
-            '& .MuiInputBase-root': {
+            '& .MuiInputLabel-root': {
+              '&.Mui-focused': {
+                color: '#fd9905',
+              },
               fontFamily: 'Ubuntu, sans-serif',
-            },
-            '& .MuiInput-underline:before': {
-              borderBottomColor: '#e0e0e0',
             },
             '& .MuiInput-underline:after': {
               borderBottomColor: '#fd9905',
             },
-            '& .MuiInputBase-input': {
-              bgcolor: 'transparent',
-            },
           }}
-        >
-          {editionTeams.map(team => (
-            <MenuItem key={team.id} value={team.id} sx={{ fontFamily: 'Ubuntu, sans-serif' }}>{team.name}</MenuItem>
-          ))}
-        </Select>
+        />
       </FormControl>
       <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
         Igrači u timu

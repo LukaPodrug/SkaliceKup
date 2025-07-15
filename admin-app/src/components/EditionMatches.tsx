@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Paper, List, ListItem, ListItemText, Button, Divider, TextField, Select, MenuItem, FormControl, InputLabel, Dialog, DialogTitle, DialogContent, DialogActions, ListItemButton, CircularProgress, Alert, Checkbox, FormControlLabel, Radio, RadioGroup, Backdrop, Autocomplete } from '@mui/material';
+import { Box, Typography, Paper, List, ListItem, ListItemText, Button, Divider, TextField, Select, MenuItem, FormControl, InputLabel, Dialog, DialogTitle, DialogContent, DialogActions, ListItemButton, CircularProgress, Alert, Checkbox, FormControlLabel, Radio, RadioGroup, Backdrop, Autocomplete, Tabs, Tab } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -397,6 +397,29 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
     fetchMatchPlayers();
   }, [selectedMatch, tournamentId]);
 
+  // Tab state for filtering matches
+  const [matchTab, setMatchTab] = useState(1); // Default to 'Danas'
+
+  // Helper to filter matches by date
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const matchesOdigrane = matches.filter(match => {
+    const matchDate = new Date(match.date);
+    matchDate.setHours(0, 0, 0, 0);
+    return matchDate < today;
+  });
+  const matchesDanas = matches.filter(match => {
+    const matchDate = new Date(match.date);
+    matchDate.setHours(0, 0, 0, 0);
+    return matchDate.getTime() === today.getTime();
+  });
+  const matchesURasporedu = matches.filter(match => {
+    const matchDate = new Date(match.date);
+    matchDate.setHours(0, 0, 0, 0);
+    return matchDate > today;
+  });
+  const tabMatches = matchTab === 0 ? matchesOdigrane : matchTab === 1 ? matchesDanas : matchesURasporedu;
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
@@ -487,6 +510,7 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
         Utakmice
       </Typography>
+      {/* Restore match creation form above tab bar */}
       <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
         <DatePicker
           label="Datum"
@@ -704,8 +728,33 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
           {addMatchLoading ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : 'Dodaj utakmicu'}
         </Button>
       </Box>
+      {/* Tab bar for match filtering */}
+      <Tabs
+        value={matchTab}
+        onChange={(_, v) => setMatchTab(v)}
+        sx={{ mb: 2, width: '100%',
+          '& .MuiTab-root:focus': {
+            outline: 'none',
+            boxShadow: 'none',
+          },
+          '& .MuiTab-root:focus-visible': {
+            outline: 'none',
+            boxShadow: 'none',
+          },
+          '& .Mui-selected': {
+            outline: 'none',
+            boxShadow: 'none',
+          }
+        }}
+        variant="fullWidth"
+        TabIndicatorProps={{ style: { backgroundColor: '#fd9905' } }}
+      >
+        <Tab label="Odigrane" sx={{ width: '33%' }} />
+        <Tab label="Danas" sx={{ width: '33%' }} />
+        <Tab label="U rasporedu" sx={{ width: '33%' }} />
+      </Tabs>
       <List>
-        {matches.map(match => {
+        {tabMatches.map(match => {
           const home = editionTeams.find(t => t.id === match.homeTeamId)?.name || '';
           const away = editionTeams.find(t => t.id === match.awayTeamId)?.name || '';
           return (
@@ -774,7 +823,7 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
             </React.Fragment>
           );
         })}
-        {matches.length === 0 && (
+        {tabMatches.length === 0 && (
           <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif', px: 2, py: 1 }}>Nema utakmica.</Typography>
         )}
       </List>
