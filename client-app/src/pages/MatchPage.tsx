@@ -339,7 +339,11 @@ const MatchPage: React.FC = () => {
                 py: 0.5,
                 mb: 2,
                 display: 'block',
-                width: '100%'
+                width: '100%',
+                maxWidth: '100vw',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
               }}>
                 {phaseLabel}
               </Box>
