@@ -12,7 +12,7 @@ const NewsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [page, setPage] = useState(1);
   const articlesPerPage = 10;
 

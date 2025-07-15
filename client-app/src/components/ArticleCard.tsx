@@ -23,7 +23,8 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
   showDivider 
 }) => {
   const theme = useTheme();
-  const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
+  // Update breakpoint for mobile/tablet layout
+  const isMobileView = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleClick = () => {
     if (onClick) {

@@ -27,7 +27,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ tab, handleTabChange }) => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const tabLabels = ['Početna', 'Novosti', 'Rezultati'];
@@ -194,7 +194,7 @@ const Header: React.FC<HeaderProps> = ({ tab, handleTabChange }) => {
           keepMounted: true, // Better open performance on mobile.
         }}
         sx={{
-          display: { xs: 'block', sm: 'none' },
+          display: { xs: 'block', sm: 'block', md: 'block', lg: 'none' },
           '& .MuiDrawer-paper': { 
             boxSizing: 'border-box', 
             width: '100vw',

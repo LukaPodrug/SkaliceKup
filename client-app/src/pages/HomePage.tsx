@@ -653,7 +653,8 @@ const HomePageDesktop: React.FC<{
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  // Update breakpoint for mobile/tablet layout
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
   
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);

@@ -12,7 +12,8 @@ const MatchPage: React.FC = () => {
   const { matchId } = useParams<{ matchId: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  // Update breakpoint for mobile/tablet layout
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
   const [match, setMatch] = useState<Match | null>(null);
   const [homeTeam, setHomeTeam] = useState<Team | null>(null);
@@ -293,7 +294,7 @@ const MatchPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 0, m: 0, width: '100%', bgcolor: '#f7f7f7' }}>
+    <Box sx={{ flexGrow: 1, p: 0, m: 0, width: '100%', bgcolor: '#f7f7f7', overflowX: 'hidden' }}>
       {/* Back button */}
       <Box sx={{ p: isMobile ? 2 : 4, pt: isMobile ? 2 : 4, pb: 0 }}>
         <Box

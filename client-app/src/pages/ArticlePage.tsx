@@ -24,7 +24,7 @@ const ArticlePage: React.FC = () => {
   const { articleId } = useParams<{ articleId: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const [article, setArticle] = useState<ContentfulArticle | null>(null);
   const [loading, setLoading] = useState(true);

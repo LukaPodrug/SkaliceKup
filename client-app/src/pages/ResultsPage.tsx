@@ -50,7 +50,8 @@ const ResultsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  // Update breakpoint for mobile/tablet layout
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // Store available categories and phases
   const [availableCategories, setAvailableCategories] = useState<{ label: string; value: 'senior' | 'veteran'; edition?: TournamentEdition }[]>([]);
