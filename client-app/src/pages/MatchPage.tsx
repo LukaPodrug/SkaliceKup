@@ -533,7 +533,7 @@ const MatchPage: React.FC = () => {
               </Box>
             )}
             {isLive && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1, mt: 2 }}>
                 <Chip 
                   label="LIVE" 
                   size="small" 
