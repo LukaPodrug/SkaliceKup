@@ -183,9 +183,9 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
     try {
       const response = await apiClient.addPlayerToTeam(tournamentId, selectedTeam, playerId);
       if (response.data) {
-        setTeamPlayers(prev => prev ? [...prev, response.data] : [response.data]);
-        setAllPlayers(prev => prev ? prev.filter(player => player.id !== playerId) : []);
-        setAllEditionPlayers(prev => prev ? [...prev, response.data] : [response.data]);
+        setTeamPlayers(prev => prev ? [...prev, response.data].filter((p): p is Player => p !== undefined) : [response.data]);
+        setAllPlayers(prev => prev ? prev.filter((player): player is Player => player.id !== playerId) : []);
+        setAllEditionPlayers(prev => prev ? [...prev, response.data].filter((p): p is Player => p !== undefined) : [response.data]);
       }
     } catch (err) {
       console.error('Error adding player to team:', err);
@@ -230,9 +230,9 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
       
       if (response.data) {
         // Update in all lists
-        setAllPlayers(allPlayers.map(player => player.id === editPlayer.id ? response.data : player));
-        setTeamPlayers(teamPlayers.map(player => player.id === editPlayer.id ? response.data : player));
-        setAllEditionPlayers(allEditionPlayers.map(player => player.id === editPlayer.id ? response.data : player));
+        setAllPlayers(allPlayers.map(player => player.id === editPlayer.id ? response.data : player).filter((p): p is Player => p !== undefined));
+        setTeamPlayers(teamPlayers.map(player => player.id === editPlayer.id ? response.data : player).filter((p): p is Player => p !== undefined));
+        setAllEditionPlayers(allEditionPlayers.map(player => player.id === editPlayer.id ? response.data : player).filter((p): p is Player => p !== undefined));
         setEditPlayer(null);
       }
     } catch (err) {
