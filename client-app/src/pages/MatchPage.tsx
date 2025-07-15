@@ -271,6 +271,16 @@ const MatchPage: React.FC = () => {
     ? awaySquad.filter(player => match.awaySquad!.includes(player.id))
     : awaySquad;
 
+  // Determine phase label for header
+  let phaseLabel = '';
+  if (match.qualificationRound) {
+    phaseLabel = `${match.qualificationRound}. pretkolo`;
+  } else if (match.group) {
+    phaseLabel = `Grupa ${match.group}`;
+  } else if (match.phase) {
+    phaseLabel = match.phase.charAt(0).toUpperCase() + match.phase.slice(1);
+  }
+
   return (
     <Box sx={{ flexGrow: 1, p: 0, m: 0, width: '100%', bgcolor: '#f7f7f7' }}>
       {/* Back button */}
@@ -305,6 +315,24 @@ const MatchPage: React.FC = () => {
       {isMobile ? (
         <Box sx={{ bgcolor: '#fff' }}>
           <Box sx={{ p: 0 }}>
+            {/* Competition phase header */}
+            {phaseLabel && (
+              <Box sx={{
+                bgcolor: '#fd9905',
+                color: '#fff',
+                fontFamily: 'Ubuntu, sans-serif',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                borderRadius: 0,
+                px: 2,
+                py: 0.5,
+                mb: 2,
+                display: 'block',
+                width: '100%'
+              }}>
+                {phaseLabel}
+              </Box>
+            )}
             {/* Live indicator */}
             {isLive && (
               <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
@@ -470,30 +498,25 @@ const MatchPage: React.FC = () => {
       ) : (
         <Container maxWidth={false} sx={{ width: '60%', px: 3 }}>
           <Box sx={{ bgcolor: '#fff', overflow: 'hidden' }}>
+            {/* Competition phase header - match card width, inside card */}
+            {phaseLabel && (
+              <Box sx={{
+                bgcolor: '#fd9905',
+                color: '#fff',
+                fontFamily: 'Ubuntu, sans-serif',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                borderRadius: 0,
+                px: 2,
+                py: 0.5,
+                mb: 0,
+                display: 'block',
+                width: '100%'
+              }}>
+                {phaseLabel}
+              </Box>
+            )}
             <Box sx={{ p: 4, pb: 0 }}>
-              {/* Live indicator */}
-              {isLive && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                  <Chip
-                    label="LIVE"
-                    size="small"
-                    sx={{
-                      bgcolor: '#fd9905',
-                      color: '#fff',
-                      fontFamily: 'Ubuntu, sans-serif',
-                      fontSize: isMobile ? '0.75rem' : '0.85rem',
-                      fontWeight: 600,
-                      mb: isMobile ? 1 : 2,
-                      animation: 'pulse 2s infinite',
-                      '@keyframes pulse': {
-                        '0%': { opacity: 1 },
-                        '50%': { opacity: 0.7 },
-                        '100%': { opacity: 1 }
-                      }
-                    }}
-                  />
-                </Box>
-              )}
               
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 6 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, justifyContent: 'flex-end' }}>

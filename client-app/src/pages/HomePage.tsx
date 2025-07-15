@@ -174,13 +174,12 @@ const HomePageMobile: React.FC<{
                       fontFamily: 'Ubuntu, sans-serif',
                       fontWeight: 700,
                       fontSize: '0.95rem',
-                      borderTopLeftRadius: 8,
-                      borderTopRightRadius: 8,
+                      borderRadius: 0,
                       px: 2,
                       py: 0.5,
                       mb: '-4px',
-                      display: 'inline-block',
-                      ml: 1
+                      display: 'block',
+                      width: '100%'
                     }}>
                       {phaseLabel}
                     </Box>
@@ -468,8 +467,34 @@ const HomePageDesktop: React.FC<{
               {matches.map((match, idx) => {
                 const { hasStarted, hasEnded } = getMatchStatus(match);
                 const { homeScore, awayScore } = calculateScores(match);
+                // Determine phase label
+                let phaseLabel = '';
+                if (match.qualificationRound) {
+                  phaseLabel = `${match.qualificationRound}. pretkolo`;
+                } else if (match.group) {
+                  phaseLabel = `Grupa ${match.group}`;
+                } else if (match.phase) {
+                  phaseLabel = match.phase.charAt(0).toUpperCase() + match.phase.slice(1);
+                }
                 return (
                   <React.Fragment key={match.id}>
+                    {phaseLabel && (
+                      <Box sx={{
+                        bgcolor: '#fd9905',
+                        color: '#fff',
+                        fontFamily: 'Ubuntu, sans-serif',
+                        fontWeight: 700,
+                        fontSize: '0.95rem',
+                        borderRadius: 0,
+                        px: 2,
+                        py: 0.5,
+                        mb: '-4px',
+                        display: 'block',
+                        width: '100%'
+                      }}>
+                        {phaseLabel}
+                      </Box>
+                    )}
                     <MatchCard
                       team1={getTeamName(match.homeTeamId)}
                       team2={getTeamName(match.awayTeamId)}

@@ -63,6 +63,16 @@ const ResultsMatchCard: React.FC<ResultsMatchCardProps & { hasStarted?: boolean;
   // Determine if match is live
   const isLive = hasStarted && !hasEnded;
 
+  // Determine phase label for header
+  let phaseLabel = '';
+  if (match.qualificationRound) {
+    phaseLabel = `${match.qualificationRound}. pretkolo`;
+  } else if (match.group) {
+    phaseLabel = `Grupa ${match.group}`;
+  } else if (match.phase) {
+    phaseLabel = match.phase.charAt(0).toUpperCase() + match.phase.slice(1);
+  }
+
   return (
     <Box 
       sx={{ 
@@ -71,11 +81,40 @@ const ResultsMatchCard: React.FC<ResultsMatchCardProps & { hasStarted?: boolean;
         cursor: 'pointer',
         '&:hover': {
           bgcolor: '#f5f5f5'
-        }
+        },
+        position: 'relative'
       }}
       onClick={handleClick}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, width: '100%' }}>
+      {/* Competition phase header, flush with card edge */}
+      {phaseLabel && (
+        <Box sx={{
+          bgcolor: '#fd9905',
+          color: '#fff',
+          fontFamily: 'Ubuntu, sans-serif',
+          fontWeight: 700,
+          fontSize: '0.95rem',
+          borderRadius: 0,
+          px: 0,
+          pl: 1,
+          py: 0.5,
+          mb: 0,
+          mt: 0,
+          width: 'calc(100% + ' + (isMobile ? '3rem' : '4rem') + ')',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          textAlign: 'left',
+          zIndex: 1,
+          height: '1.5rem',
+          lineHeight: '1.5rem',
+          display: 'flex',
+          alignItems: 'center'
+        }}>
+          {phaseLabel}
+        </Box>
+      )}
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, width: '100%', mt: phaseLabel ? '1.5rem' : 0 }}>
         {/* First row: LIVE chip, centered if needed */}
         {isLive && (
           <Chip 
