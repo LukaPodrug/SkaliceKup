@@ -462,12 +462,9 @@ const MatchPage: React.FC = () => {
                         </Typography>
                       ) : (
                         <>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <PlayerAvatar firstName={getPlayerFirstName(event.playerId)} lastName={getPlayerLastName(event.playerId)} size={24} />
-                            <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
-                              {getPlayerName(event.playerId)}
-                            </Typography>
-                          </Box>
+                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                            {getPlayerName(event.playerId)}
+                          </Typography>
                           <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
                             {getTeamName(event.teamId)}
                           </Typography>
@@ -637,12 +634,9 @@ const MatchPage: React.FC = () => {
                         </Typography>
                       ) : (
                         <>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <PlayerAvatar firstName={getPlayerFirstName(event.playerId)} lastName={getPlayerLastName(event.playerId)} size={24} />
-                            <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
-                              {getPlayerName(event.playerId)}
-                            </Typography>
-                          </Box>
+                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                            {getPlayerName(event.playerId)}
+                          </Typography>
                           <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
                             {getTeamName(event.teamId)}
                           </Typography>
