@@ -579,7 +579,7 @@ const MatchPage: React.FC = () => {
                   <Chip 
                     label={homeTeam?.name || 'TBD'}
                     size="small"
-                    sx={{ bgcolor: '#fd9905', color: 'white', fontFamily: 'Ubuntu, sans-serif', fontSize: '0.8rem', fontWeight: 600, height: 24 }}
+                    sx={{ bgcolor: '#fd9905', color: 'white', fontFamily: 'Ubuntu, sans-serif', fontSize: '0.8rem', fontWeight: 600, height: 24, ml: 2 }}
                   />
                 </Box>
                 <Box sx={{ overflow: 'hidden' }}>
