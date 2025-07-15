@@ -101,7 +101,7 @@ const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId, refreshTrigge
     try {
       const response = await apiClient.addTeamToEdition(tournamentId, teamId);
       if (response.data) {
-        setEditionTeams(prev => [...prev, response.data]);
+        setEditionTeams(prev => ([...prev, response.data]).filter((t): t is Team => t !== undefined));
         setAllTeams(prev => prev.filter(team => team.id !== teamId));
       }
     } catch (err) {
