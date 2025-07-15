@@ -183,9 +183,9 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
     try {
       const response = await apiClient.addPlayerToTeam(tournamentId, selectedTeam, playerId);
       if (response.data) {
-        setTeamPlayers(prev => prev ? [...prev, response.data].filter((p): p is Player => p !== undefined) : [response.data]);
+        setTeamPlayers(prev => (prev ? [...prev, response.data] : [response.data]).filter((p): p is Player => p !== undefined));
         setAllPlayers(prev => prev ? prev.filter((player): player is Player => player.id !== playerId) : []);
-        setAllEditionPlayers(prev => prev ? [...prev, response.data].filter((p): p is Player => p !== undefined) : [response.data]);
+        setAllEditionPlayers(prev => (prev ? [...prev, response.data] : [response.data]).filter((p): p is Player => p !== undefined));
       }
     } catch (err) {
       console.error('Error adding player to team:', err);
@@ -248,7 +248,7 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
         if (selectedTeam) {
           await handleAddPlayer(response.data.id);
         }
-        setAllPlayers(prev => [...prev, response.data]);
+        setAllPlayers(prev => ([...prev, response.data]).filter((p): p is Player => p !== undefined));
         setOpenCreatePlayerDialog(false);
         setNewPlayerFirstName('');
         setNewPlayerLastName('');
