@@ -6,6 +6,7 @@ import teamLogoMock from '../assets/teamLogoMock.png';
 import type { Match, Team, Player } from '../utils/apiClient';
 import { apiClient } from '../utils/apiClient';
 import { websocketClient } from '../utils/websocketClient';
+import { TeamAvatar, PlayerAvatar } from '../components/ResultsMatchCard';
 
 const MatchPage: React.FC = () => {
   const { matchId } = useParams<{ matchId: string }>();
@@ -252,6 +253,16 @@ const MatchPage: React.FC = () => {
     return `${home} - ${away}`;
   };
 
+  // Add helpers for player first/last name
+  const getPlayerFirstName = (playerId?: string) => {
+    const player = [...homeSquad, ...awaySquad].find(p => p.id === playerId);
+    return player ? player.firstName : '';
+  };
+  const getPlayerLastName = (playerId?: string) => {
+    const player = [...homeSquad, ...awaySquad].find(p => p.id === playerId);
+    return player ? player.lastName : '';
+  };
+
   if (loading) {
     return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}><CircularProgress sx={{ color: '#fd9905' }} /></Box>;
   }
@@ -392,8 +403,9 @@ const MatchPage: React.FC = () => {
               <Box sx={{ overflow: 'hidden' }}>
                 {filteredHomeSquad.map((player, index) => (
                   <React.Fragment key={player.id}>
-                    <Box sx={{ p: 1, px: 2 }}>
-                      <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.875rem', color: '#222' }}>
+                    <Box sx={{ p: 1, px: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <PlayerAvatar firstName={player.firstName} lastName={player.lastName} size={28} />
+                      <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
                         {player.firstName} {player.lastName}
                       </Typography>
                     </Box>
@@ -422,8 +434,9 @@ const MatchPage: React.FC = () => {
               <Box sx={{ overflow: 'hidden' }}>
                 {filteredAwaySquad.map((player, index) => (
                   <React.Fragment key={player.id}>
-                    <Box sx={{ p: 1, px: 2 }}>
-                      <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.875rem', color: '#222' }}>
+                    <Box sx={{ p: 1, px: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <PlayerAvatar firstName={player.firstName} lastName={player.lastName} size={28} />
+                      <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
                         {player.firstName} {player.lastName}
                       </Typography>
                     </Box>
@@ -449,9 +462,12 @@ const MatchPage: React.FC = () => {
                         </Typography>
                       ) : (
                         <>
-                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
-                            {getPlayerName(event.playerId)}
-                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <PlayerAvatar firstName={getPlayerFirstName(event.playerId)} lastName={getPlayerLastName(event.playerId)} size={24} />
+                            <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                              {getPlayerName(event.playerId)}
+                            </Typography>
+                          </Box>
                           <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
                             {getTeamName(event.teamId)}
                           </Typography>
@@ -519,11 +535,36 @@ const MatchPage: React.FC = () => {
             <Box sx={{ p: 4, pb: 0 }}>
               
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 6 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, justifyContent: 'flex-end' }}>
-                  <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, color: '#222', fontSize: '1.25rem', textAlign: 'right' }}>
-                    {homeTeam?.name || 'TBD'}
-                  </Typography>
-                  <TeamAvatar name={homeTeam?.name} logo={homeTeam?.logo} size={48} />
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
+                  {isLive && (
+                    <Chip 
+                      label="LIVE" 
+                      size="small" 
+                      sx={{
+                        bgcolor: '#fd9905',
+                        color: '#fff',
+                        fontFamily: 'Ubuntu, sans-serif',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        height: 22,
+                        borderRadius: 10,
+                        px: 2,
+                        mb: 1,
+                        animation: 'pulse 2s infinite',
+                        '@keyframes pulse': {
+                          '0%': { opacity: 1 },
+                          '50%': { opacity: 0.7 },
+                          '100%': { opacity: 1 }
+                        }
+                      }}
+                    />
+                  )}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'flex-end' }}>
+                    <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, color: '#222', fontSize: '1.25rem', textAlign: 'right' }}>
+                      {homeTeam?.name || 'TBD'}
+                    </Typography>
+                    <TeamAvatar name={homeTeam?.name} logo={homeTeam?.logo} size={48} />
+                  </Box>
                 </Box>
                 <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 700, color: '#222', fontSize: '2rem', mx: 4 }}>
                   {homeScore} - {awayScore}
@@ -547,7 +588,8 @@ const MatchPage: React.FC = () => {
                   <Box sx={{ overflow: 'hidden' }}>
                     {filteredHomeSquad.map((player, index) => (
                       <React.Fragment key={player.id}>
-                        <Box sx={{ p: 1, px: 2 }}>
+                        <Box sx={{ p: 1, px: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <PlayerAvatar firstName={player.firstName} lastName={player.lastName} size={28} />
                           <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
                             {player.firstName} {player.lastName}
                           </Typography>
@@ -570,7 +612,8 @@ const MatchPage: React.FC = () => {
                   <Box sx={{ overflow: 'hidden' }}>
                     {filteredAwaySquad.map((player, index) => (
                       <React.Fragment key={player.id}>
-                        <Box sx={{ p: 1, px: 2 }}>
+                        <Box sx={{ p: 1, px: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <PlayerAvatar firstName={player.firstName} lastName={player.lastName} size={28} />
                           <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
                             {player.firstName} {player.lastName}
                           </Typography>
@@ -597,9 +640,12 @@ const MatchPage: React.FC = () => {
                           </Typography>
                         ) : (
                           <>
-                            <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
-                              {getPlayerName(event.playerId)}
-                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <PlayerAvatar firstName={getPlayerFirstName(event.playerId)} lastName={getPlayerLastName(event.playerId)} size={24} />
+                              <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                                {getPlayerName(event.playerId)}
+                              </Typography>
+                            </Box>
                             <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
                               {getTeamName(event.teamId)}
                             </Typography>

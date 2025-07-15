@@ -53,6 +53,43 @@ export const TeamAvatar: React.FC<{ name?: string; logo?: string; size?: number 
   );
 };
 
+// Add PlayerAvatar helper (modeled after TeamAvatar)
+export const PlayerAvatar: React.FC<{ firstName?: string; lastName?: string; size?: number }> = ({ firstName, lastName, size = 24 }) => {
+  let initials = '?';
+  if (firstName && lastName) {
+    initials = firstName[0].toUpperCase() + lastName[0].toUpperCase();
+  } else if (firstName) {
+    initials = firstName.slice(0, 2).toUpperCase();
+  } else if (lastName) {
+    initials = lastName.slice(0, 2).toUpperCase();
+  }
+  const circleSize = size * 0.7;
+  return (
+    <Box sx={{
+      width: size,
+      height: size,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      <Box sx={{
+        width: circleSize,
+        height: circleSize,
+        borderRadius: '50%',
+        bgcolor: '#222',
+        color: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 700,
+        fontSize: size * 0.32,
+        fontFamily: 'Ubuntu, sans-serif',
+        userSelect: 'none',
+      }}>{initials}</Box>
+    </Box>
+  );
+};
+
 const ResultsMatchCard: React.FC<ResultsMatchCardProps & { hasStarted?: boolean; hasEnded?: boolean }> = ({ match, isMobile = false, showRound = false, hasStarted, hasEnded }) => {
   const navigate = useNavigate();
 
