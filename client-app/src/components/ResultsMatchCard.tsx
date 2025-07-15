@@ -10,12 +10,58 @@ interface ResultsMatchCardProps {
   showRound?: boolean;
 }
 
-const ResultsMatchCard: React.FC<ResultsMatchCardProps> = ({ match, isMobile = false, showRound = false }) => {
+// Add TeamAvatar helper (copy from MatchPage)
+export const TeamAvatar: React.FC<{ name?: string; logo?: string; size?: number }> = ({ name, logo, size = 24 }) => {
+  if (logo) {
+    return <img src={logo} alt={name} style={{ width: size, height: size, borderRadius: size / 6 }} />;
+  }
+  let initials = '?';
+  if (name) {
+    const words = name.trim().split(/\s+/);
+    if (words.length >= 2) {
+      initials = words[0][0].toUpperCase() + words[1][0].toUpperCase();
+    } else if (words.length === 1 && words[0].length >= 2) {
+      initials = words[0].slice(0, 2).toUpperCase();
+    } else if (words.length === 1) {
+      initials = words[0][0].toUpperCase();
+    }
+  }
+  const circleSize = size * 0.7;
+  return (
+    <Box sx={{
+      width: size,
+      height: size,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      <Box sx={{
+        width: circleSize,
+        height: circleSize,
+        borderRadius: '50%',
+        bgcolor: '#fd9905',
+        color: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 700,
+        fontSize: size * 0.32,
+        fontFamily: 'Ubuntu, sans-serif',
+        userSelect: 'none',
+      }}>{initials}</Box>
+    </Box>
+  );
+};
+
+const ResultsMatchCard: React.FC<ResultsMatchCardProps & { hasStarted?: boolean; hasEnded?: boolean }> = ({ match, isMobile = false, showRound = false, hasStarted, hasEnded }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
     navigate(`/results/match/${match.id}`);
   };
+
+  // Determine if match is live
+  const isLive = hasStarted && !hasEnded;
 
   return (
     <Box 
@@ -29,52 +75,86 @@ const ResultsMatchCard: React.FC<ResultsMatchCardProps> = ({ match, isMobile = f
       }}
       onClick={handleClick}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-        {showRound && match.round && (
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, width: '100%' }}>
+        {/* First row: LIVE chip, centered if needed */}
+        {isLive && (
           <Chip 
-            label={match.round}
-            size="small"
+            label="LIVE" 
+            size="small" 
             sx={{
               bgcolor: '#fd9905',
-              color: 'white',
+              color: '#fff',
               fontFamily: 'Ubuntu, sans-serif',
-              fontSize: isMobile ? '0.8rem' : '0.9rem',
+              fontSize: isMobile ? '0.7rem' : '0.8rem',
               fontWeight: 600,
-              height: isMobile ? 20 : 24
+              height: isMobile ? 20 : 22,
+              borderRadius: 10,
+              px: 2,
+              mb: 0.5,
+              animation: 'pulse 2s infinite',
+              '@keyframes pulse': {
+                '0%': { opacity: 1 },
+                '50%': { opacity: 0.7 },
+                '100%': { opacity: 1 }
+              }
             }}
           />
         )}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, width: '100%' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end' }}>
+        {/* Second row: teams and result, always in the same line */}
+        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
             <Typography sx={{ 
               fontFamily: 'Ubuntu, sans-serif', 
               fontWeight: 600, 
               color: '#222',
               fontSize: isMobile ? '0.875rem' : 'inherit',
-              textAlign: 'right'
+              textAlign: 'right',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
             }}>
               {match.homeTeam}
             </Typography>
-            <img src={teamLogoMock} alt={match.homeTeam} style={{ width: 24, height: 24, borderRadius: 4 }} />
+            <TeamAvatar name={match.homeTeam} size={32} />
           </Box>
-          
-          <Typography sx={{ 
-            fontFamily: 'Ubuntu, sans-serif', 
-            fontWeight: 700, 
-            color: '#222', 
-            fontSize: isMobile ? '0.875rem' : 'inherit',
-            mx: 2
-          }}>
-            {match.homeScore !== null ? match.homeScore : '-'} - {match.awayScore !== null ? match.awayScore : '-'}
-          </Typography>
-          
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
-            <img src={teamLogoMock} alt={match.awayTeam} style={{ width: 24, height: 24, borderRadius: 4 }} />
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minWidth: isMobile ? 48 : 56, flex: '0 0 auto' }}>
+            {hasStarted ? (
+              <Typography sx={{ 
+                fontFamily: 'Ubuntu, sans-serif', 
+                fontWeight: 700, 
+                color: '#222', 
+                fontSize: isMobile ? '0.875rem' : 'inherit',
+                mx: 2,
+                textAlign: 'center',
+                minWidth: 32
+              }}>
+                {match.homeScore !== null ? match.homeScore : '-'} - {match.awayScore !== null ? match.awayScore : '-'}
+              </Typography>
+            ) : (
+              <Typography sx={{ 
+                fontFamily: 'Ubuntu, sans-serif', 
+                fontWeight: 700, 
+                color: '#222', 
+                fontSize: isMobile ? '0.875rem' : 'inherit',
+                mx: 2,
+                textAlign: 'center',
+                minWidth: 32
+              }}>
+                -
+              </Typography>
+            )}
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, justifyContent: 'flex-start', minWidth: 0 }}>
+            <TeamAvatar name={match.awayTeam} size={32} />
             <Typography sx={{ 
               fontFamily: 'Ubuntu, sans-serif', 
               fontWeight: 600, 
               color: '#222',
-              fontSize: isMobile ? '0.875rem' : 'inherit'
+              fontSize: isMobile ? '0.875rem' : 'inherit',
+              textAlign: 'left',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
             }}>
               {match.awayTeam}
             </Typography>

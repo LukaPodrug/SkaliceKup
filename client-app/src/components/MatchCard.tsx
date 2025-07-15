@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, Chip } from '@mui/material';
 import teamLogoMock from '../assets/teamLogoMock.png';
+import { TeamAvatar } from './ResultsMatchCard';
 
 interface MatchCardProps {
   team1: string;
@@ -117,7 +118,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, flex: 1, minWidth: 0 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, flex: 1 }}>
-            <img src={teamLogoMock} alt={team1} style={{ width: 28, height: 28, borderRadius: 4, flexShrink: 0 }} />
+            <TeamAvatar name={team1} size={32} />
             <Typography sx={{ 
               fontFamily: fontFamily, 
               fontWeight: 600, 
@@ -143,7 +144,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, flex: 1 }}>
-            <img src={teamLogoMock} alt={team2} style={{ width: 28, height: 28, borderRadius: 4, flexShrink: 0 }} />
+            <TeamAvatar name={team2} size={32} />
             <Typography sx={{ 
               fontFamily: fontFamily, 
               fontWeight: 600, 

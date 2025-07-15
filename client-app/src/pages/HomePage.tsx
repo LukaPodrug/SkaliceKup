@@ -140,27 +140,45 @@ const HomePageMobile: React.FC<{
             }}>
               Provjerite kasnije za nove utakmice
             </Typography>
+            <Button
+              variant="contained"
+              sx={{ mt: 2, bgcolor: '#fd9905', color: '#fff', fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, borderRadius: 8, px: 4, py: 1, boxShadow: 'none', textTransform: 'none', '&:hover': { bgcolor: '#e68a00', boxShadow: 'none' } }}
+              onClick={() => navigate('/results')}
+            >
+              Svi rezultati
+            </Button>
           </Box>
         ) : (
-          matches.slice(0, 6).map((match, idx) => {
-            const { hasStarted, hasEnded } = getMatchStatus(match);
-            const { homeScore, awayScore } = calculateScores(match);
-            return (
-              <MatchCard
-                key={match.id}
-                team1={getTeamName(match.homeTeamId)}
-                team2={getTeamName(match.awayTeamId)}
-                date={new Date(match.date).toLocaleDateString('hr-HR', { day: '2-digit', month: '2-digit' })}
-                time={new Date(match.date).toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' })}
-                status={match.status === 'scheduled' ? 'Nije počelo' : match.status === 'in_progress' ? 'U tijeku' : 'Kraj'}
-                score1={homeScore}
-                score2={awayScore}
-                hasStarted={hasStarted}
-                hasEnded={hasEnded}
-                onClick={() => navigate(`/match/${match.id}`)}
-              />
-            );
-          })
+          <>
+            {matches.slice(0, 6).map((match, idx) => {
+              const { hasStarted, hasEnded } = getMatchStatus(match);
+              const { homeScore, awayScore } = calculateScores(match);
+              return (
+                <MatchCard
+                  key={match.id}
+                  team1={getTeamName(match.homeTeamId)}
+                  team2={getTeamName(match.awayTeamId)}
+                  date={new Date(match.date).toLocaleDateString('hr-HR', { day: '2-digit', month: '2-digit' })}
+                  time={new Date(match.date).toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' })}
+                  status={match.status === 'scheduled' ? 'Nije počelo' : match.status === 'in_progress' ? 'U tijeku' : 'Kraj'}
+                  score1={homeScore}
+                  score2={awayScore}
+                  hasStarted={hasStarted}
+                  hasEnded={hasEnded}
+                  onClick={() => navigate(`/match/${match.id}`)}
+                />
+              );
+            })}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+              <Button
+                variant="contained"
+                sx={{ bgcolor: '#fd9905', color: '#fff', fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, borderRadius: 8, px: 4, py: 1, boxShadow: 'none', textTransform: 'none', '&:hover': { bgcolor: '#e68a00', boxShadow: 'none' } }}
+                onClick={() => navigate('/results')}
+              >
+                Svi rezultati
+              </Button>
+            </Box>
+          </>
         )}
       </Box>
 
@@ -403,31 +421,49 @@ const HomePageDesktop: React.FC<{
               }}>
                 Provjerite kasnije za nove utakmice
               </Typography>
+              <Button
+                variant="contained"
+                sx={{ mt: 2, bgcolor: '#fd9905', color: '#fff', fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, borderRadius: 8, px: 4, py: 1, boxShadow: 'none', textTransform: 'none', '&:hover': { bgcolor: '#e68a00', boxShadow: 'none' } }}
+                onClick={() => navigate('/results')}
+              >
+                Svi rezultati
+              </Button>
             </Box>
           ) : (
-            matches.map((match, idx) => {
-              const { hasStarted, hasEnded } = getMatchStatus(match);
-              const { homeScore, awayScore } = calculateScores(match);
-              return (
-                <React.Fragment key={match.id}>
-                  <MatchCard
-                    team1={getTeamName(match.homeTeamId)}
-                    team2={getTeamName(match.awayTeamId)}
-                    date={new Date(match.date).toLocaleDateString('hr-HR', { day: '2-digit', month: '2-digit' })}
-                    time={new Date(match.date).toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' })}
-                    status={match.status === 'scheduled' ? 'Nije počelo' : match.status === 'in_progress' ? 'U tijeku' : 'Kraj'}
-                    score1={homeScore}
-                    score2={awayScore}
-                    hasStarted={hasStarted}
-                    hasEnded={hasEnded}
-                    onClick={() => navigate(`/match/${match.id}`)}
-                  />
-                  {idx < matches.length - 1 && (
-                    <Divider sx={{ my: 0, bgcolor: '#e0e0e0', height: '1px', borderRadius: 1 }} />
-                  )}
-                </React.Fragment>
-              );
-            })
+            <>
+              {matches.map((match, idx) => {
+                const { hasStarted, hasEnded } = getMatchStatus(match);
+                const { homeScore, awayScore } = calculateScores(match);
+                return (
+                  <React.Fragment key={match.id}>
+                    <MatchCard
+                      team1={getTeamName(match.homeTeamId)}
+                      team2={getTeamName(match.awayTeamId)}
+                      date={new Date(match.date).toLocaleDateString('hr-HR', { day: '2-digit', month: '2-digit' })}
+                      time={new Date(match.date).toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' })}
+                      status={match.status === 'scheduled' ? 'Nije počelo' : match.status === 'in_progress' ? 'U tijeku' : 'Kraj'}
+                      score1={homeScore}
+                      score2={awayScore}
+                      hasStarted={hasStarted}
+                      hasEnded={hasEnded}
+                      onClick={() => navigate(`/match/${match.id}`)}
+                    />
+                    {idx < matches.length - 1 && (
+                      <Divider sx={{ my: 0, bgcolor: '#e0e0e0', height: '1px', borderRadius: 1 }} />
+                    )}
+                  </React.Fragment>
+                );
+              })}
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                <Button
+                  variant="contained"
+                  sx={{ bgcolor: '#fd9905', color: '#fff', fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, borderRadius: 8, px: 4, py: 1, boxShadow: 'none', textTransform: 'none', '&:hover': { bgcolor: '#e68a00', boxShadow: 'none' } }}
+                  onClick={() => navigate('/results')}
+                >
+                  Svi rezultati
+                </Button>
+              </Box>
+            </>
           )}
         </Box>
         

@@ -16,6 +16,7 @@ import ResultsMatchCard from '../components/ResultsMatchCard';
 import { apiClient } from '../utils/apiClient';
 import { websocketClient } from '../utils/websocketClient';
 import type { TournamentEdition, Match, Team } from '../utils/apiClient';
+import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -47,9 +48,13 @@ const ResultsPage: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Store available categories and phases
+  const [availableCategories, setAvailableCategories] = useState<{ label: string; value: 'senior' | 'veteran'; edition?: TournamentEdition }[]>([]);
+  const [availablePhases, setAvailablePhases] = useState<{ label: string; value: string }[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,15 +75,17 @@ const ResultsPage: React.FC = () => {
           const latestVeteran = allEditions
             .filter(t => t.category === 'veteran')
             .sort((a, b) => b.year - a.year)[0];
-          
-          const filteredEditions = [latestSenior, latestVeteran].filter(Boolean);
-          setTournaments(filteredEditions);
+          const categories = [];
+          if (latestSenior) categories.push({ label: 'Seniori', value: 'senior' as 'senior', edition: latestSenior });
+          if (latestVeteran) categories.push({ label: 'Veterani', value: 'veteran' as 'veteran', edition: latestVeteran });
+          setAvailableCategories(categories);
+          setTournaments([latestSenior, latestVeteran].filter(Boolean) as TournamentEdition[]);
         }
-        
+
         if (matchesResponse.data) {
           setMatches(Array.isArray(matchesResponse.data) ? matchesResponse.data : []);
         }
-        
+
         if (teamsResponse.data) {
           setTeams(Array.isArray(teamsResponse.data) ? teamsResponse.data : []);
         }
@@ -92,6 +99,21 @@ const ResultsPage: React.FC = () => {
 
     fetchData();
   }, []);
+
+  // Update available phases when category changes
+  useEffect(() => {
+    const edition = availableCategories[categoryTabValue]?.edition;
+    if (!edition) {
+      setAvailablePhases([]);
+      return;
+    }
+    const phases = [];
+    if (edition.phases.kvalifikacije) phases.push({ label: 'Kvalifikacije', value: 'kvalifikacije' });
+    if (edition.phases.grupa) phases.push({ label: 'Grupe', value: 'grupa' });
+    if (edition.phases.knockout) phases.push({ label: 'Knockout', value: 'knockout' });
+    setAvailablePhases(phases);
+    setTabValue(0); // Reset phase tab when category changes
+  }, [categoryTabValue, availableCategories]);
 
   // WebSocket connection for live updates
   useEffect(() => {
@@ -133,73 +155,50 @@ const ResultsPage: React.FC = () => {
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
-  
+
   const handleCategoryTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(0); // Reset to first phase when changing category
     setCategoryTabValue(newValue);
+    setTabValue(0);
   };
 
-  // Get current tournament based on category
-  const category = categoryTabValue === 0 ? 'senior' : 'veteran';
-  const currentTournament = tournaments.find(t => t.category === category);
+  // Get current edition and phase
+  const currentEdition = availableCategories[categoryTabValue]?.edition;
+  const currentPhase = availablePhases[tabValue];
 
-  // Get available phases for current tournament
-  const getAvailablePhases = () => {
-    if (!currentTournament) return [];
-    
-    const phases = [];
-    if (currentTournament.phases.kvalifikacije) {
-      phases.push({ label: 'Kvalifikacije', value: 'kvalifikacije' });
+  // Filter matches by edition and phase
+  const currentMatches = matches.filter(match => {
+    if (!currentEdition || !currentPhase) return false;
+    if (match.tournamentEditionId !== currentEdition.id) return false;
+    if (currentPhase.value === 'kvalifikacije') {
+      return match.phase === 'Kvalifikacije';
+    } else if (currentPhase.value === 'grupa') {
+      return match.phase === 'Grupa';
+    } else if (currentPhase.value === 'knockout') {
+      return [
+        'Šesnaestina finala',
+        'Osmina finala',
+        'Četvrtfinale',
+        'Polufinale',
+        'Finale',
+        'Knockout'
+      ].includes(match.phase);
     }
-    if (currentTournament.phases.grupa) {
-      phases.push({ label: 'Grupe', value: 'grupa' });
-    }
-    if (currentTournament.phases.knockout) {
-      phases.push({ label: 'Knockout', value: 'knockout' });
-    }
-    
-    return phases;
-  };
+    return false;
+  });
 
-  const availablePhases = getAvailablePhases();
-
-  // Filter matches by tournament and current phase
-  const getMatchesForCurrentPhase = () => {
-    if (!currentTournament || availablePhases.length === 0) return [];
-    
-    const currentPhase = availablePhases[tabValue];
-    if (!currentPhase) return [];
-    
-    return matches.filter(match => {
-      if (match.tournamentEditionId !== currentTournament.id) return false;
-      
-      if (currentPhase.value === 'kvalifikacije') {
-        return match.phase === 'Kvalifikacije';
-      } else if (currentPhase.value === 'grupa') {
-        return match.phase === 'Grupa';
-      } else if (currentPhase.value === 'knockout') {
-        return ['Šesnaestina finala', 'Osmina finala', 'Četvrtfinale', 'Polufinale', 'Finale'].includes(match.phase);
-      }
-      
-      return false;
-    });
-  };
-
-  const currentMatches = getMatchesForCurrentPhase();
-
-  // Helper function to get team name
   const getTeamName = (teamId: string) => {
     const team = teams.find(t => t.id === teamId);
     return team ? team.name : 'TBD';
   };
 
-  // Calculate scores from events
   const calculateScores = (match: Match) => {
     let homeScore = 0;
     let awayScore = 0;
-    
     match.events.forEach(event => {
-      if (event.type === 'goal') {
+      if (
+        event.type === 'goal' ||
+        ((event.type === 'penalty' || event.type === '10m') && event.result === 'score')
+      ) {
         if (event.teamId === match.homeTeamId) {
           homeScore++;
         } else if (event.teamId === match.awayTeamId) {
@@ -207,7 +206,6 @@ const ResultsPage: React.FC = () => {
         }
       }
     });
-    
     return { homeScore, awayScore };
   };
 
@@ -229,11 +227,15 @@ const ResultsPage: React.FC = () => {
     );
   }
 
-  if (!currentTournament) {
+  if (availableCategories.length === 0) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
-          Nema dostupnih izdanja za odabranu kategoriju.
+      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <SportsSoccerIcon sx={{ fontSize: 80, color: '#ccc', mb: 2, opacity: 0.6 }} />
+        <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif', fontSize: '1.2rem', textAlign: 'center', fontWeight: 500 }}>
+          Nema dostupnih izdanja za prikaz rezultata.
+        </Typography>
+        <Typography sx={{ color: '#aaa', fontFamily: 'Ubuntu, sans-serif', fontSize: '1rem', textAlign: 'center' }}>
+          Provjerite kasnije ili kontaktirajte organizatora.
         </Typography>
       </Box>
     );
@@ -262,8 +264,9 @@ const ResultsPage: React.FC = () => {
               },
             }}
           >
-            <Tab label="Seniori" />
-            <Tab label="Veterani" />
+            {availableCategories.map((category, index) => (
+              <Tab key={category.value} label={category.label} />
+            ))}
           </Tabs>
           
           {/* Phase TabBar - only show if there are available phases */}
@@ -297,11 +300,17 @@ const ResultsPage: React.FC = () => {
             availablePhases.map((phase, index) => (
               <TabPanel key={phase.value} value={tabValue} index={index}>
                 {currentMatches.length === 0 ? (
-                  <Typography sx={{ p: 3, textAlign: 'center', color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
-                    Nema utakmica u {phase.label.toLowerCase()} fazi.
-                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 4 }}>
+                    <SportsSoccerIcon sx={{ fontSize: 64, color: '#ccc', mb: 2, opacity: 0.6 }} />
+                    <Typography sx={{ p: 3, textAlign: 'center', color: '#888', fontFamily: 'Ubuntu, sans-serif', fontWeight: 500 }}>
+                      Nema utakmica u {phase.label.toLowerCase()} fazi.
+                    </Typography>
+                  </Box>
                 ) : (
                   currentMatches.map((match, matchIndex) => {
+                    // Determine live status for each match
+                    const hasStarted = match.events.some(event => event.type === 'start');
+                    const hasEnded = match.events.some(event => event.type === 'end');
                     const { homeScore, awayScore } = calculateScores(match);
                     return (
                       <React.Fragment key={match.id}>
@@ -313,11 +322,13 @@ const ResultsPage: React.FC = () => {
                             homeScore: homeScore,
                             awayScore: awayScore,
                             date: match.date,
-                            status: match.status, // do not use 'live', use 'in_progress'
-                            round: phase.value === 'knockout' ? match.phase : undefined
+                            status: match.status,
+                            round: currentPhase?.value === 'knockout' ? match.phase : undefined
                           }}
                           isMobile={true}
-                          showRound={phase.value === 'knockout'}
+                          showRound={currentPhase?.value === 'knockout'}
+                          hasStarted={hasStarted}
+                          hasEnded={hasEnded}
                         />
                         {matchIndex < currentMatches.length - 1 && (
                           <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
@@ -329,8 +340,9 @@ const ResultsPage: React.FC = () => {
               </TabPanel>
             ))
           ) : (
-            <Box sx={{ p: 3, textAlign: 'center' }}>
-              <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
+            <Box sx={{ p: 3, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 4 }}>
+              <SportsSoccerIcon sx={{ fontSize: 64, color: '#ccc', mb: 2, opacity: 0.6 }} />
+              <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif', fontWeight: 500 }}>
                 Nema dostupnih faza za ovo izdanje.
               </Typography>
             </Box>
@@ -367,8 +379,9 @@ const ResultsPage: React.FC = () => {
               },
             }}
           >
-            <Tab label="Seniori" />
-            <Tab label="Veterani" />
+            {availableCategories.map((category, index) => (
+              <Tab key={category.value} label={category.label} />
+            ))}
           </Tabs>
           
           {/* Phase TabBar - only show if there are available phases */}
@@ -405,11 +418,17 @@ const ResultsPage: React.FC = () => {
             availablePhases.map((phase, index) => (
               <TabPanel key={phase.value} value={tabValue} index={index}>
                 {currentMatches.length === 0 ? (
-                  <Typography sx={{ p: 3, textAlign: 'center', color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
-                    Nema utakmica u {phase.label.toLowerCase()} fazi.
-                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 4 }}>
+                    <SportsSoccerIcon sx={{ fontSize: 64, color: '#ccc', mb: 2, opacity: 0.6 }} />
+                    <Typography sx={{ p: 3, textAlign: 'center', color: '#888', fontFamily: 'Ubuntu, sans-serif', fontWeight: 500 }}>
+                      Nema utakmica u {phase.label.toLowerCase()} fazi.
+                    </Typography>
+                  </Box>
                 ) : (
                   currentMatches.map((match, matchIndex) => {
+                    // Determine live status for each match
+                    const hasStarted = match.events.some(event => event.type === 'start');
+                    const hasEnded = match.events.some(event => event.type === 'end');
                     const { homeScore, awayScore } = calculateScores(match);
                     return (
                       <React.Fragment key={match.id}>
@@ -421,11 +440,13 @@ const ResultsPage: React.FC = () => {
                             homeScore: homeScore,
                             awayScore: awayScore,
                             date: match.date,
-                            status: match.status, // do not use 'live', use 'in_progress'
-                            round: phase.value === 'knockout' ? match.phase : undefined
+                            status: match.status,
+                            round: currentPhase?.value === 'knockout' ? match.phase : undefined
                           }}
                           isMobile={false}
-                          showRound={phase.value === 'knockout'}
+                          showRound={currentPhase?.value === 'knockout'}
+                          hasStarted={hasStarted}
+                          hasEnded={hasEnded}
                         />
                         {matchIndex < currentMatches.length - 1 && (
                           <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
@@ -437,8 +458,9 @@ const ResultsPage: React.FC = () => {
               </TabPanel>
             ))
           ) : (
-            <Box sx={{ p: 3, textAlign: 'center' }}>
-              <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
+            <Box sx={{ p: 3, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 4 }}>
+              <SportsSoccerIcon sx={{ fontSize: 64, color: '#ccc', mb: 2, opacity: 0.6 }} />
+              <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif', fontWeight: 500 }}>
                 Nema dostupnih faza za ovo izdanje.
               </Typography>
             </Box>
