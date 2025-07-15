@@ -676,10 +676,26 @@ const HomePage: React.FC = () => {
   }, []);
 
   if (isMobile) {
-    return <HomePageMobile navigate={navigate} matches={matches} teams={teams} articles={articles} loading={loading} error={error} />;
+    // Filter matches to only today's matches
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayMatches = matches.filter(match => {
+      const matchDate = new Date(match.date);
+      matchDate.setHours(0, 0, 0, 0);
+      return matchDate.getTime() === today.getTime();
+    });
+    return <HomePageMobile navigate={navigate} matches={todayMatches} teams={teams} articles={articles} loading={loading} error={error} />;
   }
 
-  return <HomePageDesktop navigate={navigate} matches={matches} teams={teams} articles={articles} loading={loading} error={error} />;
+  // Filter matches to only today's matches for desktop as well
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayMatches = matches.filter(match => {
+    const matchDate = new Date(match.date);
+    matchDate.setHours(0, 0, 0, 0);
+    return matchDate.getTime() === today.getTime();
+  });
+  return <HomePageDesktop navigate={navigate} matches={todayMatches} teams={teams} articles={articles} loading={loading} error={error} />;
 };
 
 export default HomePage; 
