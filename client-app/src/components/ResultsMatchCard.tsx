@@ -100,7 +100,7 @@ const ResultsMatchCard: React.FC<ResultsMatchCardProps & { hasStarted?: boolean;
           py: 0.5,
           mb: 0,
           mt: 0,
-          width: 'calc(100% + ' + (isMobile ? '3rem' : '4rem') + ')',
+          width: '100%',
           position: 'absolute',
           top: 0,
           left: 0,
@@ -109,7 +109,9 @@ const ResultsMatchCard: React.FC<ResultsMatchCardProps & { hasStarted?: boolean;
           height: '1.5rem',
           lineHeight: '1.5rem',
           display: 'flex',
-          alignItems: 'center'
+          alignItems: 'center',
+          boxSizing: 'border-box',
+          overflow: 'hidden'
         }}>
           {phaseLabel}
         </Box>
