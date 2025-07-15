@@ -710,26 +710,62 @@ const HomePage: React.FC = () => {
   }, []);
 
   if (isMobile) {
-    // Filter matches to only today's matches
+    // Find today's matches
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const todayMatches = matches.filter(match => {
+    let shownMatches = matches.filter(match => {
       const matchDate = new Date(match.date);
       matchDate.setHours(0, 0, 0, 0);
       return matchDate.getTime() === today.getTime();
     });
-    return <HomePageMobile navigate={navigate} matches={todayMatches} teams={teams} articles={articles} loading={loading} error={error} />;
+    // If no matches today, find the next available date with matches
+    if (shownMatches.length === 0 && matches.length > 0) {
+      // Get all unique future dates
+      const futureDates = Array.from(new Set(
+        matches
+          .map(match => {
+            const d = new Date(match.date); d.setHours(0,0,0,0); return d.getTime();
+          })
+          .filter(time => time > today.getTime())
+      )).sort((a, b) => a - b);
+      if (futureDates.length > 0) {
+        const nextDate = futureDates[0];
+        shownMatches = matches.filter(match => {
+          const matchDate = new Date(match.date);
+          matchDate.setHours(0, 0, 0, 0);
+          return matchDate.getTime() === nextDate;
+        });
+      }
+    }
+    return <HomePageMobile navigate={navigate} matches={shownMatches} teams={teams} articles={articles} loading={loading} error={error} />;
   }
 
-  // Filter matches to only today's matches for desktop as well
+  // Desktop logic
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const todayMatches = matches.filter(match => {
+  let shownMatches = matches.filter(match => {
     const matchDate = new Date(match.date);
     matchDate.setHours(0, 0, 0, 0);
     return matchDate.getTime() === today.getTime();
   });
-  return <HomePageDesktop navigate={navigate} matches={todayMatches} teams={teams} articles={articles} loading={loading} error={error} />;
+  if (shownMatches.length === 0 && matches.length > 0) {
+    const futureDates = Array.from(new Set(
+      matches
+        .map(match => {
+          const d = new Date(match.date); d.setHours(0,0,0,0); return d.getTime();
+        })
+        .filter(time => time > today.getTime())
+    )).sort((a, b) => a - b);
+    if (futureDates.length > 0) {
+      const nextDate = futureDates[0];
+      shownMatches = matches.filter(match => {
+        const matchDate = new Date(match.date);
+        matchDate.setHours(0, 0, 0, 0);
+        return matchDate.getTime() === nextDate;
+      });
+    }
+  }
+  return <HomePageDesktop navigate={navigate} matches={shownMatches} teams={teams} articles={articles} loading={loading} error={error} />;
 };
 
 export default HomePage; 
