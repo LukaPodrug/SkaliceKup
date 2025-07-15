@@ -181,6 +181,7 @@ const HomePageMobile: React.FC<{
                       display: 'block',
                       width: '100%',
                       maxWidth: '100vw',
+                      boxSizing: 'border-box',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap'
@@ -494,8 +495,6 @@ const HomePageDesktop: React.FC<{
                         py: 0.5,
                         mb: '-4px',
                         display: 'block',
-                        width: '100%',
-                        maxWidth: '100%',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap'

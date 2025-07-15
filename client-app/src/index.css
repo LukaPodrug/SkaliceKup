@@ -27,6 +27,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   font-family: 'Ubuntu', sans-serif;
+  overflow-x: hidden;
 }
 
 h1 {
