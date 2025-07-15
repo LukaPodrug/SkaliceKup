@@ -183,9 +183,9 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
     try {
       const response = await apiClient.addPlayerToTeam(tournamentId, selectedTeam, playerId);
       if (response.data) {
-        setTeamPlayers(prev => [...prev, response.data]);
-        setAllPlayers(prev => prev.filter(player => player.id !== playerId));
-        setAllEditionPlayers(prev => [...prev, response.data]);
+        setTeamPlayers(prev => prev ? [...prev, response.data] : [response.data]);
+        setAllPlayers(prev => prev ? prev.filter(player => player.id !== playerId) : []);
+        setAllEditionPlayers(prev => prev ? [...prev, response.data] : [response.data]);
       }
     } catch (err) {
       console.error('Error adding player to team:', err);
