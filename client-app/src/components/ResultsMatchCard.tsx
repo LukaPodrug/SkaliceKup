@@ -76,7 +76,7 @@ export const PlayerAvatar: React.FC<{ firstName?: string; lastName?: string; siz
         width: circleSize,
         height: circleSize,
         borderRadius: '50%',
-        bgcolor: '#222',
+        bgcolor: '#fd9905', // changed from #222 to #fd9905
         color: '#fff',
         display: 'flex',
         alignItems: 'center',
