@@ -494,7 +494,11 @@ const HomePageDesktop: React.FC<{
                         py: 0.5,
                         mb: '-4px',
                         display: 'block',
-                        width: '100%'
+                        width: '100%',
+                        maxWidth: '100%',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
                       }}>
                         {phaseLabel}
                       </Box>
