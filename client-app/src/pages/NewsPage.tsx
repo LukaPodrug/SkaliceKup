@@ -62,27 +62,36 @@ const NewsPage: React.FC = () => {
 
   if (isMobile) {
     return (
-      <Box sx={{ flexGrow: 1, p: 0, m: 0, width: '100%', bgcolor: '#f7f7f7' }}>
+      <Box sx={{ flexGrow: 1, p: 0, m: 0, width: '100vw', bgcolor: '#f7f7f7', position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw' }}>
         <Box sx={{ bgcolor: '#fff' }}>
           {articles.length === 0 ? (
             <Box sx={{
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              py: 3,
-              width: '100%'
+              justifyContent: 'center',
+              py: 4,
+              minHeight: '300px',
+              width: '100vw',
+              bgcolor: '#222',
+              borderRadius: 0,
+              position: 'relative',
+              left: '50%',
+              right: '50%',
+              marginLeft: '-50vw',
+              marginRight: '-50vw'
             }}>
               <ArticleIcon sx={{
-                fontSize: 64,
+                fontSize: isMobile ? 64 : 80,
                 color: '#ccc',
-                mb: 2,
+                mb: isMobile ? 2 : 3,
                 opacity: 0.6
               }} />
               <Typography sx={{
                 textAlign: 'center',
-                color: '#666',
+                color: '#fff',
                 fontFamily: 'Ubuntu, sans-serif',
-                fontSize: '1.1rem',
+                fontSize: isMobile ? '1.1rem' : '1.2rem',
                 fontWeight: 500,
                 mb: 1
               }}>
@@ -90,9 +99,9 @@ const NewsPage: React.FC = () => {
               </Typography>
               <Typography sx={{
                 textAlign: 'center',
-                color: '#999',
+                color: '#bbb',
                 fontFamily: 'Ubuntu, sans-serif',
-                fontSize: '0.9rem'
+                fontSize: isMobile ? '0.9rem' : '1rem'
               }}>
                 Provjerite kasnije za nove članke
               </Typography>
@@ -148,7 +157,7 @@ const NewsPage: React.FC = () => {
 
   // Desktop Layout
   return (
-    <Box sx={{ flexGrow: 1, p: 0, m: 0, width: '100%', bgcolor: '#f7f7f7', display: 'flex', justifyContent: 'center' }}>
+    <Box sx={{ flexGrow: 1, p: 0, m: 0, width: '100vw', bgcolor: '#f7f7f7', display: 'flex', justifyContent: 'center', position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw' }}>
       <Container maxWidth={false} sx={{ width: '60%', px: 3 }}>
         <Box sx={{ bgcolor: '#fff', borderRadius: 2 }}>
           {articles.length === 0 ? (
@@ -157,21 +166,28 @@ const NewsPage: React.FC = () => {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              py: 3,
+              py: 4,
               minHeight: '300px',
-              width: '100%'
+              width: '100vw',
+              bgcolor: '#222',
+              borderRadius: 0,
+              position: 'relative',
+              left: '50%',
+              right: '50%',
+              marginLeft: '-50vw',
+              marginRight: '-50vw'
             }}>
               <ArticleIcon sx={{
-                fontSize: 80,
+                fontSize: isMobile ? 64 : 80,
                 color: '#ccc',
-                mb: 3,
+                mb: isMobile ? 2 : 3,
                 opacity: 0.6
               }} />
               <Typography sx={{
                 textAlign: 'center',
-                color: '#666',
+                color: '#fff',
                 fontFamily: 'Ubuntu, sans-serif',
-                fontSize: '1.2rem',
+                fontSize: isMobile ? '1.1rem' : '1.2rem',
                 fontWeight: 500,
                 mb: 1
               }}>
@@ -179,9 +195,9 @@ const NewsPage: React.FC = () => {
               </Typography>
               <Typography sx={{
                 textAlign: 'center',
-                color: '#999',
+                color: '#bbb',
                 fontFamily: 'Ubuntu, sans-serif',
-                fontSize: '1rem'
+                fontSize: isMobile ? '0.9rem' : '1rem'
               }}>
                 Provjerite kasnije za nove članke
               </Typography>
