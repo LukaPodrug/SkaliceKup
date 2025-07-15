@@ -134,7 +134,10 @@ const MatchPage: React.FC = () => {
     let awayScore = 0;
     
     match.events.forEach(event => {
-      if (event.type === 'goal') {
+      if (
+        event.type === 'goal' ||
+        ((event.type === 'penalty' || event.type === '10m') && event.result === 'score')
+      ) {
         if (event.teamId === match.homeTeamId) {
           homeScore++;
         } else if (event.teamId === match.awayTeamId) {
@@ -158,6 +161,96 @@ const MatchPage: React.FC = () => {
     return teamId;
   };
 
+  // Helper for team avatar
+  const TeamAvatar: React.FC<{ name?: string; logo?: string; size?: number }> = ({ name, logo, size = 48 }) => {
+    if (logo) {
+      return <img src={logo} alt={name} style={{ width: size, height: size, borderRadius: size / 6 }} />;
+    }
+    let initials = '?';
+    if (name) {
+      const words = name.trim().split(/\s+/);
+      if (words.length >= 2) {
+        initials = words[0][0].toUpperCase() + words[1][0].toUpperCase();
+      } else if (words.length === 1 && words[0].length >= 2) {
+        initials = words[0].slice(0, 2).toUpperCase();
+      } else if (words.length === 1) {
+        initials = words[0][0].toUpperCase();
+      }
+    }
+    const circleSize = size * 0.7;
+    return (
+      <Box sx={{
+        width: size,
+        height: size,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <Box sx={{
+          width: circleSize,
+          height: circleSize,
+          borderRadius: '50%',
+          bgcolor: '#fd9905',
+          color: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontWeight: 700,
+          fontSize: size * 0.32,
+          fontFamily: 'Ubuntu, sans-serif',
+          userSelect: 'none',
+        }}>{initials}</Box>
+      </Box>
+    );
+  };
+
+  // Helper to check if event is chronological
+  const isChronologicalEvent = (type: string) => [
+    'start', 'end', 'first_half_end', 'second_half_start', 'regular_time_end',
+    'extra1_start', 'extra1_end', 'extra2_start', 'extra2_end', 'shootout_start'
+  ].includes(type);
+
+  // Map event type to Croatian display name
+  const eventTypeToCroatian: Record<string, string> = {
+    start: 'Početak utakmice',
+    end: 'Kraj utakmice',
+    first_half_end: 'Kraj 1. poluvremena',
+    second_half_start: 'Početak 2. poluvremena',
+    regular_time_end: 'Kraj regularnog dijela',
+    extra1_start: 'Početak 1. produžetka',
+    extra1_end: 'Kraj 1. produžetka',
+    extra2_start: 'Početak 2. produžetka',
+    extra2_end: 'Kraj 2. produžetka',
+    shootout_start: 'Početak penala',
+  };
+
+  // Map event type to Croatian display name (for chips)
+  const eventTypeToCroatianChip: Record<string, string> = {
+    goal: 'Gol',
+    yellow: 'Žuti karton',
+    red: 'Crveni karton',
+    penalty: 'Penal',
+    '10m': '10m',
+    foul: 'Prekršaj',
+  };
+
+  // Helper to calculate score up to a given event index
+  const getScoreAtEvent = (events: Match['events'], match: Match, eventIndex: number) => {
+    let home = 0;
+    let away = 0;
+    for (let i = 0; i <= eventIndex; i++) {
+      const e = events[i];
+      if (
+        e.type === 'goal' ||
+        ((e.type === 'penalty' || e.type === '10m') && e.result === 'score')
+      ) {
+        if (e.teamId === match.homeTeamId) home++;
+        else if (e.teamId === match.awayTeamId) away++;
+      }
+    }
+    return `${home} - ${away}`;
+  };
+
   if (loading) {
     return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}><CircularProgress sx={{ color: '#fd9905' }} /></Box>;
   }
@@ -169,6 +262,14 @@ const MatchPage: React.FC = () => {
   const isLive = hasStarted && !hasEnded;
   const { homeScore, awayScore } = calculateScores(match);
 
+  // For squads, filter by match.homeSquad/awaySquad if present
+  const filteredHomeSquad = match.homeSquad && match.homeSquad.length > 0
+    ? homeSquad.filter(player => match.homeSquad!.includes(player.id))
+    : homeSquad;
+  const filteredAwaySquad = match.awaySquad && match.awaySquad.length > 0
+    ? awaySquad.filter(player => match.awaySquad!.includes(player.id))
+    : awaySquad;
+
   return (
     <Box sx={{ flexGrow: 1, p: 0, m: 0, width: '100%', bgcolor: '#f7f7f7' }}>
       {isMobile ? (
@@ -176,10 +277,25 @@ const MatchPage: React.FC = () => {
           <Box sx={{ p: 0 }}>
             {/* Live indicator */}
             {isLive && (
-              <Box sx={{ bgcolor: '#fd9905', color: 'white', textAlign: 'center', py: 1 }}>
-                <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, animation: 'pulse 2s infinite' }}>
-                  LIVE
-                </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                <Chip
+                  label="LIVE"
+                  size="small"
+                  sx={{
+                    bgcolor: '#fd9905',
+                    color: '#fff',
+                    fontFamily: 'Ubuntu, sans-serif',
+                    fontSize: isMobile ? '0.75rem' : '0.85rem',
+                    fontWeight: 600,
+                    mb: isMobile ? 1 : 2,
+                    animation: 'pulse 2s infinite',
+                    '@keyframes pulse': {
+                      '0%': { opacity: 1 },
+                      '50%': { opacity: 0.7 },
+                      '100%': { opacity: 1 }
+                    }
+                  }}
+                />
               </Box>
             )}
             
@@ -188,13 +304,13 @@ const MatchPage: React.FC = () => {
                 <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, color: '#222', textAlign: 'right' }}>
                   {homeTeam?.name || 'TBD'}
                 </Typography>
-                <img src={homeTeam?.logo || teamLogoMock} alt={homeTeam?.name} style={{ width: 32, height: 32, borderRadius: 6 }} />
+                <TeamAvatar name={homeTeam?.name} logo={homeTeam?.logo} size={32} />
               </Box>
               <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 700, color: '#222', fontSize: '1.5rem', mx: 3 }}>
                 {homeScore} - {awayScore}
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
-                <img src={awayTeam?.logo || teamLogoMock} alt={awayTeam?.name} style={{ width: 32, height: 32, borderRadius: 6 }} />
+                <TeamAvatar name={awayTeam?.name} logo={awayTeam?.logo} size={32} />
                 <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, color: '#222' }}>
                   {awayTeam?.name || 'TBD'}
                 </Typography>
@@ -216,14 +332,14 @@ const MatchPage: React.FC = () => {
                 />
               </Box>
               <Box sx={{ overflow: 'hidden' }}>
-                {homeSquad.map((player, index) => (
+                {filteredHomeSquad.map((player, index) => (
                   <React.Fragment key={player.id}>
                     <Box sx={{ p: 1, px: 2 }}>
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.875rem', color: '#222' }}>
                         {player.firstName} {player.lastName}
                       </Typography>
                     </Box>
-                    {index < homeSquad.length - 1 && (
+                    {index < filteredHomeSquad.length - 1 && (
                       <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
                     )}
                   </React.Fragment>
@@ -246,14 +362,14 @@ const MatchPage: React.FC = () => {
                 />
               </Box>
               <Box sx={{ overflow: 'hidden' }}>
-                {awaySquad.map((player, index) => (
+                {filteredAwaySquad.map((player, index) => (
                   <React.Fragment key={player.id}>
                     <Box sx={{ p: 1, px: 2 }}>
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.875rem', color: '#222' }}>
                         {player.firstName} {player.lastName}
                       </Typography>
                     </Box>
-                    {index < awaySquad.length - 1 && (
+                    {index < filteredAwaySquad.length - 1 && (
                       <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
                     )}
                   </React.Fragment>
@@ -295,10 +411,25 @@ const MatchPage: React.FC = () => {
             <Box sx={{ p: 4, pb: 0 }}>
               {/* Live indicator */}
               {isLive && (
-                <Box sx={{ bgcolor: '#fd9905', color: 'white', textAlign: 'center', py: 2, mb: 3 }}>
-                  <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: '1.2rem', animation: 'pulse 2s infinite' }}>
-                    LIVE
-                  </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                  <Chip
+                    label="LIVE"
+                    size="small"
+                    sx={{
+                      bgcolor: '#fd9905',
+                      color: '#fff',
+                      fontFamily: 'Ubuntu, sans-serif',
+                      fontSize: isMobile ? '0.75rem' : '0.85rem',
+                      fontWeight: 600,
+                      mb: isMobile ? 1 : 2,
+                      animation: 'pulse 2s infinite',
+                      '@keyframes pulse': {
+                        '0%': { opacity: 1 },
+                        '50%': { opacity: 0.7 },
+                        '100%': { opacity: 1 }
+                      }
+                    }}
+                  />
                 </Box>
               )}
               
@@ -307,13 +438,13 @@ const MatchPage: React.FC = () => {
                   <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, color: '#222', fontSize: '1.25rem', textAlign: 'right' }}>
                     {homeTeam?.name || 'TBD'}
                   </Typography>
-                  <img src={homeTeam?.logo || teamLogoMock} alt={homeTeam?.name} style={{ width: 48, height: 48, borderRadius: 8 }} />
+                  <TeamAvatar name={homeTeam?.name} logo={homeTeam?.logo} size={48} />
                 </Box>
                 <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 700, color: '#222', fontSize: '2rem', mx: 4 }}>
                   {homeScore} - {awayScore}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
-                  <img src={awayTeam?.logo || teamLogoMock} alt={awayTeam?.name} style={{ width: 48, height: 48, borderRadius: 8 }} />
+                  <TeamAvatar name={awayTeam?.name} logo={awayTeam?.logo} size={48} />
                   <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, color: '#222', fontSize: '1.25rem' }}>
                     {awayTeam?.name || 'TBD'}
                   </Typography>
@@ -329,14 +460,14 @@ const MatchPage: React.FC = () => {
                     />
                   </Box>
                   <Box sx={{ overflow: 'hidden' }}>
-                    {homeSquad.map((player, index) => (
+                    {filteredHomeSquad.map((player, index) => (
                       <React.Fragment key={player.id}>
                         <Box sx={{ p: 1, px: 2 }}>
                           <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
                             {player.firstName} {player.lastName}
                           </Typography>
                         </Box>
-                        {index < homeSquad.length - 1 && (
+                        {index < filteredHomeSquad.length - 1 && (
                           <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
                         )}
                       </React.Fragment>
@@ -352,14 +483,14 @@ const MatchPage: React.FC = () => {
                     />
                   </Box>
                   <Box sx={{ overflow: 'hidden' }}>
-                    {awaySquad.map((player, index) => (
+                    {filteredAwaySquad.map((player, index) => (
                       <React.Fragment key={player.id}>
                         <Box sx={{ p: 1, px: 2 }}>
                           <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
                             {player.firstName} {player.lastName}
                           </Typography>
                         </Box>
-                        {index < awaySquad.length - 1 && (
+                        {index < filteredAwaySquad.length - 1 && (
                           <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
                         )}
                       </React.Fragment>
@@ -371,22 +502,53 @@ const MatchPage: React.FC = () => {
                 {match.events.map((event, index) => (
                   <React.Fragment key={index}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1.5, px: 2 }}>
-                      <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: '0.95rem', minWidth: 30, color: '#222' }}>
-                        {typeof event.minute === 'number' ? `${event.minute}'` : ''}
+                      <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', minWidth: 50, color: '#222' }}>
+                        {event.time ? event.time : (typeof event.minute === 'number' ? `${event.minute}'` : '')}
                       </Typography>
                       <Box sx={{ flex: 1 }}>
-                        <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', fontWeight: 600, color: '#222' }}>
-                          {getPlayerName(event.playerId)}
-                        </Typography>
-                        <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.8rem', color: '#666' }}>
-                          {getTeamName(event.teamId)}
-                        </Typography>
+                        {isChronologicalEvent(event.type) ? (
+                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                            {eventTypeToCroatian[event.type] || event.type.replace(/_/g, ' ').toUpperCase()}
+                          </Typography>
+                        ) : (
+                          <>
+                            <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                              {getPlayerName(event.playerId)}
+                            </Typography>
+                            <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
+                              {getTeamName(event.teamId)}
+                            </Typography>
+                          </>
+                        )}
                       </Box>
-                      <Chip 
-                        label={event.type}
-                        size="small" 
-                        sx={{ bgcolor: getEventColor(event.type), color: 'white', fontSize: '0.8rem', height: 22 }} 
-                      />
+                      {!isChronologicalEvent(event.type) && (
+                        <>
+                          <Chip 
+                            label={
+                              (event.type === 'penalty' && event.result === 'score') ? 'Penal - gol' :
+                              (event.type === '10m' && event.result === 'score') ? '10m penal - gol' :
+                              eventTypeToCroatianChip[event.type] || event.type.replace(/_/g, ' ').toUpperCase()
+                            }
+                            size="small" 
+                            sx={{
+                              bgcolor: (event.type === '10m' && event.result === 'score') ? '#4caf50' : getEventColor(event.type),
+                              color: 'white',
+                              fontSize: isMobile ? '0.7rem' : '0.8rem',
+                              height: isMobile ? 20 : 22,
+                              mr: 1
+                            }}
+                          />
+                          {(
+                            event.type === 'goal' ||
+                            (event.type === 'penalty' && event.result === 'score') ||
+                            (event.type === '10m' && event.result === 'score')
+                          ) && (
+                            <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.8rem' : '0.95rem', color: '#222', ml: 1 }}>
+                              {getScoreAtEvent(match.events, match, index)}
+                            </Typography>
+                          )}
+                        </>
+                      )}
                     </Box>
                     {index < match.events.length - 1 && (
                       <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />

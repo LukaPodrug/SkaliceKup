@@ -55,10 +55,13 @@ export interface Match {
   events: Array<{
     type: 'start' | 'goal' | 'yellow' | 'red' | 'penalty' | '10m' | 'end';
     minute: number;
+    time?: string;
     playerId?: string;
     teamId?: string;
     result?: 'score' | 'miss';
   }>;
+  homeSquad?: string[]; // Player IDs for home team squad
+  awaySquad?: string[]; // Player IDs for away team squad
   createdAt: string;
   updatedAt: string;
 }

@@ -51,9 +51,11 @@ const HomePageMobile: React.FC<{
   const calculateScores = (match: Match) => {
     let homeScore = 0;
     let awayScore = 0;
-    
     match.events.forEach(event => {
-      if (event.type === 'goal') {
+      if (
+        event.type === 'goal' ||
+        ((event.type === 'penalty' || event.type === '10m') && event.result === 'score')
+      ) {
         if (event.teamId === match.homeTeamId) {
           homeScore++;
         } else if (event.teamId === match.awayTeamId) {
@@ -61,7 +63,6 @@ const HomePageMobile: React.FC<{
         }
       }
     });
-    
     return { homeScore, awayScore };
   };
 
@@ -310,9 +311,11 @@ const HomePageDesktop: React.FC<{
   const calculateScores = (match: Match) => {
     let homeScore = 0;
     let awayScore = 0;
-    
     match.events.forEach(event => {
-      if (event.type === 'goal') {
+      if (
+        event.type === 'goal' ||
+        ((event.type === 'penalty' || event.type === '10m') && event.result === 'score')
+      ) {
         if (event.teamId === match.homeTeamId) {
           homeScore++;
         } else if (event.teamId === match.awayTeamId) {
@@ -320,7 +323,6 @@ const HomePageDesktop: React.FC<{
         }
       }
     });
-    
     return { homeScore, awayScore };
   };
 
