@@ -107,18 +107,32 @@ const ArticlePage: React.FC = () => {
         <Box sx={{ bgcolor: '#fff', p: 2 }}>
           {/* Back button */}
           <Box sx={{ mb: 2 }}>
-            <Typography 
+            <Box
               onClick={() => navigate(-1)}
-              sx={{ 
-                color: '#fd9905', 
-                fontFamily: 'Ubuntu, sans-serif', 
-                fontWeight: 600, 
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                bgcolor: '#fd9905',
+                color: '#fff',
+                fontFamily: 'Ubuntu, sans-serif',
+                fontWeight: 600,
+                fontSize: isMobile ? '1rem' : '1.1rem',
+                borderRadius: 999,
+                px: isMobile ? 2 : 3,
+                py: isMobile ? 0.7 : 1,
+                mb: isMobile ? 1 : 2,
                 cursor: 'pointer',
-                '&:hover': { textDecoration: 'underline' }
+                boxShadow: 'none',
+                transition: 'background 0.2s',
+                '&:hover': {
+                  bgcolor: '#e68a00',
+                  textDecoration: 'none',
+                },
+                userSelect: 'none',
               }}
             >
-              ← Nazad
-            </Typography>
+              <span style={{ fontSize: '1.3em', marginRight: 8, lineHeight: 1 }}>‹</span> Nazad
+            </Box>
           </Box>
 
           {/* Featured Image */}
@@ -401,18 +415,32 @@ const ArticlePage: React.FC = () => {
         <Box sx={{ bgcolor: '#fff', p: 4, borderRadius: 2 }}>
           {/* Back button */}
           <Box sx={{ mb: 3 }}>
-            <Typography 
+            <Box
               onClick={() => navigate(-1)}
-              sx={{ 
-                color: '#fd9905', 
-                fontFamily: 'Ubuntu, sans-serif', 
-                fontWeight: 600, 
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                bgcolor: '#fd9905',
+                color: '#fff',
+                fontFamily: 'Ubuntu, sans-serif',
+                fontWeight: 600,
+                fontSize: isMobile ? '1rem' : '1.1rem',
+                borderRadius: 999,
+                px: isMobile ? 2 : 3,
+                py: isMobile ? 0.7 : 1,
+                mb: isMobile ? 1 : 2,
                 cursor: 'pointer',
-                '&:hover': { textDecoration: 'underline' }
+                boxShadow: 'none',
+                transition: 'background 0.2s',
+                '&:hover': {
+                  bgcolor: '#e68a00',
+                  textDecoration: 'none',
+                },
+                userSelect: 'none',
               }}
             >
-              ← Nazad
-            </Typography>
+              <span style={{ fontSize: '1.3em', marginRight: 8, lineHeight: 1 }}>‹</span> Nazad
+            </Box>
           </Box>
 
           {/* Featured Image */}

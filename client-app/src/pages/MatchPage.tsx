@@ -272,6 +272,35 @@ const MatchPage: React.FC = () => {
 
   return (
     <Box sx={{ flexGrow: 1, p: 0, m: 0, width: '100%', bgcolor: '#f7f7f7' }}>
+      {/* Back button */}
+      <Box sx={{ p: isMobile ? 2 : 4, pt: isMobile ? 2 : 4, pb: 0 }}>
+        <Box
+          onClick={() => navigate(-1)}
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            bgcolor: '#fd9905',
+            color: '#fff',
+            fontFamily: 'Ubuntu, sans-serif',
+            fontWeight: 600,
+            fontSize: isMobile ? '1rem' : '1.1rem',
+            borderRadius: 999,
+            px: isMobile ? 2 : 3,
+            py: isMobile ? 0.7 : 1,
+            mb: isMobile ? 1 : 2,
+            cursor: 'pointer',
+            boxShadow: 'none',
+            transition: 'background 0.2s',
+            '&:hover': {
+              bgcolor: '#e68a00',
+              textDecoration: 'none',
+            },
+            userSelect: 'none',
+          }}
+        >
+          <span style={{ fontSize: '1.3em', marginRight: 8, lineHeight: 1 }}>←</span> Nazad
+        </Box>
+      </Box>
       {isMobile ? (
         <Box sx={{ bgcolor: '#fff' }}>
           <Box sx={{ p: 0 }}>
