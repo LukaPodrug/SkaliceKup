@@ -558,7 +558,7 @@ const MatchPage: React.FC = () => {
                 />
               </Box>
             )}
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 6 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 6, mt: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, justifyContent: 'flex-end' }}>
                 <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, color: '#222', fontSize: '1.25rem', textAlign: 'right' }}>
                   {homeTeam?.name || 'TBD'}
