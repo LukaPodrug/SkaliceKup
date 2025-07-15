@@ -138,12 +138,8 @@ const EditionTeams: React.FC<EditionTeamsProps> = ({ tournamentId, refreshTrigge
       
       if (response.data) {
         // Update in both lists
-        setEditionTeams(editionTeams.map(team => 
-          team.id === editTeam.id ? response.data : team
-        ));
-        setAllTeams(allTeams.map(team => 
-          team.id === editTeam.id ? response.data : team
-        ));
+        setEditionTeams(editionTeams.map(team => team.id === editTeam.id ? response.data : team));
+        setAllTeams(allTeams.map(team => team.id === editTeam.id ? response.data : team));
         setEditTeam(null);
       }
     } catch (err) {

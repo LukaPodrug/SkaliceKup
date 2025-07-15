@@ -230,15 +230,9 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
       
       if (response.data) {
         // Update in all lists
-        setAllPlayers(allPlayers.map(player => 
-          player.id === editPlayer.id ? response.data : player
-        ));
-        setTeamPlayers(teamPlayers.map(player => 
-          player.id === editPlayer.id ? response.data : player
-        ));
-        setAllEditionPlayers(allEditionPlayers.map(player => 
-          player.id === editPlayer.id ? response.data : player
-        ));
+        setAllPlayers(allPlayers.map(player => player.id === editPlayer.id ? response.data : player));
+        setTeamPlayers(teamPlayers.map(player => player.id === editPlayer.id ? response.data : player));
+        setAllEditionPlayers(allEditionPlayers.map(player => player.id === editPlayer.id ? response.data : player));
         setEditPlayer(null);
       }
     } catch (err) {
