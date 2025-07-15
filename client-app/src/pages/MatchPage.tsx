@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Container, useTheme, useMediaQuery, Chip, Divider, CircularProgress, Alert } from '@mui/material';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { useParams, useNavigate } from 'react-router-dom';
 import teamLogoMock from '../assets/teamLogoMock.png';
 import type { Match, Team, Player } from '../utils/apiClient';
@@ -298,7 +299,7 @@ const MatchPage: React.FC = () => {
             userSelect: 'none',
           }}
         >
-          <span style={{ fontSize: '1.3em', marginRight: 8, lineHeight: 1 }}>←</span> Nazad
+          Nazad
         </Box>
       </Box>
       {isMobile ? (
@@ -405,26 +406,58 @@ const MatchPage: React.FC = () => {
                 ))}
               </Box>
             </Box>
-            <Box sx={{ overflow: 'hidden' }}>
+            {/* Match events - use same logic as desktop */}
+            <Box sx={{ overflow: 'hidden', mb: 4 }}>
               {match.events.map((event, index) => (
                 <React.Fragment key={index}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1.5, px: 2 }}>
-                    <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: '0.875rem', minWidth: 30, color: '#222' }}>
-                      {typeof event.minute === 'number' ? `${event.minute}'` : ''}
+                    <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', minWidth: 50, color: '#222' }}>
+                      {event.time ? event.time : (typeof event.minute === 'number' ? `${event.minute}'` : '')}
                     </Typography>
                     <Box sx={{ flex: 1 }}>
-                      <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.875rem', fontWeight: 600, color: '#222' }}>
-                        {getPlayerName(event.playerId)}
-                      </Typography>
-                      <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.75rem', color: '#666' }}>
-                        {getTeamName(event.teamId)}
-                      </Typography>
+                      {isChronologicalEvent(event.type) ? (
+                        <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                          {eventTypeToCroatian[event.type] || event.type.replace(/_/g, ' ').toUpperCase()}
+                        </Typography>
+                      ) : (
+                        <>
+                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                            {getPlayerName(event.playerId)}
+                          </Typography>
+                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
+                            {getTeamName(event.teamId)}
+                          </Typography>
+                        </>
+                      )}
                     </Box>
-                    <Chip 
-                      label={event.type}
-                      size="small" 
-                      sx={{ bgcolor: getEventColor(event.type), color: 'white', fontSize: '0.7rem', height: 20 }} 
-                    />
+                    {!isChronologicalEvent(event.type) && (
+                      <>
+                        <Chip 
+                          label={
+                            (event.type === 'penalty' && event.result === 'score') ? 'Penal - gol' :
+                            (event.type === '10m' && event.result === 'score') ? '10m penal - gol' :
+                            eventTypeToCroatianChip[event.type] || event.type.replace(/_/g, ' ').toUpperCase()
+                          }
+                          size="small" 
+                          sx={{
+                            bgcolor: (event.type === '10m' && event.result === 'score') ? '#4caf50' : getEventColor(event.type),
+                            color: 'white',
+                            fontSize: isMobile ? '0.7rem' : '0.8rem',
+                            height: isMobile ? 20 : 22,
+                            mr: 1
+                          }}
+                        />
+                        {(
+                          event.type === 'goal' ||
+                          (event.type === 'penalty' && event.result === 'score') ||
+                          (event.type === '10m' && event.result === 'score')
+                        ) && (
+                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.8rem' : '0.95rem', color: '#222', ml: 1 }}>
+                            {getScoreAtEvent(match.events, match, index)}
+                          </Typography>
+                        )}
+                      </>
+                    )}
                   </Box>
                   {index < match.events.length - 1 && (
                     <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />

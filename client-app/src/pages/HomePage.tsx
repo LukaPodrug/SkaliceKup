@@ -140,13 +140,15 @@ const HomePageMobile: React.FC<{
             }}>
               Provjerite kasnije za nove utakmice
             </Typography>
-            <Button
-              variant="contained"
-              sx={{ mt: 2, bgcolor: '#fd9905', color: '#fff', fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, borderRadius: 8, px: 4, py: 1, boxShadow: 'none', textTransform: 'none', '&:hover': { bgcolor: '#e68a00', boxShadow: 'none' } }}
-              onClick={() => navigate('/results')}
-            >
-              Svi rezultati
-            </Button>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 0, pb: 0, px: 2, py: 2 }}>
+              <Button
+                variant="contained"
+                sx={{ bgcolor: '#fd9905', color: '#fff', fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, borderRadius: 8, px: 4, py: 1, boxShadow: 'none', textTransform: 'none', '&:hover': { bgcolor: '#e68a00', boxShadow: 'none' } }}
+                onClick={() => navigate('/results')}
+              >
+                Svi rezultati
+              </Button>
+            </Box>
           </Box>
         ) : (
           <>
@@ -154,22 +156,26 @@ const HomePageMobile: React.FC<{
               const { hasStarted, hasEnded } = getMatchStatus(match);
               const { homeScore, awayScore } = calculateScores(match);
               return (
-                <MatchCard
-                  key={match.id}
-                  team1={getTeamName(match.homeTeamId)}
-                  team2={getTeamName(match.awayTeamId)}
-                  date={new Date(match.date).toLocaleDateString('hr-HR', { day: '2-digit', month: '2-digit' })}
-                  time={new Date(match.date).toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' })}
-                  status={match.status === 'scheduled' ? 'Nije počelo' : match.status === 'in_progress' ? 'U tijeku' : 'Kraj'}
-                  score1={homeScore}
-                  score2={awayScore}
-                  hasStarted={hasStarted}
-                  hasEnded={hasEnded}
-                  onClick={() => navigate(`/match/${match.id}`)}
-                />
+                <React.Fragment key={match.id}>
+                  <MatchCard
+                    team1={getTeamName(match.homeTeamId)}
+                    team2={getTeamName(match.awayTeamId)}
+                    date={new Date(match.date).toLocaleDateString('hr-HR', { day: '2-digit', month: '2-digit' })}
+                    time={new Date(match.date).toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' })}
+                    status={match.status === 'scheduled' ? 'Nije počelo' : match.status === 'in_progress' ? 'U tijeku' : 'Kraj'}
+                    score1={homeScore}
+                    score2={awayScore}
+                    hasStarted={hasStarted}
+                    hasEnded={hasEnded}
+                    onClick={() => navigate(`/match/${match.id}`)}
+                  />
+                  {idx < Math.min(matches.length, 6) - 1 && (
+                    <Divider sx={{ bgcolor: '#e0e0e0', height: '1px', borderRadius: 1, m: 0 }} />
+                  )}
+                </React.Fragment>
               );
             })}
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 0, pb: 0, px: 2, py: 2 }}>
               <Button
                 variant="contained"
                 sx={{ bgcolor: '#fd9905', color: '#fff', fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, borderRadius: 8, px: 4, py: 1, boxShadow: 'none', textTransform: 'none', '&:hover': { bgcolor: '#e68a00', boxShadow: 'none' } }}
@@ -253,7 +259,7 @@ const HomePageMobile: React.FC<{
         {/* Social Media Embeds */}
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {/* Facebook Profile Embed */}
-          <Box sx={{ width: '100%', height: 400, background: '#eee', overflow: 'hidden', display: 'flex', justifyContent: 'center' }}>
+          <Box sx={{ width: '100%', height: 400, background: '#eee', overflow: 'hidden', display: 'flex', justifyContent: 'center', maxWidth: 400, mx: 'auto' }}>
             <iframe
               width="100%"
               height="100%"
@@ -587,7 +593,7 @@ const HomePageDesktop: React.FC<{
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
