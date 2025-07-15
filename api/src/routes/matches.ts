@@ -276,7 +276,10 @@ router.post('/:id/events', async (req: Request, res: Response) => {
     match.events.push(newEvent);
 
     // Update scores based on event type
-    if (newEvent.type === 'goal') {
+    if (
+      newEvent.type === 'goal' ||
+      ((newEvent.type === 'penalty' || newEvent.type === '10m') && newEvent.result === 'score')
+    ) {
       if (newEvent.teamId === match.homeTeamId) {
         match.homeScore = (match.homeScore || 0) + 1;
       } else if (newEvent.teamId === match.awayTeamId) {
@@ -330,7 +333,10 @@ router.delete('/:id/events/:eventIndex', async (req: Request, res: Response) => 
     match.events.splice(eventIndex, 1);
 
     // Recalculate scores if a goal was removed
-    if (removedEvent.type === 'goal') {
+    if (
+      removedEvent.type === 'goal' ||
+      ((removedEvent.type === 'penalty' || removedEvent.type === '10m') && removedEvent.result === 'score')
+    ) {
       if (removedEvent.teamId === match.homeTeamId) {
         match.homeScore = Math.max(0, (match.homeScore || 0) - 1);
       } else if (removedEvent.teamId === match.awayTeamId) {
