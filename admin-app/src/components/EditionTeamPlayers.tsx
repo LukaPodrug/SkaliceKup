@@ -299,21 +299,6 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
     !allEditionPlayers.some(editionPlayer => editionPlayer.id === player.id)
   );
 
-  // Only render content after filtering is complete and data is ready
-  // Remove dataReady logic, as loading states now cover readiness
-  if (availablePlayers.length === 0 && teamPlayers.length === 0) {
-    return (
-      <Paper sx={{ p: 3, fontFamily: 'Ubuntu, sans-serif' }}>
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
-          Igrači po timu
-        </Typography>
-        <Typography sx={{ color: '#888', fontFamily: 'Ubuntu, sans-serif' }}>
-          Nema dostupnih igrača za dodavanje ovom timu.
-        </Typography>
-      </Paper>
-    );
-  }
-
   return (
     <Paper sx={{ p: 3, fontFamily: 'Ubuntu, sans-serif' }}>
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
