@@ -308,6 +308,10 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
       if (["penalty", "10m"].includes(eventType)) {
         eventData.result = penaltyResult;
       }
+      // If starting the match, also update status to in_progress
+      if (eventType === 'start') {
+        await apiClient.updateMatch(selectedMatch.id, { status: 'in_progress' });
+      }
       const response = await apiClient.addMatchEvent(selectedMatch.id, eventData);
       if (response.data) {
         setMatches(matches.map(match =>

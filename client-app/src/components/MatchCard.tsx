@@ -29,10 +29,9 @@ const MatchCard: React.FC<MatchCardProps> = ({
   hasStarted = false,
   hasEnded = false
 }) => {
-  const getBorderColor = (status: string) => {
+  const getBorderColor = () => {
+    if (hasStarted && !hasEnded) return '#fd9905'; // Orange for live matches
     switch (status) {
-      case 'U tijeku':
-        return '#fd9905'; // Orange for live matches
       case 'Kraj':
         return '#666666'; // Dark grey for finished matches
       case 'Nije počelo':
@@ -70,7 +69,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
         width: '100%',
         position: 'relative',
         boxSizing: 'border-box',
-        borderLeft: `4px solid ${getBorderColor(status)}`
+        borderLeft: `4px solid ${getBorderColor()}`
       }}
       onClick={onClick}
     >
@@ -139,7 +138,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
             flexShrink: 0,
             ml: 1
           }}>
-            {hasScore ? score1 : '-'}
+            {hasStarted && hasScore ? score1 : ''}
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%', justifyContent: 'space-between' }}>
@@ -165,7 +164,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
             flexShrink: 0,
             ml: 1
           }}>
-            {hasScore ? score2 : '-'}
+            {hasStarted && hasScore ? score2 : ''}
           </Typography>
         </Box>
       </Box>
