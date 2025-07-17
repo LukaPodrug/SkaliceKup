@@ -57,7 +57,7 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, p
 
         if (editionTeamsResponse.data) {
           setEditionTeams(editionTeamsResponse.data);
-          if (editionTeamsResponse.data.length > 0) {
+          if (editionTeamsResponse.data.length > 0 && !selectedTeam) {
             setSelectedTeam(editionTeamsResponse.data[0].id);
           }
         }
@@ -184,6 +184,16 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, p
   useEffect(() => {
     if (selectedTeam && tournamentId) {
       localStorage.setItem(`selectedTeam_${tournamentId}`, selectedTeam);
+    }
+  }, [selectedTeam, tournamentId]);
+
+  // When the component mounts, restore selected team from localStorage if available
+  useEffect(() => {
+    if (!selectedTeam && tournamentId) {
+      const storedTeam = localStorage.getItem(`selectedTeam_${tournamentId}`);
+      if (storedTeam) {
+        setSelectedTeam(storedTeam);
+      }
     }
   }, [selectedTeam, tournamentId]);
 
