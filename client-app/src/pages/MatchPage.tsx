@@ -467,12 +467,20 @@ const MatchPage: React.FC = () => {
                         </Typography>
                       ) : (
                         <>
-                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
-                            {getPlayerName(event.playerId)}
-                          </Typography>
-                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
-                            {getTeamName(event.teamId)}
-                          </Typography>
+                          {event.type === 'foul' ? (
+                            <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                              {getTeamName(event.teamId)}
+                            </Typography>
+                          ) : (
+                            <>
+                              <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                                {getPlayerName(event.playerId)}
+                              </Typography>
+                              <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
+                                {getTeamName(event.teamId)}
+                              </Typography>
+                            </>
+                          )}
                         </>
                       )}
                     </Box>
@@ -639,12 +647,20 @@ const MatchPage: React.FC = () => {
                         </Typography>
                       ) : (
                         <>
-                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
-                            {getPlayerName(event.playerId)}
-                          </Typography>
-                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
-                            {getTeamName(event.teamId)}
-                          </Typography>
+                          {event.type === 'foul' ? (
+                            <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                              {getTeamName(event.teamId)}
+                            </Typography>
+                          ) : (
+                            <>
+                              <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                                {getPlayerName(event.playerId)}
+                              </Typography>
+                              <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
+                                {getTeamName(event.teamId)}
+                              </Typography>
+                            </>
+                          )}
                         </>
                       )}
                     </Box>
