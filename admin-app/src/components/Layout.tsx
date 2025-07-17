@@ -283,6 +283,15 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
       });
 
       if (response.data) {
+        // If on edition details page, add team to edition immediately
+        if (tournamentId) {
+          try {
+            await apiClient.addTeamToEdition(tournamentId, response.data.id);
+          } catch (err) {
+            // Optionally handle error (e.g., show notification)
+            console.error('Error adding new team to edition:', err);
+          }
+        }
         setOpenTeamDialog(false);
         setTeamName('');
         setTeamLogoUrl('');
