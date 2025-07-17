@@ -274,7 +274,7 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
     if (!selectedMatch || !eventType) return;
     const pad = (v: string) => v.padStart(2, '0');
     const eventTime = eventMinute || eventSecond ? `${pad(eventMinute || '0')}:${pad(eventSecond || '0')}` : '';
-    if (!['start', 'end'].includes(eventType) && !eventTime) {
+    if (["goal", "yellow", "red", "penalty", "10m", "foul"].includes(eventType) && !eventTime) {
       setEventError('Unesite vrijeme događaja.');
       setEventLoading(false);
       return;
@@ -285,7 +285,8 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
         setEventLoading(false);
         return;
       }
-      if (!playerId) {
+      // Only require playerId for non-foul events
+      if (["goal", "yellow", "red", "penalty", "10m"].includes(eventType) && !playerId) {
         setEventError('Odaberite igrača.');
         setEventLoading(false);
         return;
@@ -303,6 +304,10 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
           return;
         }
         eventData.playerId = playerId;
+        eventData.teamId = teamId;
+      }
+      // For foul, only add teamId
+      if (eventType === 'foul') {
         eventData.teamId = teamId;
       }
       if (["penalty", "10m"].includes(eventType)) {
@@ -1033,7 +1038,8 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
                       </FormControl>
                     </Box>
                   )}
-                  {['goal', 'yellow', 'red', 'penalty', '10m', 'foul'].includes(eventType) && (
+                  {/* Only show player input for non-foul events */}
+                  {['goal', 'yellow', 'red', 'penalty', '10m'].includes(eventType) && (
                     <Box sx={{ mb: 2 }}>
                       <FormControl sx={{ minWidth: 140, fontFamily: 'Ubuntu, sans-serif' }} variant="standard" fullWidth>
                         <InputLabel id="player-label" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Igrač</InputLabel>
