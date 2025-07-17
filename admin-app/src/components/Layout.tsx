@@ -248,6 +248,19 @@ const Layout: React.FC<LayoutProps> = ({ children, onTournamentAdded, onPlayerAd
       });
 
       if (response.data) {
+        // Always try to add player to edition_players for selected team if present
+        if (tournamentId) {
+          const selectedTeamKey = `selectedTeam_${tournamentId}`;
+          const selectedTeam = localStorage.getItem(selectedTeamKey);
+          if (selectedTeam) {
+            try {
+              await apiClient.addPlayerToTeam(tournamentId, selectedTeam, response.data.id);
+            } catch (err) {
+              // Optionally handle error (e.g., show notification)
+              console.error('Error adding new player to edition team:', err);
+            }
+          }
+        }
         setOpenPlayerDialog(false);
         setPlayerFirstName('');
         setPlayerLastName('');
