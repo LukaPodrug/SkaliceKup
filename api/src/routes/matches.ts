@@ -49,6 +49,7 @@ router.get('/', async (req: Request, res: Response) => {
             }
             
             if (event.teamId) {
+              eventWithDetails.teamId = event.teamId; // Ensure teamId is always present
               const team = await teamRepository.findOne({
                 where: { id: event.teamId }
               });
@@ -105,6 +106,7 @@ router.get('/:id', async (req: Request, res: Response) => {
         }
         
         if (event.teamId) {
+          eventWithDetails.teamId = event.teamId; // Ensure teamId is always present
           const team = await teamRepository.findOne({
             where: { id: event.teamId }
           });
