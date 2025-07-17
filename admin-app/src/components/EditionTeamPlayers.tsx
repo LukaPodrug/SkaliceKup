@@ -10,14 +10,14 @@ import type { Team, Player } from '../utils/apiClient';
 
 interface EditionTeamPlayersProps {
   tournamentId: string;
-  refreshTrigger?: number;
+  playersRefreshTrigger?: number;
   onPlayerAdded?: () => void;
   selectedTeam?: string;
   setSelectedTeam?: (teamId: string) => void;
   onAddPlayer?: (playerId: string) => void;
 }
 
-const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, refreshTrigger, onPlayerAdded, selectedTeam: selectedTeamProp, setSelectedTeam: setSelectedTeamProp, onAddPlayer }) => {
+const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, playersRefreshTrigger = 0, onPlayerAdded, selectedTeam: selectedTeamProp, setSelectedTeam: setSelectedTeamProp, onAddPlayer }) => {
   const [editionTeams, setEditionTeams] = useState<Team[]>([]);
   const [allPlayers, setAllPlayers] = useState<Player[]>([]);
   const [selectedTeamState, setSelectedTeamState] = useState<string>('');
@@ -45,7 +45,7 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
   const [editionPlayersLoading, setEditionPlayersLoading] = useState(true);
   const [teamPlayersLoading, setTeamPlayersLoading] = useState(true);
 
-  // Fetch edition teams and all players on component mount
+  // Fetch edition teams and all players on component mount or when playersRefreshTrigger changes
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -73,7 +73,7 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
     };
 
     fetchData();
-  }, [tournamentId, refreshTrigger]);
+  }, [tournamentId, playersRefreshTrigger]);
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -147,29 +147,45 @@ const EditionTeamPlayers: React.FC<EditionTeamPlayersProps> = ({ tournamentId, r
     fetchAllEditionPlayers();
   }, [tournamentId, editionTeams]);
 
-  // Fetch team players when selected team changes
+  // Fetch team players helper so it can be called from multiple places
+  const fetchTeamPlayers = async () => {
+    if (!selectedTeam) {
+      setTeamPlayers([]);
+      setTeamPlayersLoading(false);
+      return;
+    }
+    setTeamPlayersLoading(true);
+    try {
+      const response = await apiClient.getEditionPlayers(tournamentId, selectedTeam);
+      if (response.data) {
+        setTeamPlayers(response.data);
+      }
+    } catch (err) {
+      console.error('Error fetching team players:', err);
+      setTeamPlayers([]);
+    } finally {
+      setTeamPlayersLoading(false);
+    }
+  };
+
+  // Fetch team players when selected team or playersRefreshTrigger changes
   useEffect(() => {
-    const fetchTeamPlayers = async () => {
-      if (!selectedTeam) {
-        setTeamPlayers([]);
-        setTeamPlayersLoading(false);
-        return;
-      }
-      setTeamPlayersLoading(true);
-      try {
-        const response = await apiClient.getEditionPlayers(tournamentId, selectedTeam);
-        if (response.data) {
-          setTeamPlayers(response.data);
-        }
-      } catch (err) {
-        console.error('Error fetching team players:', err);
-        setTeamPlayers([]);
-      } finally {
-        setTeamPlayersLoading(false);
-      }
-    };
     fetchTeamPlayers();
-  }, [tournamentId, selectedTeam]);
+  }, [tournamentId, selectedTeam, playersRefreshTrigger]);
+
+  // Refresh team players list immediately when a player is added via global dialog
+  useEffect(() => {
+    if (!onPlayerAdded) return;
+    fetchTeamPlayers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onPlayerAdded]);
+
+  // Persist selected team in localStorage whenever it changes
+  useEffect(() => {
+    if (selectedTeam && tournamentId) {
+      localStorage.setItem(`selectedTeam_${tournamentId}`, selectedTeam);
+    }
+  }, [selectedTeam, tournamentId]);
 
   useEffect(() => {
     // Listen for global player add event

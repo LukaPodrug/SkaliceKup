@@ -180,7 +180,7 @@ const TournamentManagement: React.FC<TournamentManagementProps> = ({ teamsRefres
       </Tabs>
       <Box sx={{ mt: 3 }}>
         {tab === 0 && <EditionTeams tournamentId={tournament.id} refreshTrigger={teamsRefreshTrigger} onAddTeam={handleAddTeamToEdition} />}
-        {tab === 1 && <EditionTeamPlayers tournamentId={tournament.id} refreshTrigger={playersRefreshTrigger} onPlayerAdded={onPlayerAdded} selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} onAddPlayer={handleAddPlayerToTeam} />}
+        {tab === 1 && <EditionTeamPlayers tournamentId={tournament.id} playersRefreshTrigger={playersRefreshTrigger} onPlayerAdded={onPlayerAdded} selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} onAddPlayer={handleAddPlayerToTeam} />}
         {tab === 2 && <EditionMatches tournamentId={tournament.id} />}
       </Box>
       <Dialog open={editEditionOpen} onClose={handleCloseEditEdition}>
