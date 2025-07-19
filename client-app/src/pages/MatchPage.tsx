@@ -514,175 +514,189 @@ const MatchPage: React.FC = () => {
           </Box>
         </Box>
       ) : (
-        <Container maxWidth={false} sx={{ width: '60%', px: 3 }}>
-          <Box sx={{ bgcolor: '#fff', overflow: 'hidden' }}>
-            {/* Competition phase header - match card width, inside card */}
-            {phaseLabel && (
-              <Box sx={{
-                bgcolor: '#fd9905',
-                color: '#fff',
-                fontFamily: 'Ubuntu, sans-serif',
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                borderRadius: 0,
-                px: 2,
-                py: 0.5,
-                mb: 0,
-                display: 'block',
-                width: '100%'
-              }}>
-                {phaseLabel}
-              </Box>
-            )}
-            {isLive && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1, mt: 2 }}>
+        <Container maxWidth="md" sx={{ pt: isMobile ? 1 : 4, pb: 4 }}>
+          {/* Orange header with phase and date/time */}
+          {phaseLabel && (
+            <Box sx={{
+              bgcolor: '#fd9905',
+              color: '#fff',
+              fontFamily: 'Ubuntu, sans-serif',
+              fontWeight: 700,
+              fontSize: isMobile ? '1rem' : '1.15rem',
+              borderRadius: 0,
+              px: 0,
+              pl: 2,
+              py: 1,
+              mb: 2,
+              mt: 0,
+              width: '100%',
+              textAlign: 'left',
+              zIndex: 1,
+              minHeight: '2.2rem',
+              lineHeight: '2.2rem',
+              display: 'flex',
+              alignItems: 'center',
+              boxSizing: 'border-box',
+              overflow: 'hidden',
+            }}>
+              {phaseLabel}
+              {match.date && (
+                <span style={{ marginLeft: 16, fontWeight: 700, fontSize: isMobile ? '1rem' : '1.15rem', fontFamily: 'Ubuntu, sans-serif', opacity: 0.95 }}>
+                  - {new Date(match.date).toLocaleDateString('hr-HR', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\.$/, '')}
+                  {' '}
+                  {new Date(match.date).toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                </span>
+              )}
+            </Box>
+          )}
+          {isLive && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1, mt: 2 }}>
+              <Chip 
+                label="LIVE" 
+                size="small" 
+                sx={{
+                  bgcolor: '#fd9905',
+                  color: '#fff',
+                  fontFamily: 'Ubuntu, sans-serif',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  height: 22,
+                  borderRadius: 10,
+                  px: 2,
+                  animation: 'pulse 2s infinite',
+                  '@keyframes pulse': {
+                    '0%': { opacity: 1 },
+                    '50%': { opacity: 0.7 },
+                    '100%': { opacity: 1 }
+                  }
+                }}
+              />
+            </Box>
+          )}
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 6, mt: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, justifyContent: 'flex-end' }}>
+              <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, color: '#222', fontSize: '1.25rem', textAlign: 'right' }}>
+                {homeTeam?.name || 'TBD'}
+              </Typography>
+              <TeamAvatar name={homeTeam?.name} logo={homeTeam?.logo} size={48} />
+            </Box>
+            <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 700, color: '#222', fontSize: '2rem', mx: 4 }}>
+              {homeScore} - {awayScore}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
+              <TeamAvatar name={awayTeam?.name} logo={awayTeam?.logo} size={48} />
+              <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, color: '#222', fontSize: '1.25rem' }}>
+                {awayTeam?.name || 'TBD'}
+              </Typography>
+            </Box>
+          </Box>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, mb: 4 }}>
+            <Box>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
                 <Chip 
-                  label="LIVE" 
-                  size="small" 
-                  sx={{
-                    bgcolor: '#fd9905',
-                    color: '#fff',
-                    fontFamily: 'Ubuntu, sans-serif',
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    height: 22,
-                    borderRadius: 10,
-                    px: 2,
-                    animation: 'pulse 2s infinite',
-                    '@keyframes pulse': {
-                      '0%': { opacity: 1 },
-                      '50%': { opacity: 0.7 },
-                      '100%': { opacity: 1 }
-                    }
-                  }}
+                  label={homeTeam?.name || 'TBD'}
+                  size="small"
+                  sx={{ bgcolor: '#fd9905', color: 'white', fontFamily: 'Ubuntu, sans-serif', fontSize: '0.8rem', fontWeight: 600, height: 24, ml: 2 }}
                 />
               </Box>
-            )}
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 6, mt: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, justifyContent: 'flex-end' }}>
-                <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, color: '#222', fontSize: '1.25rem', textAlign: 'right' }}>
-                  {homeTeam?.name || 'TBD'}
-                </Typography>
-                <TeamAvatar name={homeTeam?.name} logo={homeTeam?.logo} size={48} />
-              </Box>
-              <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 700, color: '#222', fontSize: '2rem', mx: 4 }}>
-                {homeScore} - {awayScore}
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
-                <TeamAvatar name={awayTeam?.name} logo={awayTeam?.logo} size={48} />
-                <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, color: '#222', fontSize: '1.25rem' }}>
-                  {awayTeam?.name || 'TBD'}
-                </Typography>
-              </Box>
-            </Box>
-            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, mb: 4 }}>
-              <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
-                  <Chip 
-                    label={homeTeam?.name || 'TBD'}
-                    size="small"
-                    sx={{ bgcolor: '#fd9905', color: 'white', fontFamily: 'Ubuntu, sans-serif', fontSize: '0.8rem', fontWeight: 600, height: 24, ml: 2 }}
-                  />
-                </Box>
-                <Box sx={{ overflow: 'hidden' }}>
-                  {filteredHomeSquad.map((player, index) => (
-                    <React.Fragment key={player.id}>
-                      <Box sx={{ p: 1, px: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <PlayerAvatar firstName={player.firstName} lastName={player.lastName} size={28} />
-                        <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
-                          {player.firstName} {player.lastName}
-                        </Typography>
-                      </Box>
-                      {index < filteredHomeSquad.length - 1 && (
-                        <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
-                      )}
-                    </React.Fragment>
-                  ))}
-                </Box>
-              </Box>
-              <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
-                  <Chip 
-                    label={awayTeam?.name || 'TBD'}
-                    size="small"
-                    sx={{ bgcolor: '#fd9905', color: 'white', fontFamily: 'Ubuntu, sans-serif', fontSize: '0.8rem', fontWeight: 600, height: 24, ml: 2 }}
-                  />
-                </Box>
-                <Box sx={{ overflow: 'hidden' }}>
-                  {filteredAwaySquad.map((player, index) => (
-                    <React.Fragment key={player.id}>
-                      <Box sx={{ p: 1, px: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <PlayerAvatar firstName={player.firstName} lastName={player.lastName} size={28} />
-                        <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
-                          {player.firstName} {player.lastName}
-                        </Typography>
-                      </Box>
-                      {index < filteredAwaySquad.length - 1 && (
-                        <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
-                      )}
-                    </React.Fragment>
-                  ))}
-                </Box>
-              </Box>
-            </Box>
-            <Box sx={{ overflow: 'hidden', mb: 4 }}>
-              {match.events.map((event, index) => (
-                <React.Fragment key={index}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1.5, px: 2 }}>
-                    <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', minWidth: 50, color: '#222' }}>
-                      {event.time ? event.time : (typeof event.minute === 'number' ? `${event.minute}'` : '')}
-                    </Typography>
-                    <Box sx={{ flex: 1 }}>
-                      {isChronologicalEvent(event.type) ? (
-                        <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
-                          {eventTypeToCroatian[event.type] || event.type.replace(/_/g, ' ').toUpperCase()}
-                        </Typography>
-                      ) : (
-                        <>
-                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
-                            {getPlayerName(event.playerId)}
-                          </Typography>
-                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
-                            {getTeamName(event.teamId)}
-                          </Typography>
-                        </>
-                      )}
+              <Box sx={{ overflow: 'hidden' }}>
+                {filteredHomeSquad.map((player, index) => (
+                  <React.Fragment key={player.id}>
+                    <Box sx={{ p: 1, px: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <PlayerAvatar firstName={player.firstName} lastName={player.lastName} size={28} />
+                      <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
+                        {player.firstName} {player.lastName}
+                      </Typography>
                     </Box>
-                    {!isChronologicalEvent(event.type) && (
+                    {index < filteredHomeSquad.length - 1 && (
+                      <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
+                    )}
+                  </React.Fragment>
+                ))}
+              </Box>
+            </Box>
+            <Box>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+                <Chip 
+                  label={awayTeam?.name || 'TBD'}
+                  size="small"
+                  sx={{ bgcolor: '#fd9905', color: 'white', fontFamily: 'Ubuntu, sans-serif', fontSize: '0.8rem', fontWeight: 600, height: 24, ml: 2 }}
+                />
+              </Box>
+              <Box sx={{ overflow: 'hidden' }}>
+                {filteredAwaySquad.map((player, index) => (
+                  <React.Fragment key={player.id}>
+                    <Box sx={{ p: 1, px: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <PlayerAvatar firstName={player.firstName} lastName={player.lastName} size={28} />
+                      <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
+                        {player.firstName} {player.lastName}
+                      </Typography>
+                    </Box>
+                    {index < filteredAwaySquad.length - 1 && (
+                      <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
+                    )}
+                  </React.Fragment>
+                ))}
+              </Box>
+            </Box>
+          </Box>
+          <Box sx={{ overflow: 'hidden', mb: 4 }}>
+            {match.events.map((event, index) => (
+              <React.Fragment key={index}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1.5, px: 2 }}>
+                  <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', minWidth: 50, color: '#222' }}>
+                    {event.time ? event.time : (typeof event.minute === 'number' ? `${event.minute}'` : '')}
+                  </Typography>
+                  <Box sx={{ flex: 1 }}>
+                    {isChronologicalEvent(event.type) ? (
+                      <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                        {eventTypeToCroatian[event.type] || event.type.replace(/_/g, ' ').toUpperCase()}
+                      </Typography>
+                    ) : (
                       <>
-                        <Chip 
-                          label={
-                            (event.type === 'penalty' && event.result === 'score') ? 'Penal - gol' :
-                            (event.type === '10m' && event.result === 'score') ? '10m penal - gol' :
-                            eventTypeToCroatianChip[event.type] || event.type.replace(/_/g, ' ').toUpperCase()
-                          }
-                          size="small" 
-                          sx={{
-                            bgcolor: (event.type === '10m' && event.result === 'score') ? '#4caf50' : getEventColor(event.type),
-                            color: 'white',
-                            fontSize: isMobile ? '0.7rem' : '0.8rem',
-                            height: isMobile ? 20 : 22,
-                            mr: 1
-                          }}
-                        />
-                        {(
-                          event.type === 'goal' ||
-                          (event.type === 'penalty' && event.result === 'score') ||
-                          (event.type === '10m' && event.result === 'score')
-                        ) && (
-                          <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.8rem' : '0.95rem', color: '#222', ml: 1 }}>
-                            {getScoreAtEvent(match.events, match, index)}
-                          </Typography>
-                        )}
+                        <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
+                          {getPlayerName(event.playerId)}
+                        </Typography>
+                        <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
+                          {getTeamName(event.teamId)}
+                        </Typography>
                       </>
                     )}
                   </Box>
-                  {index < match.events.length - 1 && (
-                    <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
+                  {!isChronologicalEvent(event.type) && (
+                    <>
+                      <Chip 
+                        label={
+                          (event.type === 'penalty' && event.result === 'score') ? 'Penal - gol' :
+                          (event.type === '10m' && event.result === 'score') ? '10m penal - gol' :
+                          eventTypeToCroatianChip[event.type] || event.type.replace(/_/g, ' ').toUpperCase()
+                        }
+                        size="small" 
+                        sx={{
+                          bgcolor: (event.type === '10m' && event.result === 'score') ? '#4caf50' : getEventColor(event.type),
+                          color: 'white',
+                          fontSize: isMobile ? '0.7rem' : '0.8rem',
+                          height: isMobile ? 20 : 22,
+                          mr: 1
+                        }}
+                      />
+                      {(
+                        event.type === 'goal' ||
+                        (event.type === 'penalty' && event.result === 'score') ||
+                        (event.type === '10m' && event.result === 'score')
+                      ) && (
+                        <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.8rem' : '0.95rem', color: '#222', ml: 1 }}>
+                          {getScoreAtEvent(match.events, match, index)}
+                        </Typography>
+                      )}
+                    </>
                   )}
-                </React.Fragment>
-              ))}
-            </Box>
+                </Box>
+                {index < match.events.length - 1 && (
+                  <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
+                )}
+              </React.Fragment>
+            ))}
           </Box>
         </Container>
       )}

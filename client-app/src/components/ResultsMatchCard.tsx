@@ -152,9 +152,9 @@ const ResultsMatchCard: React.FC<ResultsMatchCardProps & { hasStarted?: boolean;
         }}>
           {phaseLabel}
           {match.date && (
-            <span style={{ marginLeft: 12, fontWeight: 400, fontSize: '0.93rem', opacity: 0.95 }}>
-              {new Date(match.date).toLocaleDateString('hr-HR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-              {'. '}
+            <span style={{ marginLeft: 12, fontWeight: 700, fontSize: '0.95rem', fontFamily: 'Ubuntu, sans-serif', opacity: 0.95 }}>
+              - {new Date(match.date).toLocaleDateString('hr-HR', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\.$/, '')}
+              {' '}
               {new Date(match.date).toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit', hour12: false })}
             </span>
           )}
