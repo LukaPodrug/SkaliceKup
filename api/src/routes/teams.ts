@@ -8,7 +8,19 @@ const teamRepository = AppDataSource.getRepository(Team);
 // Get all teams
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const { search } = req.query;
+    const { search, editionId } = req.query;
+    
+    if (editionId) {
+      // If editionId is provided, return all teams for that edition (no limit)
+      const editionTeamRepository = AppDataSource.getRepository(require('../entities/EditionTeam').EditionTeam);
+      const editionTeams = await editionTeamRepository.find({
+        where: { tournamentEditionId: editionId },
+        relations: ['team'],
+        order: { team: { name: 'ASC' } }
+      });
+      const teams = editionTeams.map((et: any) => et.team);
+      return res.json(teams);
+    }
     
     let queryBuilder = teamRepository.createQueryBuilder('team');
     

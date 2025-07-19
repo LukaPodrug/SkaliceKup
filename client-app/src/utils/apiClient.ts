@@ -133,13 +133,12 @@ class ApiClient {
   }
 
   // Teams
-  async getTeams(search?: string) {
+  async getTeams(paramsObj?: { search?: string; editionId?: string }) {
     const params = new URLSearchParams();
-    if (search) params.append('search', search);
-    
+    if (paramsObj?.search) params.append('search', paramsObj.search);
+    if (paramsObj?.editionId) params.append('editionId', paramsObj.editionId);
     const queryString = params.toString();
     const endpoint = queryString ? `/teams?${queryString}` : '/teams';
-    
     return this.request(endpoint);
   }
 

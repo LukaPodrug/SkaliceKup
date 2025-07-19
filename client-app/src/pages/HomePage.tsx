@@ -39,7 +39,7 @@ const HomePageMobile: React.FC<{
 
   const getTeamName = (teamId: string) => {
     const team = teams.find(t => t.id === teamId);
-    return team ? team.name : 'TBD';
+    return team ? team.name : '';
   };
 
   const getMatchStatus = (match: Match) => {
@@ -355,7 +355,7 @@ const HomePageDesktop: React.FC<{
 
   const getTeamName = (teamId: string) => {
     const team = teams.find(t => t.id === teamId);
-    return team ? team.name : 'TBD';
+    return team ? team.name : '';
   };
 
   const getMatchStatus = (match: Match) => {
@@ -681,12 +681,24 @@ const HomePage: React.FC = () => {
           setError(matchesResponse.error);
         }
 
-        if (Array.isArray(teamsResponse)) {
-          setTeams(teamsResponse);
-        } else if (teamsResponse.data && Array.isArray(teamsResponse.data)) {
-          setTeams(teamsResponse.data);
-        } else if (teamsResponse.error) {
-          setError(teamsResponse.error);
+        // Try to get editionId from the first match if available
+        let editionId = undefined;
+        const matchesArr = Array.isArray(matchesResponse)
+          ? matchesResponse
+          : (matchesResponse.data && Array.isArray(matchesResponse.data) ? matchesResponse.data : []);
+        if (matchesArr.length > 0) {
+          editionId = matchesArr[0].tournamentEditionId;
+        }
+        let teamsResp = teamsResponse;
+        if (editionId) {
+          teamsResp = await apiClient.getTeams({ editionId });
+        }
+        if (Array.isArray(teamsResp)) {
+          setTeams(teamsResp);
+        } else if (teamsResp.data && Array.isArray(teamsResp.data)) {
+          setTeams(teamsResp.data);
+        } else if (teamsResp.error) {
+          setError(teamsResp.error);
         }
 
         if (articlesResponse.data) {

@@ -61,10 +61,9 @@ const ResultsPage: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [tournamentsResponse, matchesResponse, teamsResponse] = await Promise.all([
+        const [tournamentsResponse, matchesResponse] = await Promise.all([
           apiClient.getTournamentEditions(),
-          apiClient.getMatches(),
-          apiClient.getTeams()
+          apiClient.getMatches()
         ]);
 
         if (tournamentsResponse.data) {
@@ -86,10 +85,6 @@ const ResultsPage: React.FC = () => {
         if (matchesResponse.data) {
           setMatches(Array.isArray(matchesResponse.data) ? matchesResponse.data : []);
         }
-
-        if (teamsResponse.data) {
-          setTeams(Array.isArray(teamsResponse.data) ? teamsResponse.data : []);
-        }
       } catch (err) {
         setError('Failed to load data');
         console.error('Error fetching data:', err);
@@ -100,6 +95,31 @@ const ResultsPage: React.FC = () => {
 
     fetchData();
   }, []);
+
+  // Fetch teams for the selected edition
+  useEffect(() => {
+    const fetchTeams = async () => {
+      const edition = availableCategories[categoryTabValue]?.edition;
+      if (!edition) {
+        setTeams([]);
+        return;
+      }
+      try {
+        setLoading(true);
+        const teamsResponse = await apiClient.getTeams({ editionId: edition.id });
+        if (teamsResponse.data) {
+          setTeams(Array.isArray(teamsResponse.data) ? teamsResponse.data : []);
+        } else {
+          setTeams([]);
+        }
+      } catch (err) {
+        setTeams([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTeams();
+  }, [availableCategories, categoryTabValue]);
 
   // Update available phases when category changes
   useEffect(() => {
@@ -189,7 +209,7 @@ const ResultsPage: React.FC = () => {
 
   const getTeamName = (teamId: string) => {
     const team = teams.find(t => t.id === teamId);
-    return team ? team.name : 'TBD';
+    return team ? team.name : '';
   };
 
   const calculateScores = (match: Match) => {
