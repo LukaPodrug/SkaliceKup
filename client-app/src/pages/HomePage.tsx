@@ -768,6 +768,14 @@ const HomePage: React.FC = () => {
         matchDate.getTime() === yesterday.getTime()
       );
     });
+    // After filtering, sort so today's matches are first, then yesterday's
+    shownMatches.sort((a, b) => {
+      const aDate = new Date(a.date);
+      aDate.setHours(0, 0, 0, 0);
+      const bDate = new Date(b.date);
+      bDate.setHours(0, 0, 0, 0);
+      return bDate.getTime() - aDate.getTime(); // descending: today first
+    });
     // If no matches today or yesterday, find the next available date with matches
     if (shownMatches.length === 0 && matches.length > 0) {
       // Get all unique future dates
@@ -820,6 +828,14 @@ const HomePage: React.FC = () => {
       });
     }
   }
+  // After filtering, sort so today's matches are first, then yesterday's
+  shownMatches.sort((a, b) => {
+    const aDate = new Date(a.date);
+    aDate.setHours(0, 0, 0, 0);
+    const bDate = new Date(b.date);
+    bDate.setHours(0, 0, 0, 0);
+    return bDate.getTime() - aDate.getTime(); // descending: today first
+  });
   return <HomePageDesktop navigate={navigate} matches={shownMatches} teams={teams} articles={articles} loading={loading} error={error} />;
 };
 
