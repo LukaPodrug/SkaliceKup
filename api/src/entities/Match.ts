@@ -19,7 +19,9 @@ export type MatchEventType =
   | 'extra2_start'
   | 'extra2_end'
   | 'shootout_start'
-  | 'foul';
+  | 'foul'
+  | 'timeout' // NEW: timeout event
+  | 'own_goal'; // NEW: own goal event
 
 export interface MatchEvent {
   type: MatchEventType;
@@ -31,8 +33,9 @@ export interface MatchEvent {
   isShootoutPenalty?: boolean;
   minute?: number; // legacy, can be removed later
   playerId?: string;
-  teamId?: string;
+  teamId?: string; // For timeout: team that called it. For own_goal: team that scored own goal.
   result?: 'score' | 'miss';
+  // For own_goal: increases opponent's score by 1
 }
 
 @Entity('matches')

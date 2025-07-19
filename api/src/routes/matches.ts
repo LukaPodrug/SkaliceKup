@@ -288,6 +288,15 @@ router.post('/:id/events', async (req: Request, res: Response) => {
         match.awayScore = (match.awayScore || 0) + 1;
       }
     }
+    // Handle own_goal: increment opponent's score
+    if (newEvent.type === 'own_goal') {
+      if (newEvent.teamId === match.homeTeamId) {
+        match.awayScore = (match.awayScore || 0) + 1;
+      } else if (newEvent.teamId === match.awayTeamId) {
+        match.homeScore = (match.homeScore || 0) + 1;
+      }
+    }
+    // Timeout does not affect score
 
     await matchRepository.save(match);
 
@@ -343,6 +352,14 @@ router.delete('/:id/events/:eventIndex', async (req: Request, res: Response) => 
         match.homeScore = Math.max(0, (match.homeScore || 0) - 1);
       } else if (removedEvent.teamId === match.awayTeamId) {
         match.awayScore = Math.max(0, (match.awayScore || 0) - 1);
+      }
+    }
+    // Handle own_goal removal: decrement opponent's score
+    if (removedEvent.type === 'own_goal') {
+      if (removedEvent.teamId === match.homeTeamId) {
+        match.awayScore = Math.max(0, (match.awayScore || 0) - 1);
+      } else if (removedEvent.teamId === match.awayTeamId) {
+        match.homeScore = Math.max(0, (match.homeScore || 0) - 1);
       }
     }
 
