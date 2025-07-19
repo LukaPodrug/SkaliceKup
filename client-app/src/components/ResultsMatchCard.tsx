@@ -151,6 +151,13 @@ const ResultsMatchCard: React.FC<ResultsMatchCardProps & { hasStarted?: boolean;
           overflow: 'hidden'
         }}>
           {phaseLabel}
+          {match.date && (
+            <span style={{ marginLeft: 12, fontWeight: 400, fontSize: '0.93rem', opacity: 0.95 }}>
+              {new Date(match.date).toLocaleDateString('hr-HR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+              {'. '}
+              {new Date(match.date).toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit', hour12: false })}
+            </span>
+          )}
         </Box>
       )}
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, width: '100%', mt: phaseLabel ? '1.5rem' : 0 }}>
