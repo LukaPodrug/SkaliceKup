@@ -122,6 +122,8 @@ const MatchPage: React.FC = () => {
       case 'foul': return '#9e9e9e';
       case 'penalty': return '#4caf50';
       case '10m': return '#ff9800';
+      case 'timeout': return '#1976d2'; // blue for timeout
+      case 'own_goal': return '#d32f2f'; // red for own goal
       default: return '#666';
     }
   };
@@ -145,6 +147,13 @@ const MatchPage: React.FC = () => {
           homeScore++;
         } else if (event.teamId === match.awayTeamId) {
           awayScore++;
+        }
+      }
+      if (event.type === 'own_goal') {
+        if (event.teamId === match.homeTeamId) {
+          awayScore++;
+        } else if (event.teamId === match.awayTeamId) {
+          homeScore++;
         }
       }
     });
@@ -225,6 +234,8 @@ const MatchPage: React.FC = () => {
     extra2_start: 'Početak 2. produžetka',
     extra2_end: 'Kraj 2. produžetka',
     shootout_start: 'Početak penala',
+    timeout: 'Timeout',
+    own_goal: 'Autogol',
   };
 
   // Map event type to Croatian display name (for chips)
@@ -235,6 +246,8 @@ const MatchPage: React.FC = () => {
     penalty: 'Penal',
     '10m': '10m',
     foul: 'Prekršaj',
+    timeout: 'Timeout',
+    own_goal: 'Autogol',
   };
 
   // Helper to calculate score up to a given event index
@@ -249,6 +262,10 @@ const MatchPage: React.FC = () => {
       ) {
         if (e.teamId === match.homeTeamId) home++;
         else if (e.teamId === match.awayTeamId) away++;
+      }
+      if (e.type === 'own_goal') {
+        if (e.teamId === match.homeTeamId) away++;
+        else if (e.teamId === match.awayTeamId) home++;
       }
     }
     return `${home} - ${away}`;
@@ -465,6 +482,14 @@ const MatchPage: React.FC = () => {
                         <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
                           {eventTypeToCroatian[event.type] || event.type.replace(/_/g, ' ').toUpperCase()}
                         </Typography>
+                      ) : event.type === 'timeout' ? (
+                        <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#1976d2' }}>
+                          Timeout - {getTeamName(event.teamId)} {event.time ? `(${event.time})` : ''}
+                        </Typography>
+                      ) : event.type === 'own_goal' ? (
+                        <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#d32f2f' }}>
+                          Autogol - {getTeamName(event.teamId)} {event.time ? `(${event.time})` : ''} (bod za protivnika)
+                        </Typography>
                       ) : (
                         <>
                           <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
@@ -651,6 +676,14 @@ const MatchPage: React.FC = () => {
                     {isChronologicalEvent(event.type) ? (
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
                         {eventTypeToCroatian[event.type] || event.type.replace(/_/g, ' ').toUpperCase()}
+                      </Typography>
+                    ) : event.type === 'timeout' ? (
+                      <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#1976d2' }}>
+                        Timeout - {getTeamName(event.teamId)} {event.time ? `(${event.time})` : ''}
+                      </Typography>
+                    ) : event.type === 'own_goal' ? (
+                      <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#d32f2f' }}>
+                        Autogol - {getTeamName(event.teamId)} {event.time ? `(${event.time})` : ''} (bod za protivnika)
                       </Typography>
                     ) : (
                       <>

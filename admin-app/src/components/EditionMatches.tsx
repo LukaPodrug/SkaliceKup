@@ -33,6 +33,8 @@ const matchEventTypes = [
   { value: 'penalty', label: 'Penal' },
   { value: '10m', label: '10m penal' },
   { value: 'foul', label: 'Prekršaj' },
+  { value: 'timeout', label: 'Timeout' },
+  { value: 'own_goal', label: 'Autogol' },
 ];
 
 const penaltyResults = [
@@ -274,23 +276,23 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
     if (!selectedMatch || !eventType) return;
     const pad = (v: string) => v.padStart(2, '0');
     const eventTime = eventMinute || eventSecond ? `${pad(eventMinute || '0')}:${pad(eventSecond || '0')}` : '';
-    if (["goal", "yellow", "red", "penalty", "10m", "foul"].includes(eventType) && !eventTime) {
+    if (["goal", "yellow", "red", "penalty", "10m", "foul", "timeout", "own_goal"].includes(eventType) && !eventTime) {
       setEventError('Unesite vrijeme događaja.');
       setEventLoading(false);
       return;
     }
-    if (["goal", "yellow", "red", "penalty", "10m", "foul"].includes(eventType)) {
+    if (["goal", "yellow", "red", "penalty", "10m", "foul", "timeout", "own_goal"].includes(eventType)) {
       if (!teamId) {
         setEventError('Odaberite tim.');
         setEventLoading(false);
         return;
       }
-      // Only require playerId for non-foul events
-      if (["goal", "yellow", "red", "penalty", "10m"].includes(eventType) && !playerId) {
-        setEventError('Odaberite igrača.');
-        setEventLoading(false);
-        return;
-      }
+    }
+    // Only require playerId for non-foul, non-timeout, non-own_goal events
+    if (["goal", "yellow", "red", "penalty", "10m"].includes(eventType) && !playerId) {
+      setEventError('Odaberite igrača.');
+      setEventLoading(false);
+      return;
     }
     try {
       const eventData: any = {
@@ -306,8 +308,8 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
         eventData.playerId = playerId;
         eventData.teamId = teamId;
       }
-      // For foul, only add teamId
-      if (eventType === 'foul') {
+      // For foul, timeout, own_goal: only add teamId
+      if (["foul", "timeout", "own_goal"].includes(eventType)) {
         eventData.teamId = teamId;
       }
       if (["penalty", "10m"].includes(eventType)) {
@@ -494,6 +496,24 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
       [mm, ss] = e.time.split(':');
     }
     const period = e.half ? (halfLabels[e.half] || e.half) : '';
+    if (e.type === 'timeout') {
+      return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', fontFamily: 'Ubuntu, sans-serif' }}>
+          <span style={{ fontWeight: 600, color: '#1976d2' }}>Timeout</span>
+          {teamName && <span style={{ fontSize: '0.95em' }}>Tim: {teamName}</span>}
+          <span style={{ fontSize: '0.95em' }}>Vrijeme: {mm}:{ss}{period && ` (${period})`}</span>
+        </Box>
+      );
+    }
+    if (e.type === 'own_goal') {
+      return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', fontFamily: 'Ubuntu, sans-serif' }}>
+          <span style={{ fontWeight: 600, color: '#d32f2f' }}>Autogol (bod za protivnika)</span>
+          {teamName && <span style={{ fontSize: '0.95em' }}>Tim: {teamName}</span>}
+          <span style={{ fontSize: '0.95em' }}>Vrijeme: {mm}:{ss}{period && ` (${period})`}</span>
+        </Box>
+      );
+    }
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', fontFamily: 'Ubuntu, sans-serif' }}>
         <span style={{ fontWeight: 600 }}>{desc}</span>
@@ -974,9 +994,9 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
                 </FormControl>
               </Box>
               {selectedMatch && homeSquad.length > 0 && awaySquad.length > 0 && (
-                <Box sx={{ mt: 2 }}>
+                <React.Fragment>
                   {/* Only show time and period inputs for game events, not chronology events */}
-                  {['goal', 'yellow', 'red', 'penalty', '10m', 'foul'].includes(eventType) && (
+                  {['goal', 'yellow', 'red', 'penalty', '10m', 'foul', 'timeout', 'own_goal'].includes(eventType) && (
                     <>
                       <Box sx={{ display: 'flex', gap: 2, flexDirection: 'row', width: '100%', mb: 2 }}>
                         <TextField
@@ -1020,7 +1040,7 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
                     </>
                   )}
                   {/* Only show team and player inputs for game events */}
-                  {['goal', 'yellow', 'red', 'penalty', '10m', 'foul'].includes(eventType) && (
+                  {['goal', 'yellow', 'red', 'penalty', '10m', 'foul', 'timeout', 'own_goal'].includes(eventType) && (
                     <Box sx={{ mb: 2 }}>
                       <FormControl sx={{ minWidth: 140, fontFamily: 'Ubuntu, sans-serif' }} variant="standard" fullWidth>
                         <InputLabel id="team-label" sx={{ fontFamily: 'Ubuntu, sans-serif' }}>Tim</InputLabel>
@@ -1032,8 +1052,8 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
                           sx={{ fontFamily: 'Ubuntu, sans-serif' }}
                           variant="standard"
                         >
-                          <MenuItem value={selectedMatch.homeTeamId} sx={{ fontFamily: 'Ubuntu, sans-serif' }}>{editionTeams.find(t => t.id === selectedMatch.homeTeamId)?.name}</MenuItem>
-                          <MenuItem value={selectedMatch.awayTeamId} sx={{ fontFamily: 'Ubuntu, sans-serif' }}>{editionTeams.find(t => t.id === selectedMatch.awayTeamId)?.name}</MenuItem>
+                          <MenuItem value={selectedMatch?.homeTeamId} sx={{ fontFamily: 'Ubuntu, sans-serif' }}>{editionTeams.find(t => t.id === selectedMatch?.homeTeamId)?.name}</MenuItem>
+                          <MenuItem value={selectedMatch?.awayTeamId} sx={{ fontFamily: 'Ubuntu, sans-serif' }}>{editionTeams.find(t => t.id === selectedMatch?.awayTeamId)?.name}</MenuItem>
                         </Select>
                       </FormControl>
                     </Box>
@@ -1132,7 +1152,7 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
                       </List>
                     </Box>
                   )}
-                </Box>
+                </React.Fragment>
               )}
             </>
           )}

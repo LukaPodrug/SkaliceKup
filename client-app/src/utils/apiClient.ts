@@ -53,12 +53,13 @@ export interface Match {
   awayScore?: number;
   status: 'scheduled' | 'in_progress' | 'finished';
   events: Array<{
-    type: 'start' | 'goal' | 'yellow' | 'red' | 'penalty' | '10m' | 'end';
+    type: 'start' | 'goal' | 'yellow' | 'red' | 'penalty' | '10m' | 'end' | 'timeout' | 'own_goal';
     minute: number;
     time?: string;
     playerId?: string;
     teamId?: string;
     result?: 'score' | 'miss';
+    // For own_goal: increases opponent's score by 1
   }>;
   homeSquad?: string[]; // Player IDs for home team squad
   awaySquad?: string[]; // Player IDs for away team squad

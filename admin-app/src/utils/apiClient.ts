@@ -56,11 +56,12 @@ export interface Match {
   homeSquad?: string[];
   awaySquad?: string[];
   events: Array<{
-    type: 'start' | 'goal' | 'yellow' | 'red' | 'penalty' | '10m' | 'end';
+    type: 'start' | 'goal' | 'yellow' | 'red' | 'penalty' | '10m' | 'end' | 'timeout' | 'own_goal';
     minute: number;
     playerId?: string;
     teamId?: string;
     result?: 'score' | 'miss';
+    // For own_goal: increases opponent's score by 1
   }>;
   knockoutPhase?: string;
   createdAt: string;
