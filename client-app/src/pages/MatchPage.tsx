@@ -485,7 +485,7 @@ const MatchPage: React.FC = () => {
                       ) : event.type === 'timeout' ? (
                         <>
                           <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
-                            Timeout {event.time ? `(${event.time})` : ''}
+                            Timeout
                           </Typography>
                           <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
                             {getTeamName(event.teamId)}
@@ -494,7 +494,7 @@ const MatchPage: React.FC = () => {
                       ) : event.type === 'own_goal' ? (
                         <>
                           <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
-                            Autogol {event.time ? `(${event.time})` : ''}
+                            Autogol
                           </Typography>
                           <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
                             {getTeamName(event.teamId)}
@@ -690,7 +690,7 @@ const MatchPage: React.FC = () => {
                     ) : event.type === 'timeout' ? (
                       <>
                         <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
-                          Timeout {event.time ? `(${event.time})` : ''}
+                          Timeout
                         </Typography>
                         <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
                           {getTeamName(event.teamId)}
@@ -699,7 +699,7 @@ const MatchPage: React.FC = () => {
                     ) : event.type === 'own_goal' ? (
                       <>
                         <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 600, fontSize: isMobile ? '0.875rem' : '0.95rem', color: '#222' }}>
-                          Autogol {event.time ? `(${event.time})` : ''}
+                          Autogol
                         </Typography>
                         <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: isMobile ? '0.75rem' : '0.8rem', color: '#666' }}>
                           {getTeamName(event.teamId)}
