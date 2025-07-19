@@ -755,15 +755,20 @@ const HomePage: React.FC = () => {
   }, []);
 
   if (isMobile) {
-    // Find today's matches
+    // Find today's and yesterday's matches
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
     let shownMatches = matches.filter(match => {
       const matchDate = new Date(match.date);
       matchDate.setHours(0, 0, 0, 0);
-      return matchDate.getTime() === today.getTime();
+      return (
+        matchDate.getTime() === today.getTime() ||
+        matchDate.getTime() === yesterday.getTime()
+      );
     });
-    // If no matches today, find the next available date with matches
+    // If no matches today or yesterday, find the next available date with matches
     if (shownMatches.length === 0 && matches.length > 0) {
       // Get all unique future dates
       const futureDates = Array.from(new Set(
@@ -788,10 +793,15 @@ const HomePage: React.FC = () => {
   // Desktop logic
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
   let shownMatches = matches.filter(match => {
     const matchDate = new Date(match.date);
     matchDate.setHours(0, 0, 0, 0);
-    return matchDate.getTime() === today.getTime();
+    return (
+      matchDate.getTime() === today.getTime() ||
+      matchDate.getTime() === yesterday.getTime()
+    );
   });
   if (shownMatches.length === 0 && matches.length > 0) {
     const futureDates = Array.from(new Set(
