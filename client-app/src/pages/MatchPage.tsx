@@ -7,6 +7,9 @@ import type { Match, Team, Player } from '../utils/apiClient';
 import { apiClient } from '../utils/apiClient';
 import { websocketClient } from '../utils/websocketClient';
 import { TeamAvatar, PlayerAvatar } from '../components/ResultsMatchCard';
+import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import ReportIcon from '@mui/icons-material/Report';
 
 const MatchPage: React.FC = () => {
   const { matchId } = useParams<{ matchId: string }>();
@@ -281,6 +284,22 @@ const MatchPage: React.FC = () => {
     return player ? player.lastName : '';
   };
 
+  // Add this helper function to count player stats
+  const getPlayerStats = (playerId: string) => {
+    let goals = 0;
+    let yellow = 0;
+    let red = 0;
+    if (!match) return { goals, yellow, red };
+    match.events.forEach(event => {
+      if (event.playerId === playerId) {
+        if (event.type === 'goal' || (event.type === 'penalty' && event.result === 'score') || (event.type === '10m' && event.result === 'score')) goals++;
+        if (event.type === 'yellow') yellow++;
+        if (event.type === 'red') red++;
+      }
+    });
+    return { goals, yellow, red };
+  };
+
   if (loading) {
     return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}><CircularProgress sx={{ color: '#fd9905' }} /></Box>;
   }
@@ -430,6 +449,13 @@ const MatchPage: React.FC = () => {
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
                         {player.firstName} {player.lastName}
                       </Typography>
+                      {(() => { const stats = getPlayerStats(player.id); return <>
+                        {stats.goals > 0 && <><SportsSoccerIcon sx={{ color: '#4caf50', fontSize: 18, ml: 1 }} /><Typography sx={{ fontSize: '0.95rem', color: '#222', ml: 0.2 }}>{stats.goals}</Typography></>}
+                        {stats.yellow > 0 && <><Box sx={{ width: 14, height: 18, bgcolor: '#ffeb3b', border: '1px solid #bdb800', display: 'inline-block', ml: 1, borderRadius: '2px', verticalAlign: 'middle' }} />
+                        <Typography sx={{ fontSize: '0.95rem', color: '#222', ml: 0.2, display: 'inline-block', verticalAlign: 'middle' }}>{stats.yellow}</Typography></>}
+                        {stats.red > 0 && <><Box sx={{ width: 14, height: 18, bgcolor: '#f44336', border: '1px solid #a80000', display: 'inline-block', ml: 1, borderRadius: '2px', verticalAlign: 'middle' }} />
+                        <Typography sx={{ fontSize: '0.95rem', color: '#222', ml: 0.2, display: 'inline-block', verticalAlign: 'middle' }}>{stats.red}</Typography></>}
+                      </>; })()}
                     </Box>
                     {index < filteredHomeSquad.length - 1 && (
                       <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
@@ -461,6 +487,13 @@ const MatchPage: React.FC = () => {
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
                         {player.firstName} {player.lastName}
                       </Typography>
+                      {(() => { const stats = getPlayerStats(player.id); return <>
+                        {stats.goals > 0 && <><SportsSoccerIcon sx={{ color: '#4caf50', fontSize: 18, ml: 1 }} /><Typography sx={{ fontSize: '0.95rem', color: '#222', ml: 0.2 }}>{stats.goals}</Typography></>}
+                        {stats.yellow > 0 && <><Box sx={{ width: 14, height: 18, bgcolor: '#ffeb3b', border: '1px solid #bdb800', display: 'inline-block', ml: 1, borderRadius: '2px', verticalAlign: 'middle' }} />
+                        <Typography sx={{ fontSize: '0.95rem', color: '#222', ml: 0.2, display: 'inline-block', verticalAlign: 'middle' }}>{stats.yellow}</Typography></>}
+                        {stats.red > 0 && <><Box sx={{ width: 14, height: 18, bgcolor: '#f44336', border: '1px solid #a80000', display: 'inline-block', ml: 1, borderRadius: '2px', verticalAlign: 'middle' }} />
+                        <Typography sx={{ fontSize: '0.95rem', color: '#222', ml: 0.2, display: 'inline-block', verticalAlign: 'middle' }}>{stats.red}</Typography></>}
+                      </>; })()}
                     </Box>
                     {index < filteredAwaySquad.length - 1 && (
                       <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
@@ -642,6 +675,13 @@ const MatchPage: React.FC = () => {
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
                         {player.firstName} {player.lastName}
                       </Typography>
+                      {(() => { const stats = getPlayerStats(player.id); return <>
+                        {stats.goals > 0 && <><SportsSoccerIcon sx={{ color: '#4caf50', fontSize: 18, ml: 1 }} /><Typography sx={{ fontSize: '0.95rem', color: '#222', ml: 0.2 }}>{stats.goals}</Typography></>}
+                        {stats.yellow > 0 && <><Box sx={{ width: 14, height: 18, bgcolor: '#ffeb3b', border: '1px solid #bdb800', display: 'inline-block', ml: 1, borderRadius: '2px', verticalAlign: 'middle' }} />
+                        <Typography sx={{ fontSize: '0.95rem', color: '#222', ml: 0.2, display: 'inline-block', verticalAlign: 'middle' }}>{stats.yellow}</Typography></>}
+                        {stats.red > 0 && <><Box sx={{ width: 14, height: 18, bgcolor: '#f44336', border: '1px solid #a80000', display: 'inline-block', ml: 1, borderRadius: '2px', verticalAlign: 'middle' }} />
+                        <Typography sx={{ fontSize: '0.95rem', color: '#222', ml: 0.2, display: 'inline-block', verticalAlign: 'middle' }}>{stats.red}</Typography></>}
+                      </>; })()}
                     </Box>
                     {index < filteredHomeSquad.length - 1 && (
                       <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
@@ -666,6 +706,13 @@ const MatchPage: React.FC = () => {
                       <Typography sx={{ fontFamily: 'Ubuntu, sans-serif', fontSize: '0.95rem', color: '#222' }}>
                         {player.firstName} {player.lastName}
                       </Typography>
+                      {(() => { const stats = getPlayerStats(player.id); return <>
+                        {stats.goals > 0 && <><SportsSoccerIcon sx={{ color: '#4caf50', fontSize: 18, ml: 1 }} /><Typography sx={{ fontSize: '0.95rem', color: '#222', ml: 0.2 }}>{stats.goals}</Typography></>}
+                        {stats.yellow > 0 && <><Box sx={{ width: 14, height: 18, bgcolor: '#ffeb3b', border: '1px solid #bdb800', display: 'inline-block', ml: 1, borderRadius: '2px', verticalAlign: 'middle' }} />
+                        <Typography sx={{ fontSize: '0.95rem', color: '#222', ml: 0.2, display: 'inline-block', verticalAlign: 'middle' }}>{stats.yellow}</Typography></>}
+                        {stats.red > 0 && <><Box sx={{ width: 14, height: 18, bgcolor: '#f44336', border: '1px solid #a80000', display: 'inline-block', ml: 1, borderRadius: '2px', verticalAlign: 'middle' }} />
+                        <Typography sx={{ fontSize: '0.95rem', color: '#222', ml: 0.2, display: 'inline-block', verticalAlign: 'middle' }}>{stats.red}</Typography></>}
+                      </>; })()}
                     </Box>
                     {index < filteredAwaySquad.length - 1 && (
                       <Divider sx={{ bgcolor: '#e0e0e0', height: '1px' }} />
