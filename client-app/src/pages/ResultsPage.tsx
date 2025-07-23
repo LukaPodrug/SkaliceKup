@@ -226,6 +226,13 @@ const ResultsPage: React.FC = () => {
           awayScore++;
         }
       }
+      if (event.type === 'own_goal') {
+        if (event.teamId === match.homeTeamId) {
+          awayScore++;
+        } else if (event.teamId === match.awayTeamId) {
+          homeScore++;
+        }
+      }
     });
     return { homeScore, awayScore };
   };

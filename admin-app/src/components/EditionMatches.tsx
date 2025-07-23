@@ -499,7 +499,7 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
     if (e.type === 'timeout') {
       return (
         <Box sx={{ display: 'flex', flexDirection: 'column', fontFamily: 'Ubuntu, sans-serif' }}>
-          <span style={{ fontWeight: 600, color: '#1976d2' }}>Timeout</span>
+          <span style={{ fontWeight: 600 }}>Timeout</span>
           {teamName && <span style={{ fontSize: '0.95em' }}>Tim: {teamName}</span>}
           <span style={{ fontSize: '0.95em' }}>Vrijeme: {mm}:{ss}{period && ` (${period})`}</span>
         </Box>
@@ -508,7 +508,7 @@ const EditionMatches: React.FC<EditionMatchesProps> = ({ tournamentId }) => {
     if (e.type === 'own_goal') {
       return (
         <Box sx={{ display: 'flex', flexDirection: 'column', fontFamily: 'Ubuntu, sans-serif' }}>
-          <span style={{ fontWeight: 600, color: '#d32f2f' }}>Autogol (bod za protivnika)</span>
+          <span style={{ fontWeight: 600 }}>Autogol</span>
           {teamName && <span style={{ fontSize: '0.95em' }}>Tim: {teamName}</span>}
           <span style={{ fontSize: '0.95em' }}>Vrijeme: {mm}:{ss}{period && ` (${period})`}</span>
         </Box>

@@ -62,6 +62,13 @@ const HomePageMobile: React.FC<{
           awayScore++;
         }
       }
+      if (event.type === 'own_goal') {
+        if (event.teamId === match.homeTeamId) {
+          awayScore++;
+        } else if (event.teamId === match.awayTeamId) {
+          homeScore++;
+        }
+      }
     });
     return { homeScore, awayScore };
   };
@@ -376,6 +383,13 @@ const HomePageDesktop: React.FC<{
           homeScore++;
         } else if (event.teamId === match.awayTeamId) {
           awayScore++;
+        }
+      }
+      if (event.type === 'own_goal') {
+        if (event.teamId === match.homeTeamId) {
+          awayScore++;
+        } else if (event.teamId === match.awayTeamId) {
+          homeScore++;
         }
       }
     });
