@@ -12,6 +12,24 @@ const tournamentEditionRepository = AppDataSource.getRepository(TournamentEditio
 const teamRepository = AppDataSource.getRepository(Team);
 const playerRepository = AppDataSource.getRepository(Player);
 
+// Helper to map phase/knockout round
+function getKnockoutPhaseLabel(match: any) {
+  // If phase is one of the known knockout rounds, return it
+  const knockoutMap: Record<string, string> = {
+    'Šesnaestina finala': 'Šesnaestina finala',
+    'Osmina finala': 'Osmina finala',
+    'Četvrtfinale': 'Četvrtfinale',
+    'Polufinale': 'Polufinale',
+    'Finale': 'Finale',
+  };
+  if (knockoutMap[match.phase]) return knockoutMap[match.phase];
+  // If phase is 'Knockout', try to use a custom property or fallback
+  if (match.phase === 'Knockout' && match.knockoutPhase && knockoutMap[match.knockoutPhase]) {
+    return knockoutMap[match.knockoutPhase];
+  }
+  return undefined;
+}
+
 // Get all matches
 router.get('/', async (req: Request, res: Response) => {
   try {
@@ -65,7 +83,7 @@ router.get('/', async (req: Request, res: Response) => {
           })
         );
         
-        return { ...match, events: eventsWithDetails };
+        return { ...match, events: eventsWithDetails, knockoutPhase: getKnockoutPhaseLabel(match) };
       })
     );
 
@@ -122,7 +140,7 @@ router.get('/:id', async (req: Request, res: Response) => {
       })
     );
 
-    res.json({ ...match, events: eventsWithDetails });
+    res.json({ ...match, events: eventsWithDetails, knockoutPhase: getKnockoutPhaseLabel(match) });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

@@ -307,6 +307,13 @@ const MatchPage: React.FC = () => {
     return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}><Alert severity="error">{error || 'Utakmica nije pronađena.'}</Alert></Box>;
   }
 
+  if (match) {
+    // TEMP: Log match object to inspect all properties
+    // Remove this after debugging
+    // eslint-disable-next-line no-console
+    console.log('Match object:', match);
+  }
+
   const { hasStarted, hasEnded } = getMatchStatus(match);
   const isLive = hasStarted && !hasEnded;
   const { homeScore, awayScore } = calculateScores(match);
@@ -326,7 +333,19 @@ const MatchPage: React.FC = () => {
   } else if (match.group) {
     phaseLabel = `Grupa ${match.group}`;
   } else if (match.phase) {
-    phaseLabel = match.phase.charAt(0).toUpperCase() + match.phase.slice(1);
+    // Map known knockout phase names to display labels
+    const knockoutMap: Record<string, string> = {
+      'Šesnaestina finala': 'Šesnaestina finala',
+      'Osmina finala': 'Osmina finala',
+      'Četvrtfinale': 'Četvrtfinale',
+      'Polufinale': 'Polufinale',
+      'Finale': 'Finale',
+    };
+    if (match.phase === 'Knockout' && match.knockoutPhase && knockoutMap[match.knockoutPhase]) {
+      phaseLabel = knockoutMap[match.knockoutPhase];
+    } else {
+      phaseLabel = knockoutMap[match.phase] || (match.phase.charAt(0).toUpperCase() + match.phase.slice(1));
+    }
   }
 
   return (
