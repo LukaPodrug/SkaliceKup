@@ -772,49 +772,37 @@ const HomePage: React.FC = () => {
     };
   }, []);
 
-  if (isMobile) {
-    // Remove frontend filtering of matches by date, as backend now does it
-    return <HomePageMobile navigate={navigate} matches={matches} teams={teams} articles={articles} loading={loading} error={error} />;
-  }
-
-  // Desktop logic
+  // Determine which matches to show: only today's if any, otherwise only yesterday's
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
-  let shownMatches = matches.filter(match => {
+
+  // Group matches by date
+  const matchesByDate: { [date: string]: Match[] } = {};
+  matches.forEach(match => {
     const matchDate = new Date(match.date);
     matchDate.setHours(0, 0, 0, 0);
-    return (
-      matchDate.getTime() === today.getTime() ||
-      matchDate.getTime() === yesterday.getTime()
-    );
+    const key = matchDate.toISOString();
+    if (!matchesByDate[key]) matchesByDate[key] = [];
+    matchesByDate[key].push(match);
   });
-  if (shownMatches.length === 0 && matches.length > 0) {
-    const futureDates = Array.from(new Set(
-      matches
-        .map(match => {
-          const d = new Date(match.date); d.setHours(0,0,0,0); return d.getTime();
-        })
-        .filter(time => time > today.getTime())
-    )).sort((a, b) => a - b);
-    if (futureDates.length > 0) {
-      const nextDate = futureDates[0];
-      shownMatches = matches.filter(match => {
-        const matchDate = new Date(match.date);
-        matchDate.setHours(0, 0, 0, 0);
-        return matchDate.getTime() === nextDate;
-      });
-    }
+
+  const todayKey = today.toISOString();
+  const yesterdayKey = yesterday.toISOString();
+  let shownMatches: Match[] = [];
+  if (matchesByDate[yesterdayKey]) {
+    shownMatches = shownMatches.concat(matchesByDate[yesterdayKey].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
   }
-  // After filtering, sort so today's matches are first, then yesterday's
-  shownMatches.sort((a, b) => {
-    const aDate = new Date(a.date);
-    aDate.setHours(0, 0, 0, 0);
-    const bDate = new Date(b.date);
-    bDate.setHours(0, 0, 0, 0);
-    return bDate.getTime() - aDate.getTime(); // descending: today first
-  });
+  if (matchesByDate[todayKey]) {
+    shownMatches = shownMatches.concat(matchesByDate[todayKey].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+  }
+
+  if (isMobile) {
+    return <HomePageMobile navigate={navigate} matches={shownMatches} teams={teams} articles={articles} loading={loading} error={error} />;
+  }
+
+  // Desktop logic
   return <HomePageDesktop navigate={navigate} matches={shownMatches} teams={teams} articles={articles} loading={loading} error={error} />;
 };
 
