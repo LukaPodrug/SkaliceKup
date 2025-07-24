@@ -8,7 +8,22 @@ const teamRepository = AppDataSource.getRepository(Team);
 // Get all teams
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const { search, editionId } = req.query;
+    const { search, editionId, ids } = req.query;
+    
+    // Support fetching by multiple IDs
+    if (ids) {
+      // ids can be a comma-separated string or array
+      let idList: string[] = [];
+      if (Array.isArray(ids)) {
+        idList = ids as string[];
+      } else if (typeof ids === 'string') {
+        idList = ids.split(',').map(id => id.trim()).filter(Boolean);
+      }
+      if (idList.length > 0) {
+        const teams = await teamRepository.findByIds(idList);
+        return res.json(teams);
+      }
+    }
     
     if (editionId) {
       // If editionId is provided, return all teams for that edition (no limit)

@@ -680,39 +680,36 @@ const HomePage: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [matchesResponse, teamsResponse, articlesResponse] = await Promise.all([
+        // Only fetch matches and articles in parallel
+        const [matchesResponse, articlesResponse] = await Promise.all([
           apiClient.getMatches(),
-          apiClient.getTeams(),
           contentfulClient.getArticles(3) // Get 3 latest articles for homepage
         ]);
 
         // Handle both { data: [...] } and [...] directly
+        let matchesArr: Match[] = [];
         if (Array.isArray(matchesResponse)) {
           setMatches(matchesResponse);
+          matchesArr = matchesResponse;
         } else if (matchesResponse.data && Array.isArray(matchesResponse.data)) {
           setMatches(matchesResponse.data);
+          matchesArr = matchesResponse.data;
         } else if (matchesResponse.error) {
           setError(matchesResponse.error);
         }
 
         // Try to get editionId from the first match if available
         let editionId = undefined;
-        const matchesArr = Array.isArray(matchesResponse)
-          ? matchesResponse
-          : (matchesResponse.data && Array.isArray(matchesResponse.data) ? matchesResponse.data : []);
         if (matchesArr.length > 0) {
           editionId = matchesArr[0].tournamentEditionId;
         }
-        let teamsResp = teamsResponse;
-        if (editionId) {
-          teamsResp = await apiClient.getTeams({ editionId });
-        }
-        if (Array.isArray(teamsResp)) {
+        if (matchesArr.length > 0) {
+          // Get unique team IDs from matches
+          const teamIds = Array.from(new Set(matchesArr.flatMap(m => [m.homeTeamId, m.awayTeamId])));
+          const teamsResp = await apiClient.getTeamsByIds(teamIds);
           setTeams(teamsResp);
-        } else if (teamsResp.data && Array.isArray(teamsResp.data)) {
-          setTeams(teamsResp.data);
-        } else if (teamsResp.error) {
-          setError(teamsResp.error);
+        } else {
+          setTeams([]);
         }
 
         if (articlesResponse.data) {

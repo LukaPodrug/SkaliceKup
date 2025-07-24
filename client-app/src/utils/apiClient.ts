@@ -288,6 +288,14 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+
+  async getTeamsByIds(ids: string[]) {
+    if (!ids.length) return [];
+    const param = ids.join(',');
+    const res = await fetch(`${this.baseURL}/teams?ids=${param}`);
+    if (!res.ok) throw new Error('Failed to fetch teams by ids');
+    return res.json();
+  }
 }
 
 export const apiClient = new ApiClient();
