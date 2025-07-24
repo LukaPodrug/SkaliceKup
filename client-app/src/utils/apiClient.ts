@@ -63,6 +63,7 @@ export interface Match {
   }>;
   homeSquad?: string[]; // Player IDs for home team squad
   awaySquad?: string[]; // Player IDs for away team squad
+  knockoutPhase?: string;
   createdAt: string;
   updatedAt: string;
 }
