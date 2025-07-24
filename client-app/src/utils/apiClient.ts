@@ -204,15 +204,15 @@ class ApiClient {
   }
 
   // Matches
-  async getMatches(filters?: { tournamentEdition?: string; phase?: string; status?: string }) {
+  async getMatches(filters?: { tournamentEdition?: string; phase?: string; status?: string; dateFrom?: string; dateTo?: string }) {
     const params = new URLSearchParams();
     if (filters?.tournamentEdition) params.append('tournamentEdition', filters.tournamentEdition);
     if (filters?.phase) params.append('phase', filters.phase);
     if (filters?.status) params.append('status', filters.status);
-    
+    if (filters?.dateFrom) params.append('dateFrom', filters.dateFrom);
+    if (filters?.dateTo) params.append('dateTo', filters.dateTo);
     const queryString = params.toString();
     const endpoint = queryString ? `/matches?${queryString}` : '/matches';
-    
     return this.request(endpoint);
   }
 

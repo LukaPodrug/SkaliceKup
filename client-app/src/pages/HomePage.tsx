@@ -680,10 +680,17 @@ const HomePage: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Only fetch matches and articles in parallel
+        // Calculate dateFrom (yesterday 00:00) and dateTo (today 23:59)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        const dateFrom = yesterday.toISOString().slice(0, 10) + 'T00:00:00.000Z';
+        const dateTo = today.toISOString().slice(0, 10) + 'T23:59:59.999Z';
+        // Fetch only matches in this range
         const [matchesResponse, articlesResponse] = await Promise.all([
-          apiClient.getMatches(),
-          contentfulClient.getArticles(3) // Get 3 latest articles for homepage
+          apiClient.getMatches({ dateFrom, dateTo }),
+          contentfulClient.getArticles(3)
         ]);
 
         // Handle both { data: [...] } and [...] directly
@@ -766,47 +773,8 @@ const HomePage: React.FC = () => {
   }, []);
 
   if (isMobile) {
-    // Find today's and yesterday's matches
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    let shownMatches = matches.filter(match => {
-      const matchDate = new Date(match.date);
-      matchDate.setHours(0, 0, 0, 0);
-      return (
-        matchDate.getTime() === today.getTime() ||
-        matchDate.getTime() === yesterday.getTime()
-      );
-    });
-    // After filtering, sort so today's matches are first, then yesterday's
-    shownMatches.sort((a, b) => {
-      const aDate = new Date(a.date);
-      aDate.setHours(0, 0, 0, 0);
-      const bDate = new Date(b.date);
-      bDate.setHours(0, 0, 0, 0);
-      return bDate.getTime() - aDate.getTime(); // descending: today first
-    });
-    // If no matches today or yesterday, find the next available date with matches
-    if (shownMatches.length === 0 && matches.length > 0) {
-      // Get all unique future dates
-      const futureDates = Array.from(new Set(
-        matches
-          .map(match => {
-            const d = new Date(match.date); d.setHours(0,0,0,0); return d.getTime();
-          })
-          .filter(time => time > today.getTime())
-      )).sort((a, b) => a - b);
-      if (futureDates.length > 0) {
-        const nextDate = futureDates[0];
-        shownMatches = matches.filter(match => {
-          const matchDate = new Date(match.date);
-          matchDate.setHours(0, 0, 0, 0);
-          return matchDate.getTime() === nextDate;
-        });
-      }
-    }
-    return <HomePageMobile navigate={navigate} matches={shownMatches} teams={teams} articles={articles} loading={loading} error={error} />;
+    // Remove frontend filtering of matches by date, as backend now does it
+    return <HomePageMobile navigate={navigate} matches={matches} teams={teams} articles={articles} loading={loading} error={error} />;
   }
 
   // Desktop logic

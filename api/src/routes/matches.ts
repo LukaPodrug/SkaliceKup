@@ -33,12 +33,18 @@ function getKnockoutPhaseLabel(match: any) {
 // Get all matches
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const { tournamentEdition, phase, status } = req.query;
+    const { tournamentEdition, phase, status, dateFrom, dateTo } = req.query;
     const whereClause: any = {};
     
     if (tournamentEdition) whereClause.tournamentEditionId = tournamentEdition;
     if (phase) whereClause.phase = phase;
     if (status) whereClause.status = status;
+
+    // Date filtering
+    let dateFilter: any = {};
+    if (dateFrom) dateFilter['$gte'] = new Date(dateFrom as string);
+    if (dateTo) dateFilter['$lte'] = new Date(dateTo as string);
+    if (dateFrom || dateTo) whereClause.date = dateFilter;
 
     const matches = await matchRepository.find({
       where: whereClause,
