@@ -5,6 +5,7 @@ import { TournamentEdition } from '../entities/TournamentEdition';
 import { Team } from '../entities/Team';
 import { Player } from '../entities/Player';
 import { broadcastUpdate } from '../index';
+import { Between, MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
 
 const router = express.Router();
 const matchRepository = AppDataSource.getRepository(Match);
@@ -40,11 +41,14 @@ router.get('/', async (req: Request, res: Response) => {
     if (phase) whereClause.phase = phase;
     if (status) whereClause.status = status;
 
-    // Date filtering
-    let dateFilter: any = {};
-    if (dateFrom) dateFilter['$gte'] = new Date(dateFrom as string);
-    if (dateTo) dateFilter['$lte'] = new Date(dateTo as string);
-    if (dateFrom || dateTo) whereClause.date = dateFilter;
+    // Date filtering using TypeORM operators
+    if (dateFrom && dateTo) {
+      whereClause.date = Between(new Date(dateFrom as string), new Date(dateTo as string));
+    } else if (dateFrom) {
+      whereClause.date = MoreThanOrEqual(new Date(dateFrom as string));
+    } else if (dateTo) {
+      whereClause.date = LessThanOrEqual(new Date(dateTo as string));
+    }
 
     const matches = await matchRepository.find({
       where: whereClause,
