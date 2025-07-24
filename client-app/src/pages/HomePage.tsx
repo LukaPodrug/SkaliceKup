@@ -680,13 +680,14 @@ const HomePage: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Calculate dateFrom (yesterday 00:00) and dateTo (today 23:59)
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const yesterday = new Date(today);
-        yesterday.setDate(today.getDate() - 1);
-        const dateFrom = yesterday.toISOString().slice(0, 10) + 'T00:00:00.000Z';
-        const dateTo = today.toISOString().slice(0, 10) + 'T23:59:59.999Z';
+        // Calculate dateFrom (yesterday 00:00 UTC) and dateTo (today 23:59:59 UTC) correctly
+        const now = new Date();
+        const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const yesterdayLocal = new Date(todayLocal);
+        yesterdayLocal.setDate(todayLocal.getDate() - 1);
+        // Convert local midnight to UTC ISO string for API
+        const dateFrom = new Date(yesterdayLocal.getTime() - yesterdayLocal.getTimezoneOffset() * 60000).toISOString().slice(0, 10) + 'T00:00:00.000Z';
+        const dateTo = new Date(todayLocal.getTime() - todayLocal.getTimezoneOffset() * 60000).toISOString().slice(0, 10) + 'T23:59:59.999Z';
         // Fetch only matches in this range
         const [matchesResponse, articlesResponse] = await Promise.all([
           apiClient.getMatches({ dateFrom, dateTo }),
