@@ -8,13 +8,20 @@ const Footer: React.FC = () => (
         <Box>
           <Box mt={4} display="flex" flexDirection="column" alignItems="center">
             <Box display="flex" justifyContent="center" gap={2} flexWrap="wrap">
-              <img src="/sponsor3.png" alt="Sponsor 1" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor1.png" alt="Sponsor 1" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor2.png" alt="Sponsor 2" style={{ height: 48, borderRadius: 8 }} />
-              <img src="/sponsor4.png" alt="Sponsor 3" style={{ height: 48, borderRadius: 8 }} />
-              <img src="/sponsor1.png" alt="Sponsor 4" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor3.png" alt="Sponsor 3" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor4.png" alt="Sponsor 4" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor5.png" alt="Sponsor 5" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor6.png" alt="Sponsor 6" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor7.png" alt="Sponsor 7" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor8.png" alt="Sponsor 8" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor9.png" alt="Sponsor 9" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor10.png" alt="Sponsor 10" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor11.png" alt="Sponsor 11" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor12.png" alt="Sponsor 12" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor13.png" alt="Sponsor 13" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor14.png" alt="Sponsor 14" style={{ height: 48, borderRadius: 8 }} />
             </Box>
           </Box>
         </Box>
