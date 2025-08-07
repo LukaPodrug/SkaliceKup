@@ -30,9 +30,7 @@ const Footer: React.FC = () => (
               <img src="/sponsor20.png" alt="Sponsor 20" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor21.png" alt="Sponsor 21" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor22.png" alt="Sponsor 22" style={{ height: 48, borderRadius: 8 }} />
-              <Box sx={{ height: 48, borderRadius: 8, bgcolor: '#fff', color: '#fd9905', display: 'flex', alignItems: 'center', px: 2, fontWeight: 700, fontSize: 20, fontFamily: 'Ubuntu, sans-serif' }}>
-                CB Elephant
-              </Box>
+              <img src="/sponsor23.png" alt="Sponsor 23" style={{ height: 48, borderRadius: 8 }} />
             </Box>
           </Box>
         </Box>
