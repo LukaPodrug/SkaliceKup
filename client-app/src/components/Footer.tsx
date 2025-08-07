@@ -28,6 +28,15 @@ const Footer: React.FC = () => (
               <img src="/sponsor18.png" alt="Sponsor 18" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor19.png" alt="Sponsor 19" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor20.png" alt="Sponsor 20" style={{ height: 48, borderRadius: 8 }} />
+              <Box sx={{ height: 48, borderRadius: 8, bgcolor: '#fff', color: '#fd9905', display: 'flex', alignItems: 'center', px: 2, fontWeight: 700, fontSize: 20, fontFamily: 'Ubuntu, sans-serif', boxShadow: 1 }}>
+                Krom
+              </Box>
+              <Box sx={{ height: 48, borderRadius: 8, bgcolor: '#fff', color: '#fd9905', display: 'flex', alignItems: 'center', px: 2, fontWeight: 700, fontSize: 20, fontFamily: 'Ubuntu, sans-serif', boxShadow: 1 }}>
+                CB Elephant
+              </Box>
+              <Box sx={{ height: 48, borderRadius: 8, bgcolor: '#fff', color: '#fd9905', display: 'flex', alignItems: 'center', px: 2, fontWeight: 700, fontSize: 20, fontFamily: 'Ubuntu, sans-serif', boxShadow: 1 }}>
+                HS Plumbing
+              </Box>
             </Box>
           </Box>
         </Box>
