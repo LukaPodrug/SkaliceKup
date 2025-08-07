@@ -31,10 +31,10 @@ const Footer: React.FC = () => (
               <Box sx={{ height: 48, borderRadius: 8, bgcolor: '#fff', color: '#fd9905', display: 'flex', alignItems: 'center', px: 2, fontWeight: 700, fontSize: 20, fontFamily: 'Ubuntu, sans-serif', boxShadow: 1 }}>
                 Krom
               </Box>
-              <Box sx={{ height: 48, borderRadius: 8, bgcolor: '#fff', color: '#fd9905', display: 'flex', alignItems: 'center', px: 2, fontWeight: 700, fontSize: 20, fontFamily: 'Ubuntu, sans-serif', boxShadow: 1 }}>
+              <Box sx={{ height: 48, borderRadius: 8, bgcolor: '#fff', color: '#fd9905', display: 'flex', alignItems: 'center', px: 2, fontWeight: 700, fontSize: 20, fontFamily: 'Ubuntu, sans-serif' }}>
                 CB Elephant
               </Box>
-              <Box sx={{ height: 48, borderRadius: 8, bgcolor: '#fff', color: '#fd9905', display: 'flex', alignItems: 'center', px: 2, fontWeight: 700, fontSize: 20, fontFamily: 'Ubuntu, sans-serif', boxShadow: 1 }}>
+              <Box sx={{ height: 48, borderRadius: 8, bgcolor: '#fff', color: '#fd9905', display: 'flex', alignItems: 'center', px: 2, fontWeight: 700, fontSize: 20, fontFamily: 'Ubuntu, sans-serif' }}>
                 HS Plumbing
               </Box>
             </Box>
