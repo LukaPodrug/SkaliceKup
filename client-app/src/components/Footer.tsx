@@ -11,7 +11,7 @@ const Footer: React.FC = () => (
               <img src="/sponsor1.png" alt="Sponsor 1" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor2.png" alt="Sponsor 2" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor3.png" alt="Sponsor 3" style={{ height: 48, borderRadius: 8 }} />
-              <img src="/sponsor4.png" alt="Sponsor 4" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor12.png" alt="Sponsor 4" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor5.png" alt="Sponsor 5" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor6.png" alt="Sponsor 6" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor7.png" alt="Sponsor 7" style={{ height: 48, borderRadius: 8 }} />
@@ -19,7 +19,7 @@ const Footer: React.FC = () => (
               <img src="/sponsor9.png" alt="Sponsor 9" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor10.png" alt="Sponsor 10" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor11.png" alt="Sponsor 11" style={{ height: 48, borderRadius: 8 }} />
-              <img src="/sponsor12.png" alt="Sponsor 12" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor4.png" alt="Sponsor 12" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor13.png" alt="Sponsor 13" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor14.png" alt="Sponsor 14" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor15.png" alt="Sponsor 15" style={{ height: 48, borderRadius: 8 }} />
