@@ -25,6 +25,8 @@ const Footer: React.FC = () => (
               <img src="/sponsor15.png" alt="Sponsor 15" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor16.png" alt="Sponsor 16" style={{ height: 48, borderRadius: 8 }} />
               <img src="/sponsor17.png" alt="Sponsor 17" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor18.png" alt="Sponsor 18" style={{ height: 48, borderRadius: 8 }} />
+              <img src="/sponsor19.png" alt="Sponsor 19" style={{ height: 48, borderRadius: 8 }} />
             </Box>
           </Box>
         </Box>
